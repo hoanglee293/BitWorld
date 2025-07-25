@@ -233,7 +233,7 @@ const Header = () => {
                                 {!isAuthenticated && !phantomConnected ? (
                                     <button
                                         onClick={() => setIsSigninModalOpen(true)}
-                                        className="linear-gradient-light bg-theme-primary-500 text-black dark:text-neutral-100 font-medium px-3 py-1 rounded-full text-xs transition-colors whitespace-nowrap"
+                                        className="bg-theme-primary-500 text-black dark:text-neutral-100 font-medium px-3 py-1 rounded-full text-xs transition-colors whitespace-nowrap"
                                     >
                                         {t('connect')}
                                     </button>

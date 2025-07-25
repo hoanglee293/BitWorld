@@ -303,7 +303,7 @@ export default function TradingPanel({
     }, [tradeAmount, mode, percentage, isDirectAmountInput])
    
     return (
-        <div className="h-full flex flex-col">
+        <div className="h-full flex flex-col py-2 pl-2">
             {/* Mode Tabs */}
             <div className="flex group bg-gray-100 dark:bg-theme-neutral-1000 rounded-xl h-[30px] mb-1">
                 <button
@@ -320,7 +320,7 @@ export default function TradingPanel({
                 </button>
             </div>
 
-            <div className="rounded-lg flex flex-col 2xl:justify-between gap-2 lg:gap-3 h-full overflow-y-auto">
+            <div className="rounded-lg flex flex-col 2xl:justify-between gap-2 lg:gap-3 h-full overflow-y-auto pr-2">
                 {/* Amount Input */}
                 <div className="relative mt-2">
                     <div className={`bg-gray-50 dark:bg-neutral-900 rounded-full border ${amountError ? 'border-red-500' : 'border-blue-200 dark:border-blue-500'} px-3 py-2 flex justify-between items-center ${height > 700 ? 'py-2' : 'h-[30px]'}`}>

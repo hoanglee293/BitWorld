@@ -50,9 +50,9 @@ export default function MasterTradeChat() {
     });
     
     return (
-        <div className="h-full flex flex-col relative">
+        <div className="h-full flex flex-col  relative">
              <button
-                    className={`h-10 rounded-2xl cursor-pointer text-sm font-medium uppercase text-center bg-theme-primary-500`}
+                    className={`h-8 w-full rounded-2xl cursor-pointer text-sm font-medium uppercase text-center bg-theme-primary-500`}
                     data-active-tab={"chat"}
                 >
                     {t("masterTrade.tabs.chat")}

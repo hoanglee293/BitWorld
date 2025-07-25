@@ -21,23 +21,23 @@ const TradingPage = () => {
     // Check if screen width is less than 768px (typical mobile breakpoint)
     return window.innerWidth < 768;
   };
-  
+
   const isSmallScreen = windowWidth < 1173;
-  
+
   console.log("windowWidth", windowWidth);
 
   useEffect(() => {
     setIsMounted(true);
     setWindowWidth(window.innerWidth);
     setIsMobile(checkScreenSize());
-    
+
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
       setIsMobile(checkScreenSize());
     };
-    
+
     window.addEventListener('resize', handleResize);
-    
+
     return () => {
       window.removeEventListener('resize', handleResize);
     };
@@ -50,16 +50,15 @@ const TradingPage = () => {
   // Use default height during SSR
   const height = isMounted ? windowWidth : 800;
   let withDesktop = 'w-1/6';
-  if(windowWidth < 1464) withDesktop = 'w-1/5';
-  if(windowWidth < 1201) withDesktop = 'w-[23%]';
-  if(windowWidth < 905) withDesktop = 'w-[35%]';
-  
+  if (windowWidth < 1464) withDesktop = 'w-1/5';
+  if (windowWidth < 1201) withDesktop = 'w-[23%]';
+  if (windowWidth < 905) withDesktop = 'w-[35%]';
+
   return (
-    <div className={`h-[92vh] flex flex-col gap-2 xl:gap-4 container-trading relative z-40  ${
-      isMobile ? 'px-2' : 'px-2'
-    }`}>
+    <div className={`h-[92vh] flex flex-col gap-2 xl:gap-4 container-trading relative z-40  ${isMobile ? 'px-2' : 'px-2'
+      }`}>
       {!isMobile && <Interface />}
-      
+
       {/* Sidebar Toggle Button for Small Screens */}
       {isSmallScreen && (
         <button
@@ -80,11 +79,10 @@ const TradingPage = () => {
           </svg>
         </button>
       )}
-      
-      <div className={`flex-1 flex ${
-        isMobile ? 'flex-col' : 'flex-row'
-      } 2xl:gap-4 xl:gap-2 gap-1 w-full relative z-10 overflow-hidden`}>
-        
+
+      <div className={`flex-1 flex ${isMobile ? 'flex-col' : 'flex-row'
+        } 2xl:gap-4 xl:gap-2 gap-1 w-full relative z-10 overflow-hidden`}>
+
         {/* Left Column - Sidebar for Small Screens */}
         {isSmallScreen ? (
           <>
@@ -95,11 +93,10 @@ const TradingPage = () => {
                 onClick={() => setIsSidebarOpen(false)}
               />
             )}
-            
+
             {/* Sidebar */}
-            <div className={`fixed left-0 top-12 md:h-full h-[calc(100vh-115px)] w-[360px] bg-white dark:bg-theme-neutral-1000 shadow-xl z-50 transform transition-transform duration-300 ease-in-out rounded-r-xl ${
-              isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-            }`}>
+            <div className={`fixed left-0 top-12 md:h-full h-[calc(100vh-115px)] w-[360px] bg-white dark:bg-theme-neutral-1000 shadow-xl z-50 transform transition-transform duration-300 ease-in-out rounded-r-xl ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+              }`}>
               <div className="flex flex-col h-full p-2 gap-4 overflow-y-auto">
                 <TokenInfo />
                 <ListToken />
@@ -108,20 +105,26 @@ const TradingPage = () => {
           </>
         ) : (
           /* Original Left Column for Larger Screens */
-            <></>
+          <></>
         )}
 
         {/* Center and Right Columns with Resizable Panels */}
         {!isMobile ? (
           <PanelGroup direction="horizontal" className="flex-1">
-            <Panel defaultSize={17} minSize={12} maxSize={25} className="h-full overflow-hidden">
-            <div className={`flex ${
-              isMobile ? 'flex-row w-full lg:h-[200px]' : 'flex-col '} xl:gap-2 gap-1 lg:overflow-hidden`}>
-              <TokenInfo />
-              {!isMobile && <ListToken />}
-            </div>
-            </Panel>
-             <PanelResizeHandle className="w-[2px] m-1 bg-theme-neutral-800 hover:bg-neutral-600 transition-colors relative z-400" />
+            {
+              !isSmallScreen && (
+                <>
+                  <Panel defaultSize={17} minSize={12} maxSize={25} className="h-full overflow-hidden">
+                    <div className={`flex ${isMobile ? 'flex-row w-full lg:h-[200px]' : 'flex-col '} xl:gap-2 gap-1 lg:overflow-hidden`}>
+                      <TokenInfo />
+                      {!isMobile && <ListToken />}
+                    </div>
+                  </Panel>
+                  <PanelResizeHandle className="w-[2px] m-1 bg-theme-neutral-800 hover:bg-neutral-600 transition-colors relative z-400" />
+                </>
+              )
+            }
+
             {/* Center Column */}
             <Panel defaultSize={65} minSize={50} maxSize={85} className="lg:overflow-hidden relative">
               <PanelGroup direction="vertical" className="h-full">
@@ -131,10 +134,10 @@ const TradingPage = () => {
                     <TradingViewChart className='h-full' />
                   </div>
                 </Panel>
-                
+
                 {/* Height Resize Handle */}
                 <PanelResizeHandle className="h-[2px] m-1 bg-theme-neutral-800 hover:bg-neutral-600 transition-colors relative z-400" />
-                
+
                 {/* Transaction History Panel */}
                 <Panel defaultSize={40} minSize={20} maxSize={60} className="lg:overflow-hidden relative">
                   <div className='transition-all duration-100 overflow-hidden rounded-xl flex h-full'>
@@ -145,14 +148,14 @@ const TradingPage = () => {
                 </Panel>
               </PanelGroup>
             </Panel>
-            
+
             {/* Width Resize Handle */}
             <PanelResizeHandle className="w-[2px] m-1 bg-theme-neutral-800 hover:bg-neutral-600 transition-colors relative z-400" />
-            
+
             {/* Right Column */}
             <Panel defaultSize={20} minSize={15} maxSize={30} className="h-full overflow-hidden">
               <div className='h-full overflow-auto'>
-                <Control/>
+                <Control />
               </div>
             </Panel>
           </PanelGroup>
@@ -161,26 +164,26 @@ const TradingPage = () => {
           <>
             {/* Center Column for Mobile */}
             <div className="table sm:flex flex-col w-full h-full lg:overflow-hidden relative">
-              <div 
-                style={{ height: '300px' }} 
+              <div
+                style={{ height: '300px' }}
                 className='dark:bg-theme-neutral-1000 shadow-inset bg-white rounded-xl p-2 md:p-4 overflow-auto transition-all duration-100 relative'
               >
-                <ChartMobile className='h-full'/>
+                <ChartMobile className='h-full' />
               </div>
-              
+
               <div className='h-1 m-1 md:m-2 bg-theme-neutral-800 cursor-row-resize hover:bg-neutral-600 transition-colors relative z-400' />
-              
+
               <div className='transition-all duration-100 overflow-hidden rounded-xl flex'>
                 <div className='flex flex-1 w-full md:h-full h-[50vh] overflow-scroll'>
                   <TransactionHistory />
                 </div>
               </div>
             </div>
-            
+
             {/* Right Column for Mobile */}
             <div className="w-full h-[70px]">
               <div className='h-full overflow-auto'>
-                <Control/>
+                <Control />
               </div>
             </div>
           </>

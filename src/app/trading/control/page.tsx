@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getInforWallet } from '@/services/api/TelegramWalletService'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useLang } from '@/lang/useLang'
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 
 // Icons
 const BuyIcon = () => (
@@ -88,7 +89,7 @@ const Control = () => {
       case 'sell':
         return (
           <Suspense fallback={<div className="flex items-center justify-center h-full">Loading...</div>}>
-            <TradingPanel 
+            <TradingPanel
               defaultMode={activeTab as TradingMode}
               currency={currencies}
               isConnected={isConnected}
@@ -123,7 +124,7 @@ const Control = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-neutral-700 rounded-lg p-4">
                 <h3 className="text-lg font-semibold text-white mb-2">Trade History</h3>
                 <div className="space-y-2">
@@ -153,27 +154,24 @@ const Control = () => {
           <div className="flex justify-around items-center h-16">
             <button
               onClick={() => handleTabClick('buy')}
-              className={`flex-1 h-full flex flex-col items-center justify-center gap-1 ${
-                activeTab === 'buy' ? 'text-green-500' : 'text-neutral-400'
-              }`}
+              className={`flex-1 h-full flex flex-col items-center justify-center gap-1 ${activeTab === 'buy' ? 'text-green-500' : 'text-neutral-400'
+                }`}
             >
               <BuyIcon />
               <span className="text-xs">{t('trading.buy')}</span>
             </button>
             <button
               onClick={() => handleTabClick('sell')}
-              className={`flex-1 h-full flex flex-col items-center justify-center gap-1 ${
-                activeTab === 'sell' ? 'text-red-500' : 'text-neutral-400'
-              }`}
+              className={`flex-1 h-full flex flex-col items-center justify-center gap-1 ${activeTab === 'sell' ? 'text-red-500' : 'text-neutral-400'
+                }`}
             >
               <SellIcon />
               <span className="text-xs">{t('trading.sell')}</span>
             </button>
             <button
               onClick={() => handleTabClick('chat')}
-              className={`flex-1 h-full flex flex-col items-center justify-center gap-1 ${
-                activeTab === 'chat' ? 'text-blue-500' : 'text-neutral-400'
-              }`}
+              className={`flex-1 h-full flex flex-col items-center justify-center gap-1 ${activeTab === 'chat' ? 'text-blue-500' : 'text-neutral-400'
+                }`}
             >
               <ChatIcon />
               <span className="text-xs">{walletInfor?.role === 'master' ? t('trading.master') : t('trading.chat')}</span>
@@ -185,18 +183,17 @@ const Control = () => {
         {isPanelOpen && (
           <>
             {/* Backdrop */}
-            <div 
+            <div
               className="fixed inset-0 bg-black bg-opacity-50 z-40"
               onClick={handleClosePanel}
             />
             {/* Panel */}
-            <div className={`fixed bottom-0 left-0 right-0 bg-white dark:bg-theme-neutral-1000 rounded-t-xl z-50 transform transition-transform duration-300 ${
-              isPanelOpen ? 'translate-y-0' : 'translate-y-full'
-            }`}>
+            <div className={`fixed bottom-0 left-0 right-0 bg-white dark:bg-theme-neutral-1000 rounded-t-xl z-50 transform transition-transform duration-300 ${isPanelOpen ? 'translate-y-0' : 'translate-y-full'
+              }`}>
               <div className="p-4">
                 {/* Drag handle */}
-                <div className="w-12 h-1 bg-neutral-600 rounded-full mx-auto mb-4" onClick={handleClosePanel}/>
-                
+                <div className="w-12 h-1 bg-neutral-600 rounded-full mx-auto mb-4" onClick={handleClosePanel} />
+
                 {/* Panel Content */}
                 {renderTabContent()}
               </div>
@@ -210,21 +207,33 @@ const Control = () => {
   // Desktop view
   return (
     <div className='flex flex-col h-full gap-4 '>
-      <div className={classLayout + "  p-3 flex-none"}>
-        <Suspense fallback={<div className="flex items-center min-h-[500px] justify-center h-full">Loading...</div>}>
-          <TradingPanel 
-            defaultMode={activeTab as TradingMode}
-            currency={currencies} 
-            isConnected={isConnected} 
-            onConnect={() => setIsConnected(!isConnected)}
-          />
-        </Suspense>
-      </div>
-      <div className={classLayout + " flex-1 min-h-0"}>
-        <Suspense fallback={<div className="flex items-center justify-center h-full">Loading...</div>}>
-          <MasterTradeChat />
-        </Suspense>
-      </div>
+      <PanelGroup direction="vertical" className="h-full">
+        {/* Chart Panel */}
+        <Panel defaultSize={60} minSize={25} maxSize={40} className={`${classLayout} lg:overflow-hidden relative`}>
+          <Suspense fallback={<div className="flex items-center min-h-[500px] justify-center h-full ">Loading...</div>}>
+            <TradingPanel
+              defaultMode={activeTab as TradingMode}
+              currency={currencies}
+              isConnected={isConnected}
+              onConnect={() => setIsConnected(!isConnected)}
+            />
+          </Suspense>
+        </Panel>
+
+        {/* Height Resize Handle */}
+        <PanelResizeHandle className="h-[2px] m-1 bg-theme-neutral-800 hover:bg-neutral-600 transition-colors relative z-400" />
+
+        {/* Transaction History Panel */}
+        <Panel defaultSize={40} minSize={20} maxSize={70} className={`${classLayout} lg:overflow-hidden relative`}>
+          <div className='transition-all duration-100 overflow-hidden rounded-xl flex h-full'>
+            <div className='flex flex-1 w-full'>
+              <Suspense fallback={<div className="flex items-center justify-center h-full">Loading...</div>}>
+                <MasterTradeChat />
+              </Suspense>
+            </div>
+          </div>
+        </Panel>
+      </PanelGroup>
     </div>
   )
 }

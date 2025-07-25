@@ -31,7 +31,6 @@ yarn-error.log*
 .pnpm-debug.log*
 public/charting_library/
 # env files (can opt-in for committing if needed)
-.env*
 
 # vercel
 .vercel

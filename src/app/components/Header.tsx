@@ -134,9 +134,16 @@ const Header = () => {
         setIsWalletDialogOpen(true);
     }, [isMobile]);
 
-    const storedTokens = localStorage.getItem('recentTokens');
-    let tokens: any[] = storedTokens ? JSON.parse(storedTokens) : [];
-    console.log("tokens", tokens)
+    const [tokens, setTokens] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (mounted) {
+            const storedTokens = localStorage.getItem('recentTokens');
+            const parsedTokens = storedTokens ? JSON.parse(storedTokens) : [];
+            setTokens(parsedTokens);
+            console.log("tokens", parsedTokens);
+        }
+    }, [mounted]);
 
     useEffect(() => {
         if (!isSearchModalOpen) {

@@ -125,8 +125,10 @@ const TradingPage = () => {
               )
             }
 
+           
+
             {/* Center Column */}
-            <Panel defaultSize={65} minSize={50} maxSize={85} className="lg:overflow-hidden relative">
+            <Panel defaultSize={65} minSize={40} maxSize={95} className="lg:overflow-hidden relative">
               <PanelGroup direction="vertical" className="h-full">
                 {/* Chart Panel */}
                 <Panel defaultSize={60} minSize={30} maxSize={80} className="lg:overflow-hidden relative">
@@ -149,11 +151,11 @@ const TradingPage = () => {
               </PanelGroup>
             </Panel>
 
-            {/* Width Resize Handle */}
+            {/* Right Resize Handle for Center Column */}
             <PanelResizeHandle className="w-[2px] m-1 bg-theme-neutral-800 hover:bg-neutral-600 transition-colors relative z-400" />
 
             {/* Right Column */}
-            <Panel defaultSize={20} minSize={15} maxSize={30} className="h-full overflow-hidden">
+            <Panel defaultSize={20} minSize={5} maxSize={30} className="h-full overflow-hidden">
               <div className='h-full overflow-auto'>
                 <Control />
               </div>

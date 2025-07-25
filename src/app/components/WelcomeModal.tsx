@@ -97,8 +97,8 @@ export default function WelcomeModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent hiddenCloseButton={true} className="md:max-w-[50vh] max-w-[90%] overflow-hidden p-0 border-0 bg-transparent rounded-xl" onPointerDownOutside={(e) => e.preventDefault()}>
-        <div className="relative w-full md:max-w-[50vh] rounded-xl">
+      <DialogContent hiddenCloseButton={true} className="md:max-w-[50vh] max-w-[90%] overflow-hidden p-0 border-0 bg-transparent rounded-md" onPointerDownOutside={(e) => e.preventDefault()}>
+        <div className="relative w-full md:max-w-[50vh] rounded-md">
           {/* Nút đóng - chỉ hiển thị khi ở ảnh cuối cùng */}
           {isLastImage && (
             <Button

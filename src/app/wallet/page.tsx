@@ -1,16 +1,12 @@
 "use client"
-import { TelegramWalletService } from "@/services/api";
-import { getInforWallet, getListBuyToken, getMyWallets, getPrivate } from "@/services/api/TelegramWalletService";
+import { getInforWallet, getListBuyToken } from "@/services/api/TelegramWalletService";
 import { formatNumberWithSuffix3, truncateString } from "@/utils/format";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowDownToLine, ArrowUpFromLine, Badge, Copy, Edit, Eye, EyeOff, KeyIcon, PlusIcon, Check, Loader2, ChevronDown, ArrowRight, ChevronRight } from "lucide-react";
+import { Copy, Check, ChevronDown, ArrowUpFromLine, ArrowDownToLine } from "lucide-react";
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { WalletTable } from "@/app/components/wallet/WalletTable";
 import { useAuth } from "@/hooks/useAuth";
-import { langConfig } from "@/lang";
 import { useLang } from '@/lang';
 import { useRouter } from "next/navigation";
-import bs58 from 'bs58';
 import ModalSignin from "../components/ModalSignin";
 import { toast } from 'react-hot-toast';
 
@@ -27,36 +23,11 @@ interface Token {
     is_verified: boolean;
 }
 
-interface PrivateKeys {
-    sol_private_key: string;
-    eth_private_key: string;
-    bnb_private_key: string;
-}
-
-interface TokenListResponse {
-    status: number;
-    message: string;
-    data: {
-        wallet_address: string;
-        tokens: Token[];
-    };
-}
-
-interface WalletInfoResponse {
-    role: string;
-    solana_address: string;
-    wallet_country: string;
-    wallet_id: number;
-    wallet_name: string;
-    wallet_nick_name: string;
-}
-
-const wrapGradientStyle = "bg-gradient-to-t from-theme-purple-100 to-theme-gradient-linear-end p-[1px] relative xl:w-full w-[95%] rounded-xl"
 
 // Add responsive styles
 const containerStyles = " w-full px-4 sm:px-[40px] flex flex-col gap-4 sm:gap-6 pt-4 sm:pt-[30px] relative mx-auto z-10 pb-6 lg:pb-0"
-const walletGridStyles = "flex items-center justify-center w-full gap-[10%]"
-const walletCardStyles = "px-4 sm:px-6 py-3 justify-evenly rounded-xl flex flex-col flex-1 sm:gap-4 gap-1 min-h-[130px] items-center min-w-0 bg-white z-10 max-w-[440px]"
+const walletGridStyles = "flex items-center flex-col sm:flex-row justify-center w-full md:gap-[10%] gap-4"
+const walletCardStyles = "px-4 sm:px-6 py-3  justify-evenly rounded-md flex flex-col flex-1 sm:gap-4 gap-1 min-h-[130px] items-center min-w-0 bg-white z-10 w-full md:max-w-[440px]"
 const walletTitleStyles = "text-Colors-Neutral-100 text-sm sm:text-base font-semibold uppercase leading-tight"
 const walletAddressStyles = "text-Colors-Neutral-200 text-xs sm:text-sm font-normal leading-tight truncate"
 const sectionTitleStyles = "text-Colors-Neutral-100 text-base sm:text-lg font-bold leading-relaxed"
@@ -66,7 +37,7 @@ const tableHeaderStyles = "px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-s
 const tableCellStyles = "px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-neutral-900 dark:text-gray-300"
 
 // Add new styles for mobile assets
-const assetCardStyles = "dark:bg-theme-black-200/50 bg-white rounded-xl p-4 border border-solid border-y-[#15DFFD] border-x-[#720881]"
+const assetCardStyles = "dark:bg-theme-black-200/50 bg-white rounded-md p-4 border border-solid border-y-[#15DFFD] border-x-[#720881]"
 const assetHeaderStyles = "flex items-start gap-2 mb-3"
 const assetTokenStyles = "flex items-center gap-2 flex-1 min-w-0"
 const assetValueStyles = "text-right"
@@ -99,10 +70,10 @@ function useDebounce<T extends (...args: any[]) => any>(callback: T, delay: numb
 
 // Add these new styles near the top with other style constants
 const modalContainerStyles = "fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4 sm:p-0"
-const modalContentStyles = "p-[1px] rounded-xl bg-gradient-to-t from-theme-purple-100 to-theme-gradient-linear-end w-full max-w-[400px] lg:max-w-max sm:w-auto"
-const modalInnerStyles = "p-4 xl:p-6 bg-white dark:bg-theme-black-200 rounded-xl shadow-[0px_0px_4px_0px_rgba(232,232,232,0.50)] outline outline-1 outline-offset-[-1px] outline-indigo-500 backdrop-blur-[5px]"
+const modalContentStyles = "p-[1px] rounded-md bg-gradient-to-t from-theme-purple-100 to-theme-gradient-linear-end w-full max-w-[400px] lg:max-w-max sm:w-auto"
+const modalInnerStyles = "p-4 xl:p-6 bg-white dark:bg-theme-black-200 rounded-md shadow-[0px_0px_4px_0px_rgba(232,232,232,0.50)] outline outline-1 outline-offset-[-1px] outline-indigo-500 backdrop-blur-[5px]"
 const modalTitleStyles = "text-base xl:text-[18px] font-semibold text-indigo-500 backdrop-blur-sm boxShadow linear-200-bg uppercase leading-relaxed text-fill-transparent bg-clip-text"
-const modalInputStyles = "w-full px-3 py-1.5 bg-white dark:bg-theme-black-200 rounded-xl text-sm sm:text-base placeholder:text-xs dark:text-theme-neutral-100 focus:outline-none focus:border-purple-500"
+const modalInputStyles = "w-full px-3 py-1.5 bg-white dark:bg-theme-black-200 rounded-md text-sm sm:text-base placeholder:text-xs dark:text-theme-neutral-100 focus:outline-none focus:border-purple-500"
 const modalButtonStyles = "w-full sm:w-auto h-[30px] px-4 py-1.5 bg-gradient-to-l from-blue-950 to-purple-600 rounded-[30px] outline outline-1 outline-offset-[-1px] outline-indigo-500 backdrop-blur-sm flex justify-center items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
 const modalCancelButtonStyles = "w-full sm:w-auto h-[30px] px-4 py-1 rounded-[30px] outline outline-1 outline-offset-[-1px] outline-indigo-500 backdrop-blur-sm flex justify-center items-center gap-3"
 const modalButtonTextStyles = "text-xs sm:text-sm font-medium leading-none dark:text-white"
@@ -123,7 +94,7 @@ const WalletCardSkeleton = () => (
             </div>
         </div>
         <div className="flex flex-col justify-start items-center gap-2 w-full">
-            <div className="w-full h-8 sm:h-10 pl-3 sm:pl-4 pr-4 sm:pr-6 relative rounded-xl outline outline-1 outline-offset-[-1px] outline-purple-300 flex justify-between items-center">
+            <div className="w-full h-8 sm:h-10 pl-3 sm:pl-4 pr-4 sm:pr-6 relative rounded-md outline outline-1 outline-offset-[-1px] outline-purple-300 flex justify-between items-center">
                 <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded animate-pulse w-24" />
                 <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0">
                     <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-gray-300 dark:bg-gray-600 rounded animate-pulse" />
@@ -166,7 +137,7 @@ const UniversalAccountSkeleton = () => (
 );
 
 const AssetsTableSkeleton = () => (
-    <div className="hidden sm:block overflow-hidden rounded-xl border-1 z-10 border-solid border-y-[#15DFFD] border-x-[#720881]">
+    <div className="hidden sm:block overflow-hidden rounded-md border-1 z-10 border-solid border-gray-500">
         <div className={tableContainerStyles}>
             <table className={tableStyles}>
                 <thead className="dark:bg-gray-900">
@@ -276,7 +247,7 @@ const CustomSelect = ({ value, onChange, options, placeholder }: {
         <div ref={selectRef} className="relative">
             <div
                 onClick={() => setIsOpen(!isOpen)}
-                className={`w-full px-3 py-2 bg-white dark:bg-theme-black-200 border-none rounded-xl text-black dark:text-theme-neutral-100 focus:outline-none focus:border-purple-500 cursor-pointer flex items-center justify-between transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800 ${isOpen ? 'ring-2 ring-purple-500 ring-opacity-50 shadow-lg' : ''
+                className={`w-full px-3 py-2 bg-white dark:bg-theme-black-200 border-none rounded-md text-black dark:text-theme-neutral-100 focus:outline-none focus:border-purple-500 cursor-pointer flex items-center justify-between transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800 ${isOpen ? 'ring-2 ring-purple-500 ring-opacity-50 shadow-lg' : ''
                     }`}
             >
                 <div className="flex items-center gap-2">
@@ -298,7 +269,7 @@ const CustomSelect = ({ value, onChange, options, placeholder }: {
             </div>
 
             {isOpen && (
-                <div className="absolute z-50 w-full mt-1 bg-white dark:bg-theme-black-200 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl max-h-60 overflow-auto backdrop-blur-sm">
+                <div className="absolute z-50 w-full mt-1 bg-white dark:bg-theme-black-200 border border-gray-200 dark:border-gray-700 rounded-md shadow-xl max-h-60 overflow-auto backdrop-blur-sm">
                     {options.map((option, index) => (
                         <div
                             key={option.id}
@@ -307,8 +278,8 @@ const CustomSelect = ({ value, onChange, options, placeholder }: {
                                 setIsOpen(false);
                             }}
                             className={`px-3 py-2.5 cursor-pointer transition-all duration-150 hover:bg-purple-50 dark:hover:bg-purple-900/20 flex items-center gap-2 ${value === option.code
-                                    ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-medium'
-                                    : 'text-black dark:text-theme-neutral-100'
+                                ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-medium'
+                                : 'text-black dark:text-theme-neutral-100'
                                 } ${index === 0 ? 'rounded-t-xl' : ''
                                 } ${index === options.length - 1 ? 'rounded-b-xl' : ''
                                 }`}
@@ -330,95 +301,10 @@ const CustomSelect = ({ value, onChange, options, placeholder }: {
 export default function WalletPage() {
     const { t } = useLang();
 
-    const [showPrivateKeys, setShowPrivateKeys] = useState(false);
-    const [showAddWallet, setShowAddWallet] = useState(false);
-    const [showImportWallet, setShowImportWallet] = useState(false);
-    const [showCreatePassword, setShowCreatePassword] = useState(false);
-    const [newPassword, setNewPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [showNewPassword, setShowNewPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [passwordError, setPasswordError] = useState("");
-    const [confirmPasswordError, setConfirmPasswordError] = useState("");
-    const [walletName, setWalletName] = useState("");
-    const [walletNickname, setWalletNickname] = useState("");
-    const [selectedNetwork, setSelectedNetwork] = useState("EN");
     const router = useRouter();
-    const [privateKey, setPrivateKey] = useState("");
-    const [privateKeyDefault, setPrivateKeyDefault] = useState<PrivateKeys>({
-        sol_private_key: "",
-        eth_private_key: "",
-        bnb_private_key: ""
-    });
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [wallets, setWallets] = useState<any[]>([]);
-    const [showPassword, setShowPassword] = useState({
-        sol: false,
-        eth: false,
-        bnb: false
-    });
-    const [showPasswordInput, setShowPasswordInput] = useState(false);
-    const [inputPassword, setInputPassword] = useState("");
-    const [inputPasswordError, setInputPasswordError] = useState("");
-    const [showInputPassword, setShowInputPassword] = useState(false);
     const [copyStates, setCopyStates] = useState<{ [key: string]: boolean }>({});
-    const [isLoadingWalletInfo, setIsLoadingWalletInfo] = useState(false);
-    const [privateKeyError, setPrivateKeyError] = useState("");
-    const [showForgotPassword, setShowForgotPassword] = useState(false);
-    const [showVerifyCode, setShowVerifyCode] = useState(false);
-    const [email, setEmail] = useState("");
-    const [verificationCode, setVerificationCode] = useState("");
-    const [emailError, setEmailError] = useState("");
-    const [codeError, setCodeError] = useState("");
-    const [isSendingCode, setIsSendingCode] = useState(false);
-    const [isVerifyingCode, setIsVerifyingCode] = useState(false);
-
-    const privateKeysRef = useRef<HTMLDivElement>(null);
-    const addWalletRef = useRef<HTMLDivElement>(null);
-    const importWalletRef = useRef<HTMLDivElement>(null);
     const { isAuthenticated } = useAuth();
-    const [privateKeys, setPrivateKeys] = useState<PrivateKeys>({
-        sol_private_key: "",
-        eth_private_key: "",
-        bnb_private_key: ""
-    });
-
-    const fetchWalletInfo = useCallback(async (key: string) => {
-        try {
-            setIsLoadingWalletInfo(true);
-            setPrivateKeyError("");
-            const decodedKey = bs58.decode(key);
-            if (decodedKey.length === 64) {
-                const walletInfo = await TelegramWalletService.getWalletInfoByPrivateKey(key);
-                if (walletInfo) {
-                    setWalletName(walletInfo.wallet_name || '');
-                    setWalletNickname(walletInfo.wallet_nick_name || '');
-                    setSelectedNetwork(walletInfo.wallet_country || 'EN');
-                }
-            } else {
-                setPrivateKeyError(t("wallet.invalidPrivateKeyLength"));
-            }
-        } catch (error) {
-            console.log('Invalid private key format');
-            setPrivateKeyError(t("wallet.invalidPrivateKeyFormat"));
-        } finally {
-            setIsLoadingWalletInfo(false);
-        }
-    }, []);
-
-    const debouncedFetchWalletInfo = useDebounce(fetchWalletInfo, 500);
-
-    useEffect(() => {
-        fetchWallets();
-
-    }, []);
-
-    const { data: myWallets, refetch: refetchInforWallets, isLoading: isLoadingMyWallets } = useQuery({
-        queryKey: ["my-wallets"],
-        queryFn: getMyWallets,
-        enabled: isAuthenticated,
-    });
 
     const { data: tokenList, refetch: refetchTokenList, isLoading: isLoadingTokenList } = useQuery({
         queryKey: ["token-buy-list"],
@@ -428,224 +314,12 @@ export default function WalletPage() {
 
     console.log("tokenList", tokenList)
     // Filter tokens with price >= 0.000001
-    const filteredTokens = tokenList?.tokens?.filter((token: any) => token.token_balance_usd >= 0.05) || [];
-
+    const filteredTokens = tokenList?.tokens?.filter((token: Token) => token.token_balance_usd >= 0.05) || [];
+    console.log("filteredTokens", filteredTokens)
     const { data: walletInfor, refetch, isLoading: isLoadingWalletInfor } = useQuery({
         queryKey: ["wallet-infor"],
         queryFn: getInforWallet,
     });
-    const { data: listWallets, error, isLoading: isLoadingListWallets } = useQuery({
-        queryKey: ['my-wallets'],
-        queryFn: getMyWallets,
-    });
-    const fetchWallets = async () => {
-        try {
-            const walletList = await TelegramWalletService.getMyWallets();
-            setWallets(walletList);
-        } catch (error) {
-            console.error("Error fetching wallets:", error);
-            toast.error(t('wallet.failedToFetchWallets'));
-        }
-    };
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (showPrivateKeys && privateKeysRef.current && !privateKeysRef.current.contains(event.target as Node)) {
-                handleClosePrivateKeys();
-            }
-            if (showAddWallet && addWalletRef.current && !addWalletRef.current.contains(event.target as Node)) {
-                handleCloseAddWallet();
-            }
-            if (showImportWallet && importWalletRef.current && !importWalletRef.current.contains(event.target as Node)) {
-                handleCloseImportWallet();
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [showPrivateKeys, showAddWallet, showImportWallet]);
-
-    useEffect(() => {
-        if (privateKeys) {
-            setPrivateKeyDefault({
-                sol_private_key: privateKeys.sol_private_key || "",
-                eth_private_key: privateKeys.eth_private_key || "",
-                bnb_private_key: privateKeys.bnb_private_key || ""
-            });
-        }
-    }, [privateKeys]);
-
-    const handleGetPrivateKeys = () => {
-        if (walletInfor?.password) {
-            setShowPasswordInput(true);
-        } else {
-            setShowCreatePassword(true);
-        }
-    };
-
-    const handleClosePrivateKeys = () => {
-        setShowPrivateKeys(false);
-    };
-
-    const handleCloseAddWallet = () => {
-        setShowAddWallet(false);
-        setWalletName("");
-        setWalletNickname("");
-    };
-
-
-    const handleCloseImportWallet = () => {
-        setShowImportWallet(false);
-        setWalletName("");
-        setWalletNickname("");
-        setPrivateKey("");
-    };
-
-    const handleCloseCreatePassword = () => {
-        setShowCreatePassword(false);
-        setNewPassword("");
-        setConfirmPassword("");
-        setShowNewPassword(false);
-        setShowConfirmPassword(false);
-        setPasswordError("");
-        setConfirmPasswordError("");
-    };
-
-    const validatePassword = (password: string) => {
-        if (password.length < 8) {
-            return t("wallet.passwordMustBeAtLeast8CharactersLong");
-        }
-        return "";
-    };
-
-    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setNewPassword(value);
-        const error = validatePassword(value);
-        setPasswordError(error);
-
-        // Clear confirm password error if passwords match
-        if (value === confirmPassword) {
-            setConfirmPasswordError("");
-        } else if (confirmPassword) {
-            setConfirmPasswordError(t("wallet.passwordsDoNotMatch"));
-        }
-    };
-
-    const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setConfirmPassword(value);
-        if (value !== newPassword) {
-            setConfirmPasswordError(t("wallet.passwordsDoNotMatch"));
-        } else {
-            setConfirmPasswordError("");
-        }
-    };
-
-    const handleCreatePassword = async () => {
-        // Validate both passwords
-        const passwordValidationError = validatePassword(newPassword);
-        if (passwordValidationError) {
-            console.log("Password validation failed");
-            setPasswordError(t("wallet.passwordValidationError"));
-            return;
-        }
-
-        if (newPassword !== confirmPassword) {
-            setConfirmPasswordError(t("wallet.passwordsDoNotMatch"));
-            return;
-        }
-        console.log("Creating password with:", newPassword);
-
-        try {
-            setIsLoading(true);
-            // TODO: Call API to set password
-            await TelegramWalletService.setPassword(newPassword);
-            const res = await TelegramWalletService.getPrivate(newPassword);
-            setPrivateKeys(res);
-            toast.success(t('wallet.passwordCreatedSuccessfully'));
-
-            handleCloseCreatePassword();
-            setShowPrivateKeys(true);
-        } catch (error) {
-            console.error("Error in handleCreatePassword:", error);
-            toast.error(t('wallet.failedToCreatePassword'));
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleAddWallet = async () => {
-        try {
-            setIsLoading(true);
-            const walletData = {
-                name: walletName,
-                nick_name: walletNickname,
-                country: selectedNetwork,
-                type: "other",
-            };
-
-            const response = await TelegramWalletService.addWallet(walletData);
-
-            // Reset form and close modal
-            setWalletName("");
-            setWalletNickname("");
-            setSelectedNetwork("EN");
-            setShowAddWallet(false);
-            refetchInforWallets();
-
-            // Show success message based on response
-            toast.success(t('wallet.walletAddedSuccess'));
-
-            // Refresh wallet list
-            await fetchWallets();
-        } catch (error: any) {
-            console.error("Error adding wallet:", error);
-            // Show error message from API if available
-            if (error?.response?.data?.message && error.status === 409) {
-                toast.error(t('wallet.walletAlreadyExists'));
-            } else {
-                toast.error(t('wallet.failedToAddWallet'));
-            }
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleImportWallet = async () => {
-        try {
-            setIsLoading(true);
-            const walletData = {
-                name: walletName,
-                nick_name: walletNickname,
-                country: selectedNetwork,
-                private_key: privateKey,
-                type: "import",
-            };
-
-            await TelegramWalletService.addWallet(walletData);
-
-            // Reset form and close modal
-            setWalletName("");
-            setWalletNickname("");
-            setSelectedNetwork("EN");
-            setShowImportWallet(false);
-
-            // Show success message
-            toast.success(t('wallet.walletImportedSuccessfully'));
-
-            // Refresh wallet list
-            await fetchWallets();
-        } catch (error) {
-            console.error("Error adding wallet:", error);
-            await fetchWallets();
-            toast.error(t('wallet.failedToAddWallet'));
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
     const handleCopyAddress = (address: string, e: React.MouseEvent) => {
         e.stopPropagation();
@@ -667,117 +341,6 @@ export default function WalletPage() {
         }, 2000);
     };
 
-    const handleClosePasswordInput = () => {
-        setShowPasswordInput(false);
-        setInputPassword("");
-        setInputPasswordError("");
-        setShowInputPassword(false);
-    };
-
-    const handleSubmitPassword = async () => {
-        if (!inputPassword) {
-            setInputPasswordError(t("wallet.passwordRequired"));
-            return;
-        }
-
-        try {
-            setIsLoading(true);
-            const res = await TelegramWalletService.getPrivate(inputPassword);
-            setPrivateKeys(res);
-            setPrivateKeyDefault({
-                sol_private_key: res.sol_private_key || "",
-                eth_private_key: res.eth_private_key || "",
-                bnb_private_key: res.bnb_private_key || ""
-            });
-            handleClosePasswordInput();
-            setShowPrivateKeys(true);
-            toast.success(t('wallet.privateKeysRetrieved'));
-        } catch (error) {
-            console.error("Error getting private keys:", error);
-            setInputPasswordError(t("wallet.invalidPassword"));
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleForgotPassword = async () => {
-        // Close other modals
-        setShowPasswordInput(false);
-        setShowCreatePassword(false);
-        setShowPrivateKeys(false);
-        setShowAddWallet(false);
-        setShowImportWallet(false);
-
-        // Show verification code modal
-        setShowForgotPassword(true);
-        handleSendVerificationCode();
-    };
-
-    const handleSendVerificationCode = async () => {
-        try {
-            const res = await TelegramWalletService.sendVerificationCode()
-            console.log(res)
-            toast.success(t('wallet.verificationCodeSent'));
-        } catch (error) {
-            console.error("Error verifying code:", error);
-            setCodeError(t("wallet.invalidCode"));
-        } finally {
-            setIsVerifyingCode(false);
-        }
-    };
-
-    const handleCloseForgotPassword = () => {
-        setShowForgotPassword(false);
-        setEmail("");
-        setEmailError("");
-    };
-
-    const handleCloseVerifyCode = () => {
-        setShowVerifyCode(false);
-        setVerificationCode("");
-        setCodeError("");
-    };
-
-    const handleChangePassword = async () => {
-        try {
-            setIsLoading(true);
-            const res = await TelegramWalletService.changePassword(verificationCode.toUpperCase(), newPassword);
-            if (res.status === 400) {
-                toast.error(t('wallet.expiredCode'));
-            }
-            // Close modal and reset states
-            setShowForgotPassword(false);
-            setVerificationCode("");
-            setNewPassword("");
-            setConfirmPassword("");
-            setShowNewPassword(false);
-            setShowConfirmPassword(false);
-            setPasswordError("");
-            setConfirmPasswordError("");
-            setCodeError("");
-
-            // Show success message
-            toast.success(t('wallet.passwordChangedSuccessfully'));
-        } catch (error) {
-            console.error("Error changing password:", error);
-            setCodeError(t("wallet.invalidCode"));
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
-    const handleResendCode = async () => {
-        try {
-            setIsSendingCode(true);
-            const res = await TelegramWalletService.sendVerificationCode();
-            toast.success(t('wallet.codeResentSuccessfully'));
-        } catch (error) {
-            console.error("Error resending code:", error);
-            toast.error(t('wallet.failedToResendCode'));
-        } finally {
-            setIsSendingCode(false);
-        }
-    };
 
     return (
         <>
@@ -785,7 +348,7 @@ export default function WalletPage() {
                 <div className={containerStyles}>
                     {/* Wallet Cards Section */}
                     <div className={walletGridStyles}>
-                        {isLoadingWalletInfor || isLoadingListWallets ? (
+                        {isLoadingWalletInfor ? (
                             <>
                                 <WalletCardSkeleton />
                                 <WalletCardSkeleton />
@@ -794,7 +357,7 @@ export default function WalletPage() {
                             </>
                         ) : (
                             <>
-                                <div className={`${walletCardStyles} !bg-gray-600`}>
+                                <div className={`${walletCardStyles} !bg-gray-800`}>
                                     <div className="inline-flex justify-start items-center gap-2 w-full ">
                                         <div className="w-6 h-6 sm:w-8 sm:h-8 relative overflow-hidden flex-shrink-0">
                                             <img src="/solana.png" alt="Solana" className="w-full h-full object-cover" />
@@ -805,7 +368,7 @@ export default function WalletPage() {
                                         </div>
                                     </div>
                                     <div className="flex flex-col justify-start items-center gap-2 w-full">
-                                        <div className="w-full h-8 lg:h-[36px] pl-3 sm:pl-4 pr-4 sm:pr-6 relative rounded-xl outline outline-1 outline-offset-[-1px] outline-purple-300 flex justify-between items-center">
+                                        <div className="w-full h-8 lg:h-[36px] pl-3 sm:pl-4 pr-4 sm:pr-6 relative rounded-md outline outline-1 outline-offset-[-1px] outline-gray-500 flex justify-between items-center">
                                             <div className={walletAddressStyles}>
                                                 {truncateString(walletInfor?.solana_address, 12)}
                                             </div>
@@ -813,7 +376,11 @@ export default function WalletPage() {
                                                 <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-Colors-Neutral-100" />
                                             </div>
                                             <button
-                                                onClick={(e) => handleCopyAddress(walletInfor?.solana_address || '', e)}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    navigator.clipboard.writeText(walletInfor?.solana_address || '');
+                                                    toast.success(t('connectMasterModal.copyAddress.copied'));
+                                                }}
                                                 className="text-gray-400 hover:text-gray-200 transition-colors"
                                             >
                                                 {copyStates[walletInfor?.solana_address || ''] ? (
@@ -919,7 +486,7 @@ export default function WalletPage() {
                         )}
                     </div>
 
-                   
+
 
                     <div className="w-full flex flex-col xl:gap-4 gap-2">
                         {/* Assets Section */}
@@ -939,7 +506,7 @@ export default function WalletPage() {
                             ) : (
                                 <>
                                     {/* Desktop Table View */}
-                                    <div className="hidden sm:block overflow-hidden rounded-xl border-1 z-10 border-solid border-y-[#15DFFD] border-x-[#720881]">
+                                    <div className="hidden sm:block overflow-hidden rounded-md border-1 z-10 border-solid border-gray-500">
                                         {!filteredTokens || filteredTokens.length === 0 ? (
                                             <div className="flex justify-center items-center py-8 text-neutral-600 dark:text-gray-400">
                                                 {t('wallet.noTokens')}
@@ -990,7 +557,11 @@ export default function WalletPage() {
                                                                     <div className="flex items-center gap-2">
                                                                         <span className="truncate max-w-[100px] sm:max-w-[120px]">{truncateString(token.token_address, 12)}</span>
                                                                         <button
-                                                                            onClick={(e) => handleCopyAddress(token.token_address, e)}
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                navigator.clipboard.writeText(token.token_address);
+                                                                                toast.success(t('connectMasterModal.copyAddress.copied'));
+                                                                            }}
                                                                             className="text-neutral-600 hover:text-neutral-900 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
                                                                         >
                                                                             {copyStates[token.token_address] ? (
@@ -1012,7 +583,7 @@ export default function WalletPage() {
                                     {/* Mobile Card View */}
                                     <div className="sm:hidden space-y-3">
                                         {!filteredTokens || filteredTokens.length === 0 ? (
-                                            <div className="flex justify-center items-center py-6 text-neutral-600 dark:text-gray-400 bg-gray-800/60 rounded-xl">
+                                            <div className="flex justify-center items-center py-6 text-neutral-600 dark:text-gray-400 bg-gray-800/60 rounded-md">
                                                 {t('wallet.noTokens')}
                                             </div>
                                         ) : (
@@ -1042,14 +613,14 @@ export default function WalletPage() {
                                                                 {truncateString(token.token_address, 12)}
                                                             </span>
                                                             <button
-                                                                onClick={(e) => handleCopyAddress(token.token_address, e)}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    navigator.clipboard.writeText(token.token_address);
+                                                                    toast.success(t('connectMasterModal.copyAddress.copied'));
+                                                                }}
                                                                 className="text-gray-400 hover:text-gray-200 p-1 transition-colors"
                                                             >
-                                                                {copyStates[token.token_address] ? (
-                                                                    <Check className="w-4 h-4 text-green-500" />
-                                                                ) : (
-                                                                    <Copy className="w-4 h-4" />
-                                                                )}
+                                                               <Copy className="w-4 h-4" />
                                                             </button>
                                                         </div>
                                                     </div>
@@ -1081,740 +652,6 @@ export default function WalletPage() {
                 </div>
             </div>
 
-            {/* Move modals outside the main container */}
-            {showAddWallet && (
-                <div className="fixed inset-0 bg-theme-black-1/3 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
-                    <div className="p-[1px] rounded-xl bg-gradient-to-t from-theme-purple-100 to-theme-gradient-linear-end w-full max-w-[400px]">
-                        <div ref={addWalletRef} className="bg-white dark:bg-theme-black-200 border border-theme-gradient-linear-start p-4 sm:p-6 rounded-xl">
-                            <h2 className="text-lg sm:text-xl font-semibold text-indigo-500 backdrop-blur-sm boxShadow linear-200-bg mb-4 text-fill-transparent bg-clip-text">{t('wallet.addNewWallet')}</h2>
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium dark:text-gray-200 text-black mb-1">{t('wallet.walletName')}</label>
-                                    <div className={wrapGradientStyle}>
-                                        <input
-                                            type="text"
-                                            value={walletName}
-                                            onChange={(e) => setWalletName(e.target.value)}
-                                            className="w-full px-3 py-1.5 dark:bg-theme-black-200 placeholder:text-sm rounded-xl text-black dark:text-theme-neutral-100 focus:outline-none focus:border-purple-500"
-                                            placeholder={t('wallet.enterWalletName')}
-                                        />
-                                    </div>
-
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium dark:text-gray-200 text-black mb-1">{t('wallet.nickname')}</label>
-                                    <div className={wrapGradientStyle}>
-                                        <input
-                                            type="text"
-                                            value={walletNickname}
-                                            onChange={(e) => setWalletNickname(e.target.value)}
-                                            className="w-full px-3 py-1.5 bg-white dark:bg-theme-black-200 placeholder:text-sm rounded-xl text-black dark:text-theme-neutral-100 focus:outline-none focus:border-purple-500"
-                                            placeholder={t('wallet.enterNickname')}
-                                        />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium dark:text-gray-200 text-black mb-1">{t('wallet.network')}</label>
-                                    <div className={wrapGradientStyle}>
-                                        <CustomSelect
-                                            value={selectedNetwork}
-                                            onChange={(value) => setSelectedNetwork(value)}
-                                            options={langConfig.listLangs}
-                                            placeholder={t('selectNetwork')}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="text-[10px] italic text-gray-900 dark:text-yellow-500 leading-5">
-                                    {t('wallet.walletNameNote')}
-                                </div>
-                                <div className="flex justify-end gap-3 mt-6">
-                                    <button
-                                        onClick={handleCloseAddWallet}
-                                        className="px-4 py-1.5 text-xs 2xl:text-sm font-medium dark:text-gray-200 text-black hover:text-neutral-100"
-                                    >
-                                        {t('common.cancel')}
-                                    </button>
-                                    <button
-                                        onClick={handleAddWallet}
-                                        disabled={isLoading || !walletName || !walletNickname}
-                                        className="px-4 py-1.5 text-xs 2xl:text-sm bg-gradient-to-r from-purple-600 to-blue-600 text-neutral-100 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        {isLoading ? t('wallet.adding') : t('wallet.addWallet')}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {showPrivateKeys && (
-                <div className={modalContainerStyles}>
-                    <div className={modalContentStyles}>
-                        <div ref={privateKeysRef} className={modalInnerStyles}>
-                            <div className=" 2xl:w-96 w-[40vw] flex flex-col gap-4 sm:gap-6">
-                                <div className="flex flex-col gap-4">
-                                    <div className="flex justify-between items-center">
-                                        <div className={modalTitleStyles}>{t('wallet.privateKeys')}</div>
-                                        <button onClick={handleClosePrivateKeys} className="w-5 h-5 relative overflow-hidden">
-                                            <div className="w-3 h-3 left-[4.17px] top-[4.16px] absolute bg-Colors-Neutral-200" />
-                                        </button>
-                                    </div>
-
-                                    {/* Solana Private Key */}
-                                    <div className="flex flex-col gap-1">
-                                        <div className={modalLabelStyles}>{t('wallet.solanaPrivateKey')}</div>
-                                        <div className={wrapGradientStyle}>
-                                            <div className="relative w-full">
-                                                <input
-                                                    type={showPassword.sol ? "text" : "password"}
-                                                    value={privateKeyDefault.sol_private_key}
-                                                    readOnly
-                                                    placeholder={t('wallet.enterSolanaPrivateKey')}
-                                                    className={`${modalInputStyles} pr-16 cursor-default`}
-                                                />
-                                                <div className="absolute right-3 top-1/3 flex items-center gap-2">
-                                                    <Copy
-                                                        onClick={() => {
-                                                            navigator.clipboard.writeText(privateKeyDefault.sol_private_key);
-                                                            toast.success(t('connectMasterModal.copyAddress.copied'));
-                                                        }}
-                                                        className="w-4 h-4 cursor-pointer text-gray-400 hover:text-gray-200"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setShowPassword(prev => ({ ...prev, sol: !prev.sol }))}
-                                                        className=" text-gray-400 cursor-pointer hover:text-gray-200"
-                                                    >
-                                                        {showPassword.sol ? (
-                                                            <EyeOff className="w-4 h-4" />
-                                                        ) : (
-                                                            <Eye className="w-4 h-4" />
-                                                        )}
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className={modalHelperTextStyles}>
-                                            {t('wallet.privateKeySecurity')}
-                                        </div>
-                                    </div>
-
-                                    {/* Ethereum Private Key */}
-                                    <div className="flex flex-col gap-1">
-                                        <div className={modalLabelStyles}>{t('wallet.ethereumPrivateKey')}</div>
-                                        <div className={wrapGradientStyle}>
-                                            <div className="relative w-full">
-                                                <input
-                                                    type={showPassword.eth ? "text" : "password"}
-                                                    value={privateKeyDefault.eth_private_key}
-                                                    readOnly
-                                                    placeholder="Enter Ethereum private key"
-                                                    className={`${modalInputStyles} pr-16 cursor-default`}
-                                                />
-                                                <div className="absolute right-3 top-1/3 flex items-center gap-2">
-                                                    <Copy
-                                                        onClick={() => {
-                                                            navigator.clipboard.writeText(privateKeyDefault.eth_private_key);
-                                                            toast.success(t('connectMasterModal.copyAddress.copied'));
-                                                        }}
-                                                        className="w-4 h-4 cursor-pointer text-gray-400 hover:text-gray-200"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setShowPassword(prev => ({ ...prev, eth: !prev.eth }))}
-                                                        className=" text-gray-400 hover:text-gray-200"
-                                                    >
-                                                        {showPassword.eth ? (
-                                                            <EyeOff className="w-4 h-4" />
-                                                        ) : (
-                                                            <Eye className="w-4 h-4" />
-                                                        )}
-                                                    </button>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* BNB Private Key */}
-                                    <div className="flex flex-col gap-1">
-                                        <div className={modalLabelStyles}>{t('wallet.bnbPrivateKey')}</div>
-                                        <div className={wrapGradientStyle}>
-                                            <div className="relative w-full">
-                                                <input
-                                                    type={showPassword.bnb ? "text" : "password"}
-                                                    value={privateKeyDefault.bnb_private_key}
-                                                    readOnly
-                                                    placeholder="Enter BNB private key"
-                                                    className={`${modalInputStyles} pr-16 cursor-default`}
-                                                />
-                                                <div className="absolute right-3 top-1/3 flex items-center gap-2">
-                                                    <Copy
-                                                        onClick={() => {
-                                                            navigator.clipboard.writeText(privateKeyDefault.bnb_private_key);
-                                                            toast.success(t('connectMasterModal.copyAddress.copied'));
-                                                        }}
-                                                        className="w-4 h-4 cursor-pointer text-gray-400 hover:text-gray-200"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setShowPassword(prev => ({ ...prev, bnb: !prev.bnb }))}
-                                                        className=" text-gray-400 cursor-pointer hover:text-gray-200"
-                                                    >
-                                                        {showPassword.bnb ? (
-                                                            <EyeOff className="w-4 h-4" />
-                                                        ) : (
-                                                            <Eye className="w-4 h-4" />
-                                                        )}
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-5">
-                                    <button onClick={handleClosePrivateKeys} className={modalCancelButtonStyles}>
-                                        <div className={modalButtonTextStyles}>{t('common.close')}</div>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {showImportWallet && (
-                <div className={modalContainerStyles}>
-                    <div className={modalContentStyles}>
-                        <div ref={importWalletRef} className={modalInnerStyles}>
-                            <div className=" 2xl:w-96 w-[40vw] flex flex-col gap-4 sm:gap-6">
-                                <div className="flex flex-col gap-4">
-                                    <div className="flex justify-between items-center">
-                                        <div className={modalTitleStyles}>{t('wallet.importWallet')}</div>
-                                        <button onClick={handleCloseImportWallet} className="w-5 h-5 relative overflow-hidden">
-                                            <div className="w-3 h-3 left-[4.17px] top-[4.16px] absolute bg-Colors-Neutral-200" />
-                                        </button>
-                                    </div>
-
-                                    {/* Wallet Name */}
-                                    <div className="flex flex-col gap-1">
-                                        <div className={modalLabelStyles}>{t('wallet.walletName')}</div>
-                                        <div className={wrapGradientStyle}>
-                                            <input
-                                                type="text"
-                                                value={walletName}
-                                                onChange={(e) => setWalletName(e.target.value)}
-                                                placeholder={t('wallet.enterWalletName')}
-                                                className={modalInputStyles}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* Private Key */}
-                                    <div className="flex flex-col gap-1">
-                                        <div className={modalLabelStyles}>{t('wallet.solanaPrivateKey')}</div>
-                                        <div className={wrapGradientStyle}>
-                                            <div className="relative w-full">
-                                                <input
-                                                    type={showPassword.sol ? "text" : "password"}
-                                                    value={privateKey}
-                                                    onChange={(e) => {
-                                                        const value = e.target.value;
-                                                        setPrivateKeyError("");
-                                                        setPrivateKey(value);
-                                                        if (value) {
-                                                            debouncedFetchWalletInfo(value);
-                                                        } else {
-                                                            setPrivateKeyError("");
-                                                        }
-                                                    }}
-                                                    placeholder={t('wallet.enterSolanaPrivateKey')}
-                                                    className={`${modalInputStyles} pr-20 ${privateKeyError ? 'border-red-500' : ''}`}
-                                                />
-                                                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                                                    {isLoadingWalletInfo && (
-                                                        <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
-                                                    )}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setShowPassword(prev => ({ ...prev, sol: !prev.sol }))}
-                                                        className="text-gray-400 hover:text-gray-200"
-                                                    >
-                                                        {showPassword.sol ? (
-                                                            <EyeOff className="w-4 h-4" />
-                                                        ) : (
-                                                            <Eye className="w-4 h-4" />
-                                                        )}
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {privateKeyError && (
-                                            <div className={modalErrorStyles}>{privateKeyError}</div>
-                                        )}
-                                        <div className={modalHelperTextStyles}>
-                                            {t('wallet.privateKeySecurity')}
-                                        </div>
-                                    </div>
-
-                                    {/* Wallet Nickname */}
-                                    <div className="flex flex-col gap-1">
-                                        <div className={modalLabelStyles}>{t('wallet.walletNickname')}</div>
-                                        <div className={wrapGradientStyle}>
-                                            <input
-                                                type="text"
-                                                value={walletNickname}
-                                                onChange={(e) => setWalletNickname(e.target.value)}
-                                                placeholder={t('wallet.enterWalletNickname')}
-                                                className={modalInputStyles}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* Network Selection */}
-                                    <div className="flex flex-col gap-1">
-                                        <div className={modalLabelStyles}>{t('wallet.network')}</div>
-                                        <div className={wrapGradientStyle}>
-                                            <CustomSelect
-                                                value={selectedNetwork}
-                                                onChange={(value) => setSelectedNetwork(value)}
-                                                options={langConfig.listLangs}
-                                                placeholder={t('selectNetwork')}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-5">
-                                    <button onClick={handleCloseImportWallet} className={modalCancelButtonStyles}>
-                                        <div className={modalButtonTextStyles}>{t('common.cancel')}</div>
-                                    </button>
-                                    <button
-                                        onClick={handleImportWallet}
-                                        disabled={isLoading || !walletName || !walletNickname || !privateKey}
-                                        className={modalButtonStyles}
-                                    >
-                                        <div className={modalButtonTextStyles}>{t('wallet.importWallet')}</div>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {showCreatePassword && (
-                <div className={modalContainerStyles}>
-                    <div className={modalContentStyles}>
-                        <div className={modalInnerStyles}>
-                            <div className=" 2xl:w-96 w-[40vw] flex flex-col gap-4 sm:gap-6">
-                                <div className="flex flex-col gap-4">
-                                    <div className="flex justify-between items-center">
-                                        <div className={modalTitleStyles}>{t('wallet.createPassword')}</div>
-                                        <button onClick={handleCloseCreatePassword} className="w-5 h-5 relative overflow-hidden">
-                                            <div className="w-3 h-3 left-[4.17px] top-[4.16px] absolute bg-Colors-Neutral-200" />
-                                        </button>
-                                    </div>
-
-                                    {/* New Password */}
-                                    <div className="flex flex-col gap-1">
-                                        <div className={modalLabelStyles}>{t('wallet.newPassword')}</div>
-                                        <div className={wrapGradientStyle}>
-                                            <div className="relative w-full">
-                                                <input
-                                                    type={showNewPassword ? "text" : "password"}
-                                                    value={newPassword}
-                                                    onChange={handlePasswordChange}
-                                                    placeholder={t('wallet.enterNewPassword')}
-                                                    className={`${modalInputStyles} pr-10 ${passwordError ? 'border-red-500' : ''}`}
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setShowNewPassword(!showNewPassword)}
-                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200"
-                                                >
-                                                    {showNewPassword ? (
-                                                        <EyeOff className="w-4 h-4" />
-                                                    ) : (
-                                                        <Eye className="w-4 h-4" />
-                                                    )}
-                                                </button>
-                                            </div>
-                                        </div>
-                                        {passwordError && (
-                                            <div className={modalErrorStyles}>{passwordError}</div>
-                                        )}
-                                    </div>
-
-                                    {/* Confirm Password */}
-                                    <div className="flex flex-col gap-1">
-                                        <div className={modalLabelStyles}>{t('wallet.confirmPassword')}</div>
-                                        <div className={wrapGradientStyle}>
-                                            <div className="relative w-full">
-                                                <input
-                                                    type={showConfirmPassword ? "text" : "password"}
-                                                    value={confirmPassword}
-                                                    onChange={handleConfirmPasswordChange}
-                                                    placeholder={t('wallet.enterConfirmPassword')}
-                                                    className={`${modalInputStyles} pr-10 ${confirmPasswordError ? 'border-red-500' : ''}`}
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200"
-                                                >
-                                                    {showConfirmPassword ? (
-                                                        <EyeOff className="w-4 h-4" />
-                                                    ) : (
-                                                        <Eye className="w-4 h-4" />
-                                                    )}
-                                                </button>
-                                            </div>
-                                        </div>
-                                        {confirmPasswordError && (
-                                            <div className={modalErrorStyles}>{confirmPasswordError}</div>
-                                        )}
-                                    </div>
-
-                                    <div className={modalHelperTextStyles}>
-                                        {t('wallet.passwordRequirements')}
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-5">
-                                    <button onClick={handleCloseCreatePassword} className={modalCancelButtonStyles}>
-                                        <div className={modalButtonTextStyles}>{t('common.cancel')}</div>
-                                    </button>
-                                    <button
-                                        onClick={handleCreatePassword}
-                                        disabled={isLoading || !newPassword || !confirmPassword}
-                                        className={modalButtonStyles}
-                                    >
-                                        <div className={modalButtonTextStyles}>
-                                            {isLoading ? t('wallet.creating') : t('wallet.createPassword')}
-                                        </div>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {showPasswordInput && (
-                <div className={modalContainerStyles}>
-                    <div className={modalContentStyles}>
-                        <div className={modalInnerStyles}>
-                            <div className=" 2xl:w-96 w-[40vw] flex flex-col gap-4 sm:gap-6">
-                                <div className="flex flex-col gap-4">
-                                    <div className="flex justify-between items-center">
-                                        <div className={modalTitleStyles}>{t('wallet.enterPassword')}</div>
-                                        <button onClick={handleClosePasswordInput} className="w-5 h-5 relative overflow-hidden">
-                                            <div className="w-3 h-3 left-[4.17px] top-[4.16px] absolute bg-Colors-Neutral-200" />
-                                        </button>
-                                    </div>
-
-                                    {/* Password Input */}
-                                    <div className="flex flex-col gap-1">
-                                        <div className={modalLabelStyles}>{t('wallet.password')}</div>
-                                        <div className={wrapGradientStyle}>
-                                            <div className="relative w-full">
-                                                <input
-                                                    type={showInputPassword ? "text" : "password"}
-                                                    value={inputPassword}
-                                                    onChange={(e) => {
-                                                        setInputPassword(e.target.value);
-                                                        setInputPasswordError("");
-                                                    }}
-                                                    placeholder={t("wallet.passwordRequired")}
-                                                    className={`${modalInputStyles} pr-10 ${inputPasswordError ? 'border-red-500' : ''}`}
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setShowInputPassword(!showInputPassword)}
-                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200"
-                                                >
-                                                    {showInputPassword ? (
-                                                        <EyeOff className="w-4 h-4" />
-                                                    ) : (
-                                                        <Eye className="w-4 h-4" />
-                                                    )}
-                                                </button>
-                                            </div>
-                                        </div>
-                                        {inputPasswordError && (
-                                            <div className={modalErrorStyles}>{inputPasswordError}</div>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <div className={modalHelperTextStyles}>
-                                            {t('wallet.enterPasswordToView')}
-                                        </div>
-                                        <button
-                                            onClick={handleForgotPassword}
-                                            className="text-xs text-theme-primary-400 w-fit hover:underline text-left mt-1"
-                                        >
-                                            {t('wallet.forgotPassword')}
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-5">
-                                    <button onClick={handleClosePasswordInput} className={modalCancelButtonStyles}>
-                                        <div className={modalButtonTextStyles}>{t('common.cancel')}</div>
-                                    </button>
-                                    <button
-                                        onClick={handleSubmitPassword}
-                                        disabled={isLoading || !inputPassword}
-                                        className={modalButtonStyles}
-                                    >
-                                        <div className={modalButtonTextStyles}>
-                                            {isLoading ? t('wallet.verifying') : t('wallet.submit')}
-                                        </div>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Add Forgot Password Modal */}
-            {showForgotPassword && (
-                <div className={modalContainerStyles}>
-                    <div className={modalContentStyles}>
-                        <div className={modalInnerStyles}>
-                            <div className=" 2xl:w-96 w-[40vw] flex flex-col gap-4 sm:gap-6">
-                                <div className="flex flex-col gap-4">
-                                    <div className="flex justify-between items-center">
-                                        <div className={modalTitleStyles}>{t('wallet.forgotPassword')}</div>
-                                        <button onClick={handleCloseForgotPassword} className="w-5 h-5 relative overflow-hidden">
-                                            <div className="w-3 h-3 left-[4.17px] top-[4.16px] absolute bg-Colors-Neutral-200" />
-                                        </button>
-                                    </div>
-
-                                    {/* Verification Code Inputs */}
-                                    <div>
-                                        <div className="flex flex-col gap-1">
-                                            <div className={modalLabelStyles}>{t('wallet.verificationCode')}</div>
-                                            <div className="flex justify-between gap-2">
-                                                {[0, 1, 2, 3].map((index) => (
-                                                    <div key={index} className={wrapGradientStyle}>
-                                                        <input
-                                                            type="text"
-                                                            maxLength={1}
-                                                            value={verificationCode[index] || ''}
-                                                            onChange={(e) => {
-                                                                const value = e.target.value;
-                                                                setCodeError("");
-                                                                // Allow both letters and numbers
-                                                                if (/^[a-zA-Z0-9]*$/.test(value)) {
-                                                                    const newCode = verificationCode.split('');
-                                                                    newCode[index] = value;
-                                                                    setVerificationCode(newCode.join(''));
-
-                                                                    // Auto focus next input
-                                                                    if (value && index < 3) {
-                                                                        const nextInput = document.querySelector(`input[data-index="${index + 1}"]`) as HTMLInputElement;
-                                                                        if (nextInput) nextInput.focus();
-                                                                    }
-                                                                }
-                                                            }}
-                                                            onKeyDown={(e) => {
-                                                                if (e.key === 'Backspace' && !verificationCode[index] && index > 0) {
-                                                                    const prevInput = document.querySelector(`input[data-index="${index - 1}"]`) as HTMLInputElement;
-                                                                    if (prevInput) prevInput.focus();
-                                                                }
-                                                            }}
-                                                            onPaste={(e) => {
-                                                                e.preventDefault();
-                                                                const pastedData = e.clipboardData.getData('text');
-                                                                // Remove any non-alphanumeric characters and take first 4 characters
-                                                                const cleanData = pastedData.replace(/[^a-zA-Z0-9]/g, '').slice(0, 4).toUpperCase();
-
-                                                                if (cleanData.length > 0) {
-                                                                    // Fill the verification code with pasted data
-                                                                    const newCode = cleanData.padEnd(4, '').split('');
-                                                                    setVerificationCode(newCode.join(''));
-
-                                                                    // Focus on the next empty input or the last input
-                                                                    const nextEmptyIndex = Math.min(cleanData.length, 3);
-                                                                    const nextInput = document.querySelector(`input[data-index="${nextEmptyIndex}"]`) as HTMLInputElement;
-                                                                    if (nextInput) nextInput.focus();
-                                                                }
-                                                            }}
-                                                            data-index={index}
-                                                            className={`${modalInputStyles} text-center text-lg font-semibold uppercase`}
-                                                            placeholder="-"
-                                                        />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            {codeError && (
-                                                <div className={modalErrorStyles}>{codeError}</div>
-                                            )}
-                                        </div>
-                                        <div className="flex justify-end items-center mt-1">
-                                            <button
-                                                onClick={handleResendCode}
-                                                disabled={isSendingCode}
-                                                className="text-xs text-theme-primary-400 hover:text-theme-primary-400 disabled:opacity-50 disabled:cursor-not-allowed"
-                                            >
-                                                {isSendingCode ? t('wallet.sending') : t('wallet.resendCode')}
-                                            </button>
-                                        </div>
-                                    </div>
-                                    {/* New Password */}
-                                    <div className="flex flex-col gap-1">
-                                        <div className={modalLabelStyles}>{t('wallet.newPassword')}</div>
-                                        <div className={wrapGradientStyle}>
-                                            <div className="relative w-full">
-                                                <input
-                                                    type={showNewPassword ? "text" : "password"}
-                                                    value={newPassword}
-                                                    onChange={handlePasswordChange}
-                                                    placeholder={t('wallet.enterNewPassword')}
-                                                    className={`${modalInputStyles} pr-10 ${passwordError ? 'border-red-500' : ''}`}
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setShowNewPassword(!showNewPassword)}
-                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200"
-                                                >
-                                                    {showNewPassword ? (
-                                                        <EyeOff className="w-4 h-4" />
-                                                    ) : (
-                                                        <Eye className="w-4 h-4" />
-                                                    )}
-                                                </button>
-                                            </div>
-                                        </div>
-                                        {passwordError && (
-                                            <div className={modalErrorStyles}>{passwordError}</div>
-                                        )}
-                                    </div>
-
-                                    {/* Confirm Password */}
-                                    <div className="flex flex-col gap-1">
-                                        <div className={modalLabelStyles}>{t('wallet.confirmPassword')}</div>
-                                        <div className={wrapGradientStyle}>
-                                            <div className="relative w-full">
-                                                <input
-                                                    type={showConfirmPassword ? "text" : "password"}
-                                                    value={confirmPassword}
-                                                    onChange={handleConfirmPasswordChange}
-                                                    placeholder={t('wallet.enterConfirmPassword')}
-                                                    className={`${modalInputStyles} pr-10 ${confirmPasswordError ? 'border-red-500' : ''}`}
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200"
-                                                >
-                                                    {showConfirmPassword ? (
-                                                        <EyeOff className="w-4 h-4" />
-                                                    ) : (
-                                                        <Eye className="w-4 h-4" />
-                                                    )}
-                                                </button>
-                                            </div>
-                                        </div>
-                                        {confirmPasswordError && (
-                                            <div className={modalErrorStyles}>{confirmPasswordError}</div>
-                                        )}
-                                    </div>
-
-                                    <div className={modalHelperTextStyles}>
-                                        {t('wallet.passwordRequirements')}
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-5">
-                                    <button onClick={handleCloseForgotPassword} className={modalCancelButtonStyles}>
-                                        <div className={modalButtonTextStyles}>{t('common.cancel')}</div>
-                                    </button>
-                                    <button
-                                        onClick={handleChangePassword}
-                                        disabled={isVerifyingCode ||
-                                            verificationCode.length !== 4 ||
-                                            !newPassword ||
-                                            !confirmPassword ||
-                                            !!passwordError ||
-                                            !!confirmPasswordError}
-                                        className={modalButtonStyles}
-                                    >
-                                        <div className={modalButtonTextStyles}>
-                                            {isVerifyingCode ? t('wallet.verifying') : t('wallet.verify')}
-                                        </div>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Add Verify Code Modal */}
-            {showVerifyCode && (
-                <div className={modalContainerStyles}>
-                    <div className={modalContentStyles}>
-                        <div className={modalInnerStyles}>
-                            <div className=" 2xl:w-96 w-[40vw] flex flex-col gap-4 sm:gap-6">
-                                <div className="flex flex-col gap-4">
-                                    <div className="flex justify-between items-center">
-                                        <div className={modalTitleStyles}>{t('wallet.verifyCode')}</div>
-                                        <button onClick={handleCloseVerifyCode} className="w-5 h-5 relative overflow-hidden">
-                                            <div className="w-3 h-3 left-[4.17px] top-[4.16px] absolute bg-Colors-Neutral-200" />
-                                        </button>
-                                    </div>
-
-                                    {/* Verification Code Input */}
-                                    <div className="flex flex-col gap-1">
-                                        <div className={modalLabelStyles}>{t('wallet.verificationCode')}</div>
-                                        <div className={wrapGradientStyle}>
-                                            <input
-                                                type="text"
-                                                value={verificationCode}
-                                                onChange={(e) => {
-                                                    setVerificationCode(e.target.value);
-                                                    setCodeError("");
-                                                }}
-                                                placeholder={t("wallet.enterVerificationCode")}
-                                                className={`${modalInputStyles} ${codeError ? 'border-red-500' : ''}`}
-                                            />
-                                        </div>
-                                        {codeError && (
-                                            <div className={modalErrorStyles}>{codeError}</div>
-                                        )}
-                                    </div>
-
-                                    <div className={modalHelperTextStyles}>
-                                        {t('wallet.enterVerificationCodeSent')}
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-5">
-                                    <button onClick={handleCloseVerifyCode} className={modalCancelButtonStyles}>
-                                        <div className={modalButtonTextStyles}>{t('common.cancel')}</div>
-                                    </button>
-                                    <button
-                                        // onClick={handleVerifyCode}
-                                        disabled={isVerifyingCode || !verificationCode}
-                                        className={modalButtonStyles}
-                                    >
-                                        <div className={modalButtonTextStyles}>
-                                            {isVerifyingCode ? t('wallet.verifying') : t('wallet.verify')}
-                                        </div>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
             <ModalSignin isOpen={!isAuthenticated} onClose={() => { }} />
         </>
     );

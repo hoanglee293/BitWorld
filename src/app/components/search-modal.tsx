@@ -282,8 +282,8 @@ export default function SearchModal({ isOpen, onClose, onSelectToken, searchQuer
       {/* Modal */}
       <div className="relative w-full max-w-4xl max-h-[80vh] mx-4 sm:mx-auto">
         {/* Gradient border wrapper */}
-        <div className="p-[1px] sm:p-[2px] rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#5558FF] to-[#00C0FF] animate-fadeIn">
-          <div className="dark:bg-[#1a1a1a] bg-white rounded-xl sm:rounded-2xl overflow-hidden">
+        <div className="p-[1px] sm:p-[2px] rounded-md sm:rounded-2xl bg-gradient-to-r from-[#5558FF] to-[#00C0FF] animate-fadeIn">
+          <div className="dark:bg-[#1a1a1a] bg-white rounded-md sm:rounded-2xl overflow-hidden">
             {/* Header */}
             <div className="flex justify-between items-center p-4 sm:p-6 pb-2 sm:pb-4">
               <h2 className="text-[16px] sm:text-[18px] font-bold linear-200-bg">{t('searchModal.title')}</h2>

@@ -49,8 +49,8 @@ function LoginEmailContent() {
     <div className="flex items-center justify-center min-h-screen">
       <Dialog open={showErrorModal} onOpenChange={setShowErrorModal}>
         <DialogContent className="sm:max-w-[425px] p-0 border-none border-transparent">
-          <div className="bg-gradient-to-t from-theme-purple-100 to-theme-gradient-linear-end p-[1px] relative w-full rounded-xl">
-            <div className="w-full px-3 py-2 bg-theme-black-200 rounded-xl text-neutral-100">
+          <div className="bg-gradient-to-t from-theme-purple-100 to-theme-gradient-linear-end p-[1px] relative w-full rounded-md">
+            <div className="w-full px-3 py-2 bg-theme-black-200 rounded-md text-neutral-100">
               <DialogHeader className="p-2">
                 <DialogTitle className="text-xl font-semibold text-indigo-500 backdrop-blur-sm boxShadow linear-200-bg mb-2 text-fill-transparent bg-clip-text">
                   {t('login.error')}

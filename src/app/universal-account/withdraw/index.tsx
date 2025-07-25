@@ -200,9 +200,9 @@ export default function WithdrawWallet({ walletInfor }: { walletInfor: any }) {
   return (
     <div className="flex flex-col gap-6 items-center">
       {/* Amount Input */}
-      <div className={`p-[1px] rounded-xl bg-gradient-to-t from-theme-purple-100 to-theme-gradient-linear-end w-full max-w-[600px] group hover:from-theme-purple-200 hover:to-theme-gradient-linear-end transition-all duration-300 ${isDisabled.input ? 'opacity-50 cursor-not-allowed' : ''
+      <div className={`p-[1px] rounded-md bg-gray-500 w-full max-w-[600px] group transition-all duration-300 ${isDisabled.input ? 'opacity-50 cursor-not-allowed' : ''
         }`}>
-        <div className="bg-white dark:bg-theme-black-200 border border-theme-gradient-linear-start p-4 sm:p-6 rounded-xl group-hover:border-theme-purple-200 transition-all duration-300 ">
+        <div className="bg-white dark:bg-theme-black-200 p-4 sm:p-6 rounded-md group-hover:border-theme-purple-200 transition-all duration-300 ">
           <div className="w-full">
             <div className="text-center mb-1">
               <p className="text-sm dark:text-gray-400 text-black group-hover:text-black dark:group-hover:text-white transition-colors duration-300">
@@ -239,17 +239,13 @@ export default function WithdrawWallet({ walletInfor }: { walletInfor: any }) {
         <label htmlFor="name" className={"block md:text-sm lg:text-base font-normal dark:text-neutral-100 text-black mb-1 text-xs"}>
           {t('universal_account.recipient_address')} <span className="text-theme-red-200">*</span>
         </label>
-        <div className={`p-[1px] rounded-xl bg-gradient-to-t from-theme-purple-100 to-theme-gradient-linear-end w-full group hover:from-theme-purple-200 hover:to-theme-gradient-linear-end transition-all duration-300`}>
-          <div className="bg-white dark:bg-theme-black-200 border border-theme-gradient-linear-start rounded-xl group-hover:border-theme-purple-200 transition-all duration-300">
+        <div className={`p-[1px] rounded-md bg-transparent w-full group hover:from-theme-purple-200 hover:to-theme-gradient-linear-end transition-all duration-300`}>
+          <div className="bg-white dark:bg-theme-black-200 border border-gray-500 rounded-md group-hover:border-theme-purple-200 transition-all duration-300">
             <input
               type="text"
               value={recipientWallet}
               onChange={(e) => setRecipientWallet(e.target.value)}
-              // onPaste={(e) => {
-              //   const pastedText = e.clipboardData.getData('text');
-              //   setRecipientWallet(pastedText);
-              // }}
-              className="w-full bg-transparent h-10 rounded-xl pl-3 text-sm font-normal focus:outline-none transition-colors duration-300"
+              className="w-full bg-transparent h-10 rounded-md pl-3 text-sm font-normal focus:outline-none transition-colors duration-300"
               placeholder={t('universal_account.recipient_placeholder')}
             />
           </div>
@@ -267,8 +263,8 @@ export default function WithdrawWallet({ walletInfor }: { walletInfor: any }) {
           <label className="block md:text-sm lg:text-base font-normal dark:text-neutral-100 text-black mb-1 text-xs">
             {t('universal_account.google_auth_code')} <span className="text-theme-red-200">*</span>
           </label>
-          <div className="p-[1px] rounded-xl bg-gradient-to-t from-theme-purple-100 to-theme-gradient-linear-end w-full group hover:from-theme-purple-200 hover:to-theme-gradient-linear-end transition-all duration-300">
-            <div className="bg-white dark:bg-theme-black-200 border border-theme-gradient-linear-start rounded-xl group-hover:border-theme-purple-200 transition-all duration-300 p-4">
+          <div className="p-[1px] rounded-md bg-gradient-to-t from-theme-purple-100 to-theme-gradient-linear-end w-full group hover:from-theme-purple-200 hover:to-theme-gradient-linear-end transition-all duration-300">
+            <div className="bg-white dark:bg-theme-black-200 border border-theme-gradient-linear-start rounded-md group-hover:border-theme-purple-200 transition-all duration-300 p-4">
               <div className="flex justify-center gap-2">
                 {googleAuthCode.map((digit, index) => (
                   <input
@@ -299,7 +295,7 @@ export default function WithdrawWallet({ walletInfor }: { walletInfor: any }) {
       <button
         onClick={handleSend}
         disabled={isDisabled.send || recipientWallet.length === 0}
-        className={`lg:max-w-auto min-w-[160px] group relative bg-gradient-to-t from-theme-primary-500 to-theme-secondary-400 py-1.5 md:py-2 px-3 md:px-4 lg:px-6 rounded-full text-[11px] md:text-sm text-theme-neutral-100 transition-all duration-500 hover:from-theme-blue-100 hover:to-theme-blue-200 hover:scale-105 hover:shadow-lg hover:shadow-theme-primary-500/30 active:scale-95 w-full md:w-auto ${(isDisabled.send || recipientWallet.length === 0) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+        className={`lg:max-w-auto min-w-[160px] group relative bg-theme-primary-500 py-1.5 md:py-2 px-3 md:px-4 lg:px-6 rounded-full text-[11px] md:text-sm text-theme-neutral-100 transition-all duration-500 hover:from-theme-blue-100 hover:to-theme-blue-200 hover:scale-105 hover:shadow-lg hover:shadow-theme-primary-500/30 active:scale-95 w-full md:w-auto ${(isDisabled.send || recipientWallet.length === 0) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
       >
         {isSending ? (
           <span className="flex items-center gap-2">

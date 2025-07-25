@@ -11,9 +11,9 @@ import { getTopCoins } from '@/services/api/OnChainService'
 
 const Layout = ({ children, className }: { children: React.ReactNode, className?: string }) => {
     return (
-        <div className={`bg-gradient-to-t from-theme-gradient-linear-start to-theme-gradient-linear-end dark:from-theme-blue-100/10 dark:to-theme-blue-200/10 2xl:min-w-auto 2xl:basis-1/2 relative rounded-xl transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg p-[1px] ${className}`}>
-            <div className='w-full h-full rounded-xl bg-gradient-to-l from-[#1962b0b3]/70 to-[#117b7bb3]/70'>
-                <div className='bg-theme-blue-300  dark:bg-[#00000054] 2xl:px-5 px-2 py-3 rounded-xl w-full h-full flex flex-col items-center justify-center gap-1 2xl:gap-3'>
+        <div className={`bg-gradient-to-t from-theme-gradient-linear-start to-theme-gradient-linear-end dark:from-theme-blue-100/10 dark:to-theme-blue-200/10 2xl:min-w-auto 2xl:basis-1/2 relative rounded-md transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg p-[1px] ${className}`}>
+            <div className='w-full h-full rounded-md bg-gradient-to-l from-[#1962b0b3]/70 to-[#117b7bb3]/70'>
+                <div className='bg-theme-blue-300  dark:bg-[#00000054] 2xl:px-5 px-2 py-3 rounded-md w-full h-full flex flex-col items-center justify-center gap-1 2xl:gap-3'>
                     {children}
                 </div>
             </div>
@@ -23,9 +23,9 @@ const Layout = ({ children, className }: { children: React.ReactNode, className?
 
 const LayoutCoin = ({ children, className }: { children: React.ReactNode, className?: string }) => {
     return (
-        <div className={`bg-[#33333340] shadow-lg 2xl:min-w-auto 2xl:basis-1/2 relative rounded-xl transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg p-[1px] ${className}`}>
-            <div className='w-full h-full rounded-xl '>
-                <div className='bg-theme-blue-300  dark:bg-[#00000054] rounded-xl w-full h-full flex flex-col items-center justify-center gap-1 2xl:gap-3 px-2 py-3'>
+        <div className={`bg-[#33333340] shadow-lg 2xl:min-w-auto 2xl:basis-1/2 relative rounded-md transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg p-[1px] ${className}`}>
+            <div className='w-full h-full rounded-md '>
+                <div className='bg-theme-blue-300  dark:bg-[#00000054] rounded-md w-full h-full flex flex-col items-center justify-center gap-1 2xl:gap-3 px-2 py-3'>
                     {children}
                 </div>
             </div>
@@ -316,7 +316,7 @@ const OverView = () => {
                         <div className='flex flex-col gap-2 h-full justify-around w-full'>
                             <Title name={t('overview.topPumfun')} />
                             {topPumFun24h.map((coin: any) => (
-                                <div onClick={() => router.push(`/trading?address=${coin.address}`)} key={coin.id} className='flex items-center justify-between gap-1 w-full h-[30px] cursor-pointer hover:bg-slate-800 px-2 rounded-xl'>
+                                <div onClick={() => router.push(`/trading?address=${coin.address}`)} key={coin.id} className='flex items-center justify-between gap-1 w-full h-[30px] cursor-pointer hover:bg-slate-800 px-2 rounded-md'>
                                     <div className='flex items-center gap-1'>
                                         <img
                                             src={coin.logo_uri}

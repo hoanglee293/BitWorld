@@ -376,7 +376,7 @@ const ChatWidget = () => {
           <img
             src={chatLogo}
             alt="Chat Logo"
-            className="w-[40px] h-[40px] lg:w-[60px] lg:h-[60px]"
+            className="w-[40px] h-[40px] lg:w-[60px] lg:h-[60px] hue-rotate-[238deg]"
             onMouseDown={handleMouseDown}
             onTouchStart={handleTouchStart}
           />
@@ -385,7 +385,7 @@ const ChatWidget = () => {
         {/* Chat Box */}
         {open && (
           <div
-            className={`${getBoxPositionClasses()} w-[calc(100vw-100px)] shadow-lg rounded-lg  lg:w-96 h-[40vh] flex flex-col border border-gray-200 dark:border-t-theme-primary-300 dark:border-l-theme-primary-300 dark:border-b-theme-secondary-400 dark:border-r-theme-secondary-400`}
+            className={`${getBoxPositionClasses()} w-[calc(100vw-100px)] shadow-lg rounded-lg  lg:w-[30vw] h-[50vh] flex flex-col border border-gray-200 dark:border-t-theme-primary-300 dark:border-l-theme-primary-300 dark:border-b-theme-secondary-400 dark:border-r-theme-secondary-400`}
             onMouseDown={(e) => {
               e.stopPropagation();
             }}
@@ -398,14 +398,14 @@ const ChatWidget = () => {
               <span className="dark:text-white font-bold">{t("masterTrade.manage.chat.communityChatroom")}</span>
               <img src={"/ethereum.png"} alt="ethereum-icon" width={15} height={15} />
             </div>
-            <div className="flex-1 overflow-y-auto p-3 pb-1 lg:mx-4 dark:mx-0 rounded-xl lg:bg-gray-300 bg-white  dark:bg-neutral-900">
+            <div className="flex-1 overflow-y-auto p-3 pb-1 lg:mx-4 dark:mx-0 rounded-md lg:bg-gray-300 bg-white  dark:bg-neutral-900">
               {messages.map((msg) => (
                 <ChatMessage key={msg.id} message={msg} />
               ))}
               <div ref={messagesEndRef} />
             </div>
             <div className="p-2 rounded-b-md bg-gray-50 dark:bg-neutral-900 ">
-              <div className="flex gap-2 rounded-xl">
+              <div className="flex gap-2 rounded-md">
                 <div className="relative items-center w-full">
                   <input
                     type="text"

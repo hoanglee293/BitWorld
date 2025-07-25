@@ -52,7 +52,7 @@ const textContent = 'text-neutral-900 dark:text-neutral-100 text-xs font-normal 
 
 // Add new styles for mobile wallet cards only
 const mobileStyles = {
-    card: "sm:hidden dark:bg-theme-black-200/50 bg-white rounded-xl p-3 border border-solid border-y-theme-primary-100 border-x-theme-purple-200",
+    card: "sm:hidden dark:bg-theme-black-200/50 bg-white rounded-md p-3 border border-solid border-y-theme-primary-100 border-x-theme-purple-200",
     header: "flex items-start justify-between gap-2 mb-2",
     nameContainer: "flex lg:flex-col gap-1 min-w-0",
     label: "text-[10px] dark:text-gray-400 text-black",
@@ -499,7 +499,7 @@ export function WalletTable({ wallets, onCopyAddress, onUpdateWallet, refetchWal
             <Card className="border-none dark:shadow-blue-900/5">
                 <CardContent className="p-0 relative">
                     {/* Desktop Table View */}
-                    <div className="hidden sm:block overflow-hidden rounded-xl border-1 z-10 border-solid border-y-theme-primary-100 border-x-theme-purple-200">
+                    <div className="hidden sm:block overflow-hidden rounded-md border-1 z-10 border-solid border-y-theme-primary-100 border-x-theme-purple-200">
                         <Table>
                             <TableHeader className="border-b-1 border-b-solid border-b-neutral-400">
                                 <TableRow className="bg-muted/50">
@@ -624,8 +624,8 @@ export function WalletTable({ wallets, onCopyAddress, onUpdateWallet, refetchWal
 
             <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
                 <DialogContent className="sm:max-w-[425px] p-0 border-none border-transparent">
-                    <div className="bg-gradient-to-t from-theme-purple-100 to-theme-gradient-linear-end p-[1px] relative w-full rounded-xl">
-                        <div className="w-full px-3 py-2 bg-theme-black-200 rounded-xl text-neutral-100">
+                    <div className="bg-gradient-to-t from-theme-purple-100 to-theme-gradient-linear-end p-[1px] relative w-full rounded-md">
+                        <div className="w-full px-3 py-2 bg-theme-black-200 rounded-md text-neutral-100">
                             <DialogHeader className="p-2">
                                 <DialogTitle className="text-xl font-semibold text-indigo-500 backdrop-blur-sm boxShadow linear-200-bg mb-2 text-fill-transparent bg-clip-text">
                                     {t('wallet.confirmDeleteWallet')}

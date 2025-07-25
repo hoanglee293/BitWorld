@@ -45,7 +45,7 @@ export default function PhantomWarningModal({ isOpen, onClose }: PhantomWarningM
       <div className="absolute inset-0 bg-black bg-opacity-70" />
 
       {/* Modal */}
-      <div className="relative w-full max-w-md mx-4 bg-white dark:bg-[#1a1a1a] rounded-xl border-2 border-cyan-500 shadow-lg">
+      <div className="relative w-full max-w-md mx-4 bg-white dark:bg-[#1a1a1a] rounded-md border-2 border-cyan-500 shadow-lg">
         {/* Header */}
         <div className="flex justify-between items-center py-4 px-6 pb-4">
           <h2 className="text-[18px] font-semibold text-cyan-400 mt-2">

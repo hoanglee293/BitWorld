@@ -1,12 +1,9 @@
 "use client"
 import * as React from 'react';
-import Image from 'next/image';
-import lightMode from '@/assets/svgs/light.svg';
-import { useLang } from '@/lang/useLang';
 import { LangToggle } from './LanguageSelect';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from '@/ui/dropdown-menu';
 import { Button } from '@/ui/button';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, Settings } from 'lucide-react';
 import { useTheme } from "next-themes"
 import { useState, useEffect } from 'react';
 
@@ -25,7 +22,7 @@ export default function Display() {
                         size="icon" 
                         className="w-max text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 px-2 flex items-center gap-2 transition-colors"
                     >
-                        <img src={"/light.png"} alt="light" className='2xl:h-6 h-5' />
+                        <Settings />
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent 

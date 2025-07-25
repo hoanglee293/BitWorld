@@ -54,7 +54,7 @@ export const ConnectionList: React.FC<ConnectionListProps> = ({
     }
     console.log("connections", connections)
     return (
-        <div className="h-full overflow-y-auto bg-gray-300/50 dark:bg-transparent rounded-xl">
+        <div className="h-full overflow-y-auto bg-gray-300/50 dark:bg-transparent rounded-md">
             <div className="">
                 {connections.filter(conn => conn.status === "connect").map((item) => (
                     <div

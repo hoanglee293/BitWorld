@@ -617,17 +617,17 @@ function TransactionHistoryContent() {
             <table className="w-full text-sm table-fixed">
               <thead className="sticky top-[-1px] z-10 bg-white dark:bg-[#0F0F0F]">
                 <tr className="border-b border-gray-200 dark:border-neutral-800">
-                  <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-[25%]">{t("wallet.token")} ▼</th>
+                  <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-auto">{t("wallet.token")}</th>
                   <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-[15%]">{t("wallet.balance")}</th>
                   <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-[15%]">{t("wallet.price")}</th>
                   <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-[15%]">{t("wallet.value")}</th>
-                  <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-[30%]">{t("wallet.address")}</th>
+                  <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-[20%]">{t("wallet.address")}</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredTokens.map((token: any, index: number) => (
                   <tr key={index} className={`hover:bg-gray-100 dark:hover:bg-neutral-800/30 border-b border-gray-100 dark:border-neutral-800/50 cursor-pointer ${index % 2 === 0 ? 'bg-gray-50 dark:bg-[#1A1A1A]' : 'bg-white dark:bg-[#0F0F0F]'}`} onClick={() => router.push(`/trading?address=${token.token_address}`)}>
-                    <td className="px-4 py-2 text-gray-600 dark:text-neutral-300 text-xs font-medium">
+                    <td className="px-4 py-2 text-gray-600 dark:text-neutral-300 text-xs font-medium flex-1">
                       <div className="flex items-center gap-2">
                         {token.token_logo_url && (
                           <img
@@ -645,16 +645,16 @@ function TransactionHistoryContent() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-2 text-gray-600 dark:text-neutral-300 text-xs font-medium truncate">
-                      {token.token_balance.toFixed(token.token_decimals)}
+                    <td className="px-4 py-2 text-green-600 text-xs font-medium truncate">
+                      {token.token_balance.toFixed(4)}
                     </td>
-                    <td className="px-4 py-2 text-gray-600 dark:text-neutral-300 text-xs font-medium truncate">
+                    <td className="px-4 py-2 text-purple-600 text-xs font-medium truncate">
                       ${token.token_price_usd.toFixed(6)}
                     </td>
                     <td className="px-4 py-2 text-gray-600 dark:text-neutral-300 text-xs font-medium truncate">
-                      ${token.token_balance_usd.toFixed(6)}
+                      ${token.token_balance_usd.toFixed(5)}
                     </td>
-                    <td className="px-4 py-2 text-gray-600 dark:text-neutral-300 text-xs font-medium">
+                    <td className="px-4 py-2 text-yellow-500 text-xs font-medium">
                       <div className="flex items-center gap-2">
                         <span className="truncate max-w-[100px] sm:max-w-[120px]">{truncateString(token.token_address, 12)}</span>
                         <button
@@ -686,7 +686,7 @@ function TransactionHistoryContent() {
         {/* Mobile view */}
         <div className="md:hidden">
           {!filteredTokens || filteredTokens.length === 0 ? (
-            <div className="flex justify-center items-center py-6 text-neutral-600 dark:text-gray-400 bg-gray-800/60 rounded-xl">
+            <div className="flex justify-center items-center py-6 text-neutral-600 dark:text-gray-400 bg-gray-800/60 rounded-md">
               {t("wallet.noTokens")}
             </div>
           ) : (
@@ -723,13 +723,13 @@ function TransactionHistoryContent() {
                   <div>
                     <div className="text-xs dark:text-gray-400 text-black mb-1">{t("wallet.price")}</div>
                     <div className="text-sm sm:text-base font-medium dark:text-theme-neutral-100 text-black">
-                      ${token.token_price_usd.toFixed(6)}
+                      ${token.token_price_usd.toFixed(4)}
                     </div>
                   </div>
                   <div>
                     <div className="text-xs dark:text-gray-400 text-black mb-1">{t("wallet.value")}</div>
                     <div className="text-sm sm:text-base font-medium dark:text-theme-neutral-100 text-black">
-                      ${token.token_balance_usd.toFixed(6)}
+                      ${token.token_balance_usd.toFixed(5)}
                     </div>
                   </div>
                   <div>
@@ -767,7 +767,7 @@ function TransactionHistoryContent() {
   };
 
   return (
-    <div className="shadow-inset dark:bg-theme-neutral-1000 rounded-xl p-2 sm:p-3 lg:overflow-hidden bg-white dark:bg-neutral-1000 flex flex-col h-full w-full">
+    <div className="shadow-inset dark:bg-theme-neutral-1000 rounded-md p-2 sm:p-3 lg:overflow-hidden bg-white dark:bg-neutral-1000 flex flex-col h-full w-full">
       <div className="flex border-gray-200 dark:border-neutral-800 h-[30px] bg-gray-100  rounded-full dark:bg-[#333]">
         <button
           className={`flex-1 rounded-full text-xs xl:text-sm cursor-pointer font-medium uppercase text-center ${activeTab === "all" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
@@ -795,7 +795,7 @@ function TransactionHistoryContent() {
         </button>
       </div>
 
-      <div className="mt-2 sm:mt-3 bg-gray-50 dark:bg-[#0F0F0F] rounded-xl relative flex-1 flex flex-col min-h-0">
+      <div className="mt-2 sm:mt-3 bg-gray-50 dark:bg-[#0F0F0F] rounded-md relative flex-1 flex flex-col min-h-0">
         <div className="flex-1 overflow-auto">
           {activeTab === "all" ? renderAllTransactionsTable() :
             activeTab === "my" ? renderMyTransactionsTable() :

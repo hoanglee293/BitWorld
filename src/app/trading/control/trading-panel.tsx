@@ -305,15 +305,15 @@ export default function TradingPanel({
     return (
         <div className="h-full flex flex-col py-2 pl-2">
             {/* Mode Tabs */}
-            <div className="flex group bg-gray-100 dark:bg-theme-neutral-1000 rounded-xl h-[30px] mb-1">
+            <div className="flex group bg-gray-100 dark:bg-theme-neutral-1000 rounded-md h-[30px] mb-1">
                 <button
-                    className={`flex-1 rounded-3xl text-sm cursor-pointer uppercase text-center ${mode === "buy" ? "border-green-500 text-green-600 dark:text-theme-green-200 border-1 bg-green-50 dark:bg-theme-green-100 font-semibold" : "text-gray-500 dark:text-neutral-400"}`}
+                    className={`flex-1 rounded-md text-sm cursor-pointer uppercase text-center ${mode === "buy" ? "border-green-500 text-green-600 dark:text-theme-green-200 border-1 bg-green-50 dark:bg-theme-green-100 font-semibold" : "text-gray-500 dark:text-neutral-400"}`}
                     onClick={() => setMode("buy")}
                 >
                     {t('trading.panel.buy')}
                 </button>
                 <button
-                    className={`flex-1 rounded-3xl cursor-pointer text-sm uppercase text-center ${mode === "sell" ? "border-red-500 text-red-600 dark:text-theme-red-100 border-1 bg-red-50 dark:bg-theme-red-300 font-semibold" : "text-gray-500 dark:text-neutral-400"}`}
+                    className={`flex-1 rounded-md cursor-pointer text-sm uppercase text-center ${mode === "sell" ? "border-red-500 text-red-600 dark:text-theme-red-100 border-1 bg-red-50 dark:bg-theme-red-300 font-semibold" : "text-gray-500 dark:text-neutral-400"}`}
                     onClick={() => setMode("sell")}
                 >
                     {t('trading.panel.sell')}

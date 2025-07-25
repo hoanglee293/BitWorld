@@ -57,20 +57,20 @@ const UniversalAccountContent = () => {
     };
 
     return (
-        <div className="lg:container-glow px-[12px] sm:px-[16px] lg:px-[40px] flex flex-col pt-[12px] sm:pt-[16px] lg:pt-[30px] relative mx-auto z-10 pb-6 lg:pb-0">
+        <div className="px-[12px] sm:px-[16px] lg:px-[40px] flex flex-col pt-[12px] sm:pt-[16px] lg:pt-[30px] relative mx-auto z-10 pb-6 lg:pb-0">
             <div className='container flex flex-col gap-4 sm:gap-6'>
                 {/* Toaster removed - using the one from ClientLayout */}
                 {walletInfor?.solana_address && (
-                    <div className="flex items-center justify-center flex-col gap-3 sm:gap-4 lg:gap-6">
-                        <div className="flex w-full border-gray-200 dark:border-neutral-800 max-w-[280px] sm:max-w-[320px] h-[36px] sm:h-[40px] bg-gray-100 dark:bg-theme-neutral-1000 rounded-full">
+                    <div className="flex items-center justify-center flex-col gap-6">
+                        <div className="flex w-full border-gray-200 dark:border-neutral-800 max-w-[280px] sm:max-w-[320px] h-[32px] md:h-[40px] bg-gray-100 dark:bg-theme-neutral-1000 rounded-full">
                             <button
-                                className={`flex-1 rounded-full text-sm sm:text-base cursor-pointer font-medium uppercase text-center ${tab === "deposit" ? "bg-blue-500 text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
+                                className={`flex-1 rounded-full text-sm sm:text-base cursor-pointer font-medium uppercase text-center ${tab === "deposit" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
                                 onClick={() => setTab("deposit")}
                             >
                                 {t('universal_account.deposit')}
                             </button>
                             <button
-                                className={`flex-1 rounded-full cursor-pointer text-sm sm:text-base font-medium uppercase text-center ${tab === "withdraw" ? "bg-blue-500 text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
+                                className={`flex-1 rounded-full cursor-pointer text-sm sm:text-base font-medium uppercase text-center ${tab === "withdraw" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
                                 onClick={() => setTab("withdraw")}
                             >
                                 {t('universal_account.withdraw')}
@@ -90,7 +90,7 @@ const UniversalAccountContent = () => {
                 )}
             </div>
 
-            <div className='container px-0 lg:mt-6 sm:mt-8'>
+            <div className='container px-0 mt-8'>
                 <div className="flex items-center gap-2 mb-3 sm:mb-4 mt-4 lg:mt-0">
                     <div className="w-1.5 sm:w-2 h-1.5 sm:h-2 bg-cyan-400 rounded-full"></div>
                     <h3 className="font-bold dark:text-white text-black text-sm sm:text-base uppercase">{t(`universal_account.${tab}`)} {t('universal_account.history')}</h3>
@@ -101,7 +101,7 @@ const UniversalAccountContent = () => {
                 <div className="block sm:hidden space-y-3">
                     {filteredTransactions.length > 0 ? (
                         filteredTransactions.map((tx: Transaction) => (
-                            <div key={tx.id} className="bg-white dark:bg-theme-neutral-1000/50 rounded-xl border border-theme-purple-200 p-3 space-y-2">
+                            <div key={tx.id} className="bg-white dark:bg-theme-neutral-1000/50 rounded-md border border-theme-purple-200 p-3 space-y-2">
                                 <div className="flex items-center justify-between">
                                     <span className="text-[10px] dark:text-gray-400 text-black">{t('universal_account.time')}</span>
                                     <span className="text-[11px] dark:text-gray-300 text-black">{formatDate(tx.created_at)}</span>
@@ -163,17 +163,17 @@ const UniversalAccountContent = () => {
                             </div>
                         ))
                     ) : (
-                        <div className="text-center py-6 text-gray-400 text-xs border border-theme-purple-200 rounded-xl p-2">
+                        <div className="text-center py-6 text-gray-400 text-xs border border-gray-500 rounded-md p-2">
                             {t('universal_account.no_transactions', { type: t(`universal_account.${tab}`) })}
                         </div>
                     )}
                 </div>
 
                 {/* Desktop Table View */}
-                <div className="hidden sm:block overflow-x-auto rounded-xl border-1 z-10 border-solid border-y-theme-primary-100 border-x-theme-purple-200 bg-theme-neutral-1000/50">
+                <div className="hidden sm:block overflow-x-auto rounded-md border-1 z-10 border-solid border-gray-500 bg-theme-neutral-1000/50">
                     <Table className="w-full">
                         <TableHeader>
-                            <TableRow className="border-b border-theme-purple-200 hover:bg-transparent">
+                            <TableRow className="border-b border-gray-500 hover:bg-transparent">
                                 <TableHead className="py-2 px-6 text-xs font-medium dark:text-gray-400 text-black">{t('universal_account.time')}</TableHead>
                                 <TableHead className="py-2 px-4 text-xs font-medium dark:text-gray-400 text-black">{t('universal_account.type')}</TableHead>
                                 <TableHead className="py-2 px-3 text-xs font-medium dark:text-gray-400 text-black">{t('universal_account.status')}</TableHead>

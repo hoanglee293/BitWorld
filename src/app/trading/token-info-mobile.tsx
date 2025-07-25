@@ -36,7 +36,7 @@ export default function TokenInfoMobile({
     return (
         <div className="flex flex-col w-full">
             {/* Token Header - Always Visible */}
-            <div className="dark:bg-theme-neutral-1000 bg-white shadow-inset lg:box-shadow-info rounded-xl p-2 sm:pl-0 pl-10">
+            <div className="dark:bg-theme-neutral-1000 bg-white shadow-inset lg:box-shadow-info rounded-md p-2 sm:pl-0 pl-10">
                 <div className="flex items-center justify-between min-h-[48px] ">
                     <div className="flex items-center gap-3">
                         <div className="w-[40px] h-[40px] bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
@@ -113,7 +113,7 @@ export default function TokenInfoMobile({
                 <div className="mt-2">
                     <div className="space-y-2">
                         {/* Market Stats */}
-                        <div className="dark:bg-theme-neutral-1000 bg-white lg:box-shadow-info shadow-inset rounded-xl md:p-4 p-2">
+                        <div className="dark:bg-theme-neutral-1000 bg-white lg:box-shadow-info shadow-inset rounded-md md:p-4 p-2">
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="border-linear-200 border-1 border-theme-primary-400 rounded-lg p-2 flex flex-col items-center justify-center">
                                     <div className="text-xs dark:text-theme-neutral-100 text-theme-neutral-1000 font-semibold mb-1.5">{t('trading.tokenInfo.marketCap')}</div>
@@ -152,7 +152,7 @@ export default function TokenInfoMobile({
                         </div>
 
                         {/* Time Frame Stats */}
-                        <div className="dark:bg-theme-neutral-1000 bg-white lg:box-shadow-info shadow-inset rounded-xl md:p-4 p-2">
+                        <div className="dark:bg-theme-neutral-1000 bg-white lg:box-shadow-info shadow-inset rounded-md md:p-4 p-2">
                             <div className="grid grid-cols-4 gap-2">
                                 {(['5m', '1h', '4h', '24h'] as TimeFrame[]).map((tf) => (
                                     <button

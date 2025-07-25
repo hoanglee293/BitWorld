@@ -20,6 +20,7 @@ type FormData = {
     name: string;
     nick_name: string;
     country: string;
+    bittworld_uid: string;
 };
 
 export default function CompleteProfile() {
@@ -39,7 +40,8 @@ export default function CompleteProfile() {
             wallet_id: (payloadToken as any)?.wallet_id || '',
             name: '',
             nick_name: '',
-            country: langList[0].code
+            country: langList[0].code,
+            bittworld_uid: ''
         },
         mode: 'onChange'
     });
@@ -59,7 +61,7 @@ export default function CompleteProfile() {
         try {
             const res = await TelegramWalletService.changeName(formData);
             refetch();
-            router.push("/dashboard");
+            router.push("/trading?address=6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN");
             setToastMessage(t("tglogin.submitSuccess"));
             setShowToast(true);
         } catch (error: any) {
@@ -101,6 +103,21 @@ export default function CompleteProfile() {
                             )}
                         </div>
 
+                        <div className="space-y-2">
+                            <Label htmlFor="bittworld_uid">{t("tglogin.bittworld_uid")}</Label>
+                            <Input
+                                id="bittworld_uid"
+                                {...register("bittworld_uid", {
+                                    required: t("tglogin.nicknameRequired")
+                                })}
+                                placeholder={t("tglogin.nicknamePlaceholder")}
+                            />
+                            {errors.nick_name && (
+                                <p className="text-sm text-red-500">
+                                    {errors.nick_name.message}
+                                </p>
+                            )}
+                        </div>
                         <div className="space-y-2">
                             <Label htmlFor="nick_name">{t("tglogin.nickname")}</Label>
                             <Input

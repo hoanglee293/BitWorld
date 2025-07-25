@@ -230,7 +230,7 @@ export default function TokenInfo() {
   return (
     <>
       <div className="flex flex-col xl:gap-2 gap-1 w-full">
-        <div className="dark:bg-theme-neutral-1000 bg-white shadow-inset shadow-md rounded-xl p-3 h-full flex flex-col ">
+        <div className="dark:bg-theme-neutral-1000 bg-white shadow-inset shadow-md rounded-md p-3 h-full flex flex-col ">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 bg-transparent rounded-full flex items-center justify-center">
@@ -327,7 +327,7 @@ export default function TokenInfo() {
           </div>
           {/* <div className="grid grid-cols-2 gap-2">
             <BgGradientBox>
-              <div className="dark:bg-theme-neutral-1000 bg-white border-linear-200 rounded-xl p-[10px] flex flex-col items-center justify-center">
+              <div className="dark:bg-theme-neutral-1000 bg-white border-linear-200 rounded-md p-[10px] flex flex-col items-center justify-center">
                 <div className="text-xs dark:text-neutral-100 text-theme-neutral-800 font-semibold mb-1">{t('trading.tokenInfo.marketCap')}</div>
                 <div className="font-medium text-sm dark:text-neutral-100 text-theme-neutral-800 flex items-center">
                   ${formatNumberWithSuffix(dataToken.cap || 0)}
@@ -338,7 +338,7 @@ export default function TokenInfo() {
               </div>
             </BgGradientBox>
             <BgGradientBox>
-              <div className="dark:bg-theme-neutral-1000 bg-white border-linear-200 rounded-xl p-[10px] flex flex-col items-center justify-center">
+              <div className="dark:bg-theme-neutral-1000 bg-white border-linear-200 rounded-md p-[10px] flex flex-col items-center justify-center">
                 <div className="text-xs dark:text-neutral-100 text-theme-neutral-800 font-semibold mb-1">{t('trading.tokenInfo.volume24h')}</div>
                 <div className="font-medium text-sm dark:text-neutral-100 text-theme-neutral-800 flex items-center">
                   ${formatNumberWithSuffix(Math.abs(dataToken.aDayVolume || 0))}
@@ -346,7 +346,7 @@ export default function TokenInfo() {
               </div>
             </BgGradientBox>
             <BgGradientBox>
-              <div className="dark:bg-theme-neutral-1000 bg-white border-linear-200 rounded-xl p-[10px] flex flex-col items-center justify-center">
+              <div className="dark:bg-theme-neutral-1000 bg-white border-linear-200 rounded-md p-[10px] flex flex-col items-center justify-center">
                 <div className="text-xs dark:text-neutral-100 text-theme-neutral-800 font-semibold mb-1">{t('trading.tokenInfo.liquidity')}</div>
                 <div className="font-medium text-sm dark:text-neutral-100 text-theme-neutral-800 flex items-center">
                   ${formatNumberWithSuffix(dataToken.liquidity || 0)}
@@ -357,7 +357,7 @@ export default function TokenInfo() {
               </div>
             </BgGradientBox>
             <BgGradientBox>
-              <div className="dark:bg-theme-neutral-1000 bg-white border-linear-200 rounded-xl p-[10px] flex flex-col items-center justify-center">
+              <div className="dark:bg-theme-neutral-1000 bg-white border-linear-200 rounded-md p-[10px] flex flex-col items-center justify-center">
                 <div className="text-xs dark:text-neutral-100 text-theme-neutral-800 font-semibold mb-1">{t('trading.tokenInfo.holders')}</div>
                 <div className="font-medium text-sm dark:text-neutral-100 text-theme-neutral-800 flex items-center">
                   {formatNumberWithSuffix(dataToken.holders || 0)}
@@ -371,7 +371,7 @@ export default function TokenInfo() {
 
         </div >
         <>
-          <div className="dark:bg-theme-neutral-1000 bg-white shadow-inset shadow-md rounded-xl xl:p-3 p-1 h-full flex gap-3 flex-col ">
+          <div className="dark:bg-theme-neutral-1000 bg-white shadow-inset shadow-md rounded-md xl:p-3 p-1 h-full flex gap-3 flex-col ">
             <div className="flex flex-wrap gap-2 justify-around">
               <button onClick={() => setTimeFrame("5m")} className={`flex bg-theme-neutral-200 flex-1 dark:bg-transparent dark:border-1 flex-col gap-1 cursor-pointer rounded-lg 2xl:p-2 p-1 text-center  ${timeFrame === "5m" ? "border-green-400 border-1" : "dark:shadow-custom border-none "}`}>
                 <div className="text-xs">{t('trading.tokenInfo.timeFrames.5m')}</div>

@@ -67,7 +67,7 @@ const { t } = useLang();
             <div
               data-property-1="Frame 427320434"
             >
-              <button onClick={handleGoogleSignIn} className="text-center text-gray-900 h-12 min-w-44 bg-theme-primary-500 dark:text-white text-base font-normal leading-tight flex items-center gap-2 justify-center rounded-xl">
+              <button onClick={handleGoogleSignIn} className="text-center text-gray-900 h-12 min-w-44 bg-theme-primary-500 dark:text-white text-base font-normal leading-tight flex items-center gap-2 justify-center rounded-md">
                 Login with <div className="w-10 h-10 overflow-hidden cursor-pointer rounded-full flex items-center justify-center bg-gray-100 dark:bg-gray-800" onClick={handleGoogleSignIn}>
                   <img
                     src="https://img.icons8.com/color/48/google-logo.png"

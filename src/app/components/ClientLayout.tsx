@@ -43,7 +43,6 @@ export default function ClientLayout({
       <LangProvider>
         <ThemeProvider>
           {shouldShowComponents && <Header />}
-          <VideoBackground />
           <main className="bg-white/80 dark:bg-[#000000a8] overflow-x-hidden flex-1">
             {children}
           </main>

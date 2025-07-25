@@ -7,7 +7,7 @@ import { ChatService } from "@/services/api";
 import { useWsChatMessage } from "@/hooks/useWsChatMessage";
 import { useWidgetChatStore } from "@/store/widgetChatStore";
 import { Smile } from "lucide-react";
-import EmojiPicker from 'emoji-picker-react'
+import EmojiPicker, { Theme } from 'emoji-picker-react'
 
 type Message = {
   id: string;
@@ -437,7 +437,7 @@ const ChatWidget = () => {
                         <div className="absolute bottom-full right-0 mb-2 z-50">
                           <EmojiPicker
                             onEmojiClick={onEmojiSelect}
-                            theme="dark"
+                            theme={Theme.DARK}
                             width={300}
                             height={400}
                             searchDisabled={false}

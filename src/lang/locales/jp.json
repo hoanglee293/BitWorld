@@ -851,6 +851,7 @@
     "ownerPercentage": "保有者%",
     "usdValue": "USD価格",
     "percentage": "パーセンテージ",
+    "assets": "資産",
     "error": {
       "loadFailed": "取引履歴の読み込みに失敗しました",
       "invalidAddress": "無効なアドレスです"

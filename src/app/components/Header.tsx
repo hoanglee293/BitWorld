@@ -52,22 +52,6 @@ const Header = () => {
         setIsDark(theme);
     }, [theme]);
 
-    useEffect(() => {
-        // Check Phantom connection status from localStorage
-        const isPhantomConnected = localStorage.getItem('phantomConnected') === 'true';
-        const phantomKey = localStorage.getItem('phantomPublicKey');
-        setPhantomConnected(isPhantomConnected);
-        setPhantomPublicKey(phantomKey);
-    }, []);
-
-    const handlePhantomDisconnect = () => {
-        localStorage.removeItem('phantomConnected');
-        localStorage.removeItem('phantomPublicKey');
-        setPhantomConnected(false);
-        setPhantomPublicKey(null);
-        window.location.reload();
-    };
-
     // Add wallets query
     const { wallets: myWallets } = useWallets();
 
@@ -78,6 +62,7 @@ const Header = () => {
         staleTime: 30000,
         enabled: isAuthenticated,
     });
+    console.log(walletInfor)
 
     const handleChangeWallet = async (wallet: Wallet) => {
         try {
@@ -149,16 +134,22 @@ const Header = () => {
         setIsWalletDialogOpen(true);
     }, [isMobile]);
 
+    const storedTokens = localStorage.getItem('recentTokens');
+    let tokens: any[] = storedTokens ? JSON.parse(storedTokens) : [];
+    console.log("tokens", tokens)
+
     useEffect(() => {
         if (!isSearchModalOpen) {
             setSearchQuery("");
         }
     }, [isSearchModalOpen]);
 
+    const defaultAddress = tokens.length > 0 ? `/trading?address=${tokens[0].address}` : '/trading?address=6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN';
+
     const listSidebar = [
         {
-            name: t('over view'),
-            href: '/dashboard',
+            name: t('trading'),
+            href: defaultAddress,
             icon: LayoutDashboard,
             logoPump: false,
         },
@@ -177,7 +168,7 @@ const Header = () => {
                 <div className='flex items-center justify-between px-4 2xl:px-10 2xl:py-3 py-1 '>
                     <div className='flex gap-4'>
                         <div className='flex items-center gap-[3vw]'>
-                            <Link href="/" className="flex items-center">
+                            <Link href={defaultAddress} className="flex items-center">
                                 <img
                                     src="/bitworld-logo-light.png"
                                     alt="logo"
@@ -244,38 +235,23 @@ const Header = () => {
                                         <DropdownMenuTrigger asChild>
                                             <button className="text-sm bg-theme-primary-500 text-theme-neutral-100 dark:text-neutral-100 font-medium px-3 md:px-4 py-[6px] rounded-full transition-colors whitespace-nowrap flex items-center">
                                                 <Wallet2 className="h-3 w-3 mr-1" />
-                                                <span className='text-xs md:text-sm'>{truncateString(walletInfor.solana_address, 12) || truncateString(phantomPublicKey, 12)}</span>
+                                                <span className='text-xs md:text-sm'>{truncateString(walletInfor?.solana_address, 12) || truncateString(phantomPublicKey, 12)}</span>
                                             </button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end" className="w-48 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800">
                                             <div className="p-2">
                                                 <MobileWalletSelector
-                                                    selectedWalletId={walletInfor.solana_address}
+                                                    selectedWalletId={walletInfor?.solana_address}
                                                     onSelectWallet={(wallet) => {
                                                         handleChangeWallet(wallet);
                                                         setIsMobileMenuOpen(false);
                                                     }}
-                                                    currentWalletAddress={walletInfor.solana_address}
+                                                    currentWalletAddress={walletInfor?.solana_address}
                                                 />
                                             </div>
                                             <DropdownMenuItem asChild>
-                                                <Link href={`/tos/${lang}`} className="dropdown-item lg:pl-3 lg:pb-[10px] cursor-pointer text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-800">
-                                                    <span>{t('header.wallet.tos')}</span>
-                                                </Link>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem asChild>
-                                                <Link href={`/privacypolicy/${lang}`} className="dropdown-item lg:pl-3 lg:pb-[10px] cursor-pointer text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-800">
-                                                    <span>{t('header.wallet.privacypolicy')}</span>
-                                                </Link>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem asChild>
                                                 <Link href={`/ref`} className="dropdown-item cursor-pointer text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-800">
                                                     <span>{t('header.wallet.ref')}</span>
-                                                </Link>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem asChild>
-                                                <Link href={`/security`} className="dropdown-item cursor-pointer text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-800">
-                                                    <span>{t('header.wallet.security')}</span>
                                                 </Link>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem className="dropdown-item cursor-pointer text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={logout}>
@@ -299,7 +275,7 @@ const Header = () => {
 
                     <div className='hidden lg:flex items-center gap-2 2xl:gap-6'>
                         {isAuthenticated && walletInfor && (
-                            <button className='bg-gradient-to-t dark:bg-gradient-to-t dark:from-theme-primary-500 dark:to-theme-secondary-400 2xl:text-sm text-xs linear-gradient-blue text-theme-neutral-100 dark:text-neutral-100 font-medium px-3 md:px-4 py-[6px] rounded-full transition-colors whitespace-nowrap flex flex-col'>
+                            <button className=' dark:bg-theme-primary-500 2xl:text-sm text-xs linear-gradient-blue text-theme-neutral-100 dark:text-neutral-100 font-medium px-3 md:px-4 py-[6px] rounded-full transition-colors whitespace-nowrap flex flex-col'>
                                 {walletInfor.solana_balance} SOL &ensp; {'$' + formatNumberWithSuffix3(walletInfor.solana_balance_usd)}
                             </button>
                         )}
@@ -336,12 +312,12 @@ const Header = () => {
                                     >
                                         {t('connect')}
                                     </button>
-                                ) : walletInfor && walletInfor.solana_address ? (
+                                ) : (
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <button className="text-sm bg-theme-primary-500 text-theme-neutral-100 dark:text-neutral-100 font-medium px-3 md:px-4 py-[6px] rounded-full transition-colors whitespace-nowrap flex items-center gap-1 outline-none">
                                                 <Wallet2 className="2xl:h-4 2xl:w-4 h-3 w-3 mr-1" />
-                                                <span className="2xl:text-sm text-xs hidden md:inline">{truncateString(walletInfor.solana_address, 12)}</span>
+                                                <span className="2xl:text-sm text-xs hidden md:inline">{truncateString(walletInfor?.solana_address, 12)}</span>
                                                 <ChevronDown size={14} className="ml-1" />
                                             </button>
                                         </DropdownMenuTrigger>
@@ -349,11 +325,11 @@ const Header = () => {
                                             <DropdownMenuItem
                                                 className="dropdown-item cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-700 dark:text-neutral-200"
                                                 onClick={() => {
-                                                    navigator.clipboard.writeText(walletInfor.solana_address);
+                                                    navigator.clipboard.writeText(walletInfor?.solana_address);
                                                     toast.success(t('universal_account.deposit_wallet.copy_success'));
                                                 }}
                                             >
-                                                <span className="2xl:text-sm text-xs hidden md:inline">{truncateString(walletInfor.solana_address, 12)}</span>
+                                                <span className="2xl:text-sm text-xs hidden md:inline">{truncateString(walletInfor?.solana_address, 12)}</span>
                                                 <Copy className="h-4 w-4" />
                                             </DropdownMenuItem>
                                             <DropdownMenuItem
@@ -362,30 +338,6 @@ const Header = () => {
                                             >
                                                 <Wallet2 className="mr-2 h-4 w-4" />
                                                 <span>{t('header.wallet.selectWallet')}</span>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem asChild>
-                                                <Link href={`/tos/${lang}`} className="dropdown-item cursor-pointer text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-800">
-                                                    <FileCheck className="mr-2 h-4 w-4" />
-                                                    <span>{t('header.wallet.tos')}</span>
-                                                </Link>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem asChild>
-                                                <Link href={`/privacypolicy/${lang}`} className="dropdown-item cursor-pointer text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-800">
-                                                    <ShieldCheck className="mr-2 h-4 w-4" />
-                                                    <span>{t('header.wallet.privacypolicy')}</span>
-                                                </Link>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem asChild>
-                                                {!walletInfor.isBgAffiliate ?
-                                                    <Link href={`/ref`} className="dropdown-item cursor-pointer text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-800">
-                                                        <LinkIcon className="mr-2 h-4 w-4" />
-                                                        <span>{t('header.wallet.ref')}</span>
-                                                    </Link> :
-                                                    <Link href={`https://affiliate.memepump.gg`} target='_blank' className="dropdown-item cursor-pointer text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-800">
-                                                        <LinkIcon className="mr-2 h-4 w-4" />
-                                                        <span>{t('header.wallet.ref')} BG</span>
-                                                    </Link>}
-
                                             </DropdownMenuItem>
                                             <DropdownMenuItem asChild>
                                                 <Link href={`/security`} className="dropdown-item cursor-pointer text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-800">
@@ -399,33 +351,11 @@ const Header = () => {
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
-                                ) : phantomConnected && phantomPublicKey ? (
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <button className="text-sm bg-theme-primary-500 text-theme-neutral-100 dark:text-neutral-100 font-medium px-3 md:px-4 py-[6px] rounded-full transition-colors whitespace-nowrap flex items-center gap-1">
-                                                <Wallet2 className="h-4 w-4 mr-1" />
-                                                <span className="text-sm hidden md:inline">{truncateString(phantomPublicKey, 12)}</span>
-                                                <ChevronDown size={16} className="ml-1" />
-                                            </button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800">
-                                            <DropdownMenuItem className="dropdown-item cursor-pointer text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={handlePhantomDisconnect}>
-                                                <LogOut className="mr-2 h-4 w-4" />
-                                                <span>{t('header.wallet.disconnectPhantom')}</span>
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                ) : (
-                                    <button
-                                        className="bg-blue-500 hover:bg-blue-600 bg-theme-primary-500 text-white dark:text-neutral-100 font-medium px-4 md:px-6 py-[6px] rounded-full transition-colors whitespace-nowrap"
-                                    >
-                                        {t('header.wallet.loading')}
-                                    </button>
                                 )}
                             </>
                         ) : (
                             <button
-                                className="bg-blue-500 hover:bg-blue-600 bg-theme-primary-500 text-white dark:text-neutral-100 font-medium px-4 md:px-6 py-[6px] rounded-full transition-colors whitespace-nowrap"
+                                className="hover:bg-white hover:text-theme-primary-500 bg-theme-primary-500 text-white dark:text-neutral-100 font-medium px-4 md:px-6 py-[6px] rounded-full transition-colors whitespace-nowrap"
                             >
                                 {t('header.wallet.connecting')}
                             </button>
@@ -439,8 +369,8 @@ const Header = () => {
                         <div className=" h-full bg-gradient-to-r dark:from-theme-primary-500 dark:to-theme-secondary-400 backdrop-blur-md bg-theme-blue-300">
                             <div className='dark:bg-theme-black-1/2 flex flex-col h-full'>
                                 <div className="flex items-center justify-between p-4 ">
-                                    <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
-                                        <img src={"/logo.png"} alt="logo" className="h-6 md:h-8" />
+                                    <Link href={defaultAddress} onClick={() => setIsMobileMenuOpen(false)}>
+                                        <img src={"/bitworld-logo-light.png"} alt="logo" className="h-6 md:h-8" />
                                     </Link>
 
                                     <button
@@ -469,36 +399,12 @@ const Header = () => {
                                     {/* Additional Mobile Links */}
                                     <div className="pt-4 border-t border-gray-200 dark:border-neutral-800">
                                         <Link
-                                            href={`/tos/${lang}`}
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                            className="hover:text-theme-primary-500 dark:text-theme-neutral-100 text-theme-neutral-800 md:dark:text-theme-neutral-300 capitalize transition-colors text-base py-2 flex items-center gap-3"
-                                        >
-                                            <FileCheck className="h-5 w-5" />
-                                            {t('header.wallet.tos')}
-                                        </Link>
-                                        <Link
-                                            href={`/privacypolicy/${lang}`}
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                            className="hover:text-theme-primary-500 dark:text-theme-neutral-100 text-theme-neutral-800 md:dark:text-theme-neutral-300 capitalize transition-colors text-base py-2 flex items-center gap-3"
-                                        >
-                                            <ShieldCheck className="h-5 w-5" />
-                                            {t('header.wallet.privacypolicy')}
-                                        </Link>
-                                        <Link
                                             href="/ref"
                                             onClick={() => setIsMobileMenuOpen(false)}
                                             className="hover:text-theme-primary-500 dark:text-theme-neutral-100 text-theme-neutral-800 md:dark:text-theme-neutral-300 capitalize transition-colors text-base py-2 flex items-center gap-3"
                                         >
                                             <LinkIcon className="h-5 w-5" />
                                             {t('header.wallet.ref')}
-                                        </Link>
-                                        <Link
-                                            href="/security"
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                            className="hover:text-theme-primary-500 dark:text-theme-neutral-100 text-theme-neutral-800 md:dark:text-theme-neutral-300 capitalize transition-colors text-base py-2 flex items-center gap-3"
-                                        >
-                                            <Shield className="h-5 w-5" />
-                                            {t('header.wallet.security')}
                                         </Link>
                                     </div>
                                 </nav>

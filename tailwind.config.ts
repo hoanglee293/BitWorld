@@ -296,9 +296,6 @@ const config: Config = {
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
         },
-        '.linear-gradient-blue': {
-          background: 'linear-gradient(0deg, #5558FF 0%, #00C0FF 100%)',
-        },
         '.hover-bg-delay': {
           '&:hover': {
             animation: 'background-delay 0.5s ease-in-out forwards',

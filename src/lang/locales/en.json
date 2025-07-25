@@ -810,6 +810,7 @@
     "ownerPercentage": "Owner %",
     "redirecting": "Redirecting...",
     "usdValue": "USD Value",
+    "assets": "Assets",
     "error": {
       "loadFailed": "Failed to load transaction history",
       "invalidAddress": "Invalid address"

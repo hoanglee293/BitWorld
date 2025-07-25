@@ -860,6 +860,7 @@
     "percentage": "비율",
     "quoteValue": "참조 가격",
     "usdValue": "USD 가격",
+    "assets": "자산",
     "error": {
       "loadFailed": "거래 내역을 불러오는데 실패했습니다",
       "invalidAddress": "유효하지 않은 주소입니다"

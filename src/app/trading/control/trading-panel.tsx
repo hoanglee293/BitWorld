@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { getMyConnects, getMyGroups } from "@/services/api/MasterTradingService"
 import { createTrading, getTokenAmount, getTradeAmount } from "@/services/api/TradingService"
 import { useSearchParams } from "next/navigation"
 import { useLang } from "@/lang/useLang"
@@ -13,39 +12,17 @@ import { STYLE_TEXT_BASE } from "./constants/styles"
 import { useLocalStorage } from "./hooks/useLocalStorage"
 import { PercentageButtons } from "./components/PercentageButtons"
 import { AmountButtons } from "./components/AmountButtons"
-import { GroupSelect } from "./components/GroupSelect"
 import { getInforWallet } from "@/services/api/TelegramWalletService"
-import { useTradingState } from './hooks/useTradingState'
-import { useConnectListStore } from "@/hooks/useConnectListStore"
 
 export default function TradingPanel({
     defaultMode = "buy",
     currency,
     isConnected,
 }: Omit<TradingPanelProps, 'selectedGroups' | 'setSelectedGroups' | 'selectedConnections' | 'setSelectedConnections'>) {
-    const { getConnectList, selectedConnections, setSelectedConnections, selectedGroups, setSelectedGroups, refetchConnections } = useConnectListStore()
     const { t } = useLang()
     const searchParams = useSearchParams()
     const address = searchParams?.get("address")
     const queryClient = useQueryClient()
-
-    const { data: myConnects = [], isLoading: isLoadingConnects, refetch: refetchMyConnects } = useQuery({
-        queryKey: ["myConnects"],
-        queryFn: () => getMyConnects(),
-        refetchOnWindowFocus: false,
-        staleTime: 0,
-        refetchInterval: 30000,
-        refetchOnMount: true,
-    })
-
-    const {
-        handleTradeSubmit
-    } = useTradingState(myConnects || [])
-
-    const { data: groups } = useQuery({
-        queryKey: ["groups"],
-        queryFn: getMyGroups,
-    })
 
     const { data: tradeAmount, refetch: refetchTradeAmount } = useQuery({
         queryKey: ["tradeAmount", address],
@@ -264,8 +241,8 @@ export default function TradingPanel({
             return
         }
 
-        const submitTrade = async () => {
-            return await createTrading({
+        try {
+            const result = await createTrading({
                 order_trade_type: mode,
                 order_type: "market",
                 order_token_name: tokenAmount?.token_address || tokenInfor.symbol,
@@ -275,24 +252,29 @@ export default function TradingPanel({
                         ? Number(amount) * (tokenAmount?.token_price || 0)
                         : Number(amount) * (solPrice?.priceUSD || 0),
                 order_qlty: Number(amount),
-                member_list: selectedConnections.map(id => Number(id))
             })
-        }
 
-        const { success, error } = await handleTradeSubmit(submitTrade)
-
-        if (success) {
-            setAmount("0.00")
-            setPercentage(0)
-            setAmountUSD("0.00")
-            setIsDirectAmountInput(false)
-            refetchTradeAmount()
-            notify({
-                message: t('trading.panel.success'),
-                type: 'success'
-            })
-            // Invalidate all queries with "myConnects" key to refresh data in all components
-        } else {
+            if (result.success) {
+                setAmount("0.00")
+                setPercentage(0)
+                setAmountUSD("0.00")
+                setIsDirectAmountInput(false)
+                refetchTradeAmount()
+                notify({
+                    message: t('trading.panel.success'),
+                    type: 'success'
+                })
+            } else {
+                setAmount("0.00")
+                setPercentage(0)
+                setAmountUSD("0.00")
+                setIsDirectAmountInput(false)
+                notify({
+                    message: t('trading.panel.error'),
+                    type: 'error'
+                })
+            }
+        } catch (error) {
             setAmount("0.00")
             setPercentage(0)
             setAmountUSD("0.00")
@@ -302,8 +284,7 @@ export default function TradingPanel({
                 type: 'error'
             })
         }
-        await queryClient.invalidateQueries({ queryKey: ["myConnects"] })
-    }, [mode, amount, tokenAmount, solPrice, selectedConnections, handleTradeSubmit, t, validateAmount, amountError, tokenInfor, queryClient, refetchConnections])
+    }, [mode, amount, tokenAmount, solPrice, t, validateAmount, amountError, tokenInfor, refetchTradeAmount, timeoutHandle])
 
     // Reset amount and percentage when mode changes
     useEffect(() => {
@@ -320,13 +301,6 @@ export default function TradingPanel({
             setAmount(newAmount)
         }
     }, [tradeAmount, mode, percentage, isDirectAmountInput])
-
-    const handleSelectConnection = useCallback((groups: string[]) => {
-        setSelectedGroups(groups)
-        const connectionsFilter = myConnects.filter((connect: any) => groups.some((group: any) => connect.joined_groups.some((joinedGroup: any) => joinedGroup.group_id.toString() === group))).map((connect: any) => connect.member_id.toString())
-        setSelectedConnections(connectionsFilter)
-    }, [setSelectedGroups, setSelectedConnections, myConnects, selectedConnections])
-   
    
     return (
         <div className="h-full flex flex-col">
@@ -429,14 +403,6 @@ export default function TradingPanel({
                         onEditKeyPress={handleAmountEditKeyPress}
                     />
                 )}
-
-                {/* Group Select */}
-                {walletInfor?.role == "master" && <GroupSelect
-                    groups={groups || []}
-                    selectedGroups={selectedGroups}
-                    setSelectedGroups={handleSelectConnection}
-                />}
-
 
                 {/* Action Button */}
                 <div className="mt-3">

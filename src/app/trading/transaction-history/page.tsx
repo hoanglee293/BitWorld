@@ -1,7 +1,7 @@
 "use client"
 
 import { getHolders, getOrderHistories, getOrderMyHistories } from "@/services/api/OnChainService"
-import { getInforWallet } from "@/services/api/TelegramWalletService"
+import { getInforWallet, getListBuyToken } from "@/services/api/TelegramWalletService"
 import { formatNumberWithSuffix, truncateString } from "@/utils/format"
 import { useQuery } from "@tanstack/react-query"
 import { useSearchParams } from "next/navigation"
@@ -9,6 +9,8 @@ import { useState, Suspense, useEffect, useMemo } from "react"
 import { io as socketIO } from "socket.io-client"
 import { useLang } from "@/lang/useLang"
 import { getTokenInforByAddress } from "@/services/api/SolonaTokenService"
+import { useAuth } from "@/hooks/useAuth"
+import { useRouter } from "next/navigation"
 
 type Transaction = {
   time: string
@@ -31,8 +33,9 @@ export default function TransactionHistory() {
 }
 
 function TransactionHistoryContent() {
+  const { isAuthenticated } = useAuth();
   const { t } = useLang();
-  const [activeTab, setActiveTab] = useState<"all" | "my" | "holder">("all")
+  const [activeTab, setActiveTab] = useState<"all" | "my" | "holder" | "asset">("all")
   const [socket, setSocket] = useState<any>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -77,6 +80,15 @@ function TransactionHistoryContent() {
     queryFn: () => getOrderMyHistories(String(address), String(walletInfor?.solana_address)),
     enabled: !!walletInfor,
   });
+
+  const { data: tokenList, refetch: refetchTokenList, isLoading: isLoadingTokenList } = useQuery({
+    queryKey: ["token-buy-list"],
+    queryFn: getListBuyToken,
+    enabled: isAuthenticated,
+  });
+
+  // Filter tokens with price >= 0.000001
+  const filteredTokens = tokenList?.tokens?.filter((token: any) => token.token_balance_usd >= 0.05) || [];
 
   // WebSocket connection setup
   useEffect(() => {
@@ -589,26 +601,197 @@ function TransactionHistoryContent() {
     );
   };
 
+  const renderAssetsTable = () => {
+    const { t } = useLang();
+    const router = useRouter();
+
+    return (
+      <>
+        {/* Desktop view */}
+        <div className="hidden md:block">
+          {!filteredTokens || filteredTokens.length === 0 ? (
+            <div className="flex justify-center items-center py-8 text-neutral-600 dark:text-gray-400">
+              {t("wallet.noTokens")}
+            </div>
+          ) : (
+            <table className="w-full text-sm table-fixed">
+              <thead className="sticky top-[-1px] z-10 bg-white dark:bg-[#0F0F0F]">
+                <tr className="border-b border-gray-200 dark:border-neutral-800">
+                  <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-[25%]">{t("wallet.token")} ▼</th>
+                  <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-[15%]">{t("wallet.balance")}</th>
+                  <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-[15%]">{t("wallet.price")}</th>
+                  <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-[15%]">{t("wallet.value")}</th>
+                  <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-[30%]">{t("wallet.address")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredTokens.map((token: any, index: number) => (
+                  <tr key={index} className={`hover:bg-gray-100 dark:hover:bg-neutral-800/30 border-b border-gray-100 dark:border-neutral-800/50 cursor-pointer ${index % 2 === 0 ? 'bg-gray-50 dark:bg-[#1A1A1A]' : 'bg-white dark:bg-[#0F0F0F]'}`} onClick={() => router.push(`/trading?address=${token.token_address}`)}>
+                    <td className="px-4 py-2 text-gray-600 dark:text-neutral-300 text-xs font-medium">
+                      <div className="flex items-center gap-2">
+                        {token.token_logo_url && (
+                          <img
+                            src={token.token_logo_url}
+                            alt={token.token_name}
+                            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full"
+                            onError={(e) => {
+                              e.currentTarget.src = '/placeholder.png';
+                            }}
+                          />
+                        )}
+                        <div>
+                          <div className="font-medium text-neutral-900 dark:text-theme-neutral-100 text-xs sm:text-sm">{token.token_name}</div>
+                          <div className="text-[10px] sm:text-xs text-neutral-600 dark:text-gray-400">{token.token_symbol}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-2 text-gray-600 dark:text-neutral-300 text-xs font-medium truncate">
+                      {token.token_balance.toFixed(token.token_decimals)}
+                    </td>
+                    <td className="px-4 py-2 text-gray-600 dark:text-neutral-300 text-xs font-medium truncate">
+                      ${token.token_price_usd.toFixed(6)}
+                    </td>
+                    <td className="px-4 py-2 text-gray-600 dark:text-neutral-300 text-xs font-medium truncate">
+                      ${token.token_balance_usd.toFixed(6)}
+                    </td>
+                    <td className="px-4 py-2 text-gray-600 dark:text-neutral-300 text-xs font-medium">
+                      <div className="flex items-center gap-2">
+                        <span className="truncate max-w-[100px] sm:max-w-[120px]">{truncateString(token.token_address, 12)}</span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigator.clipboard.writeText(token.token_address);
+                          }}
+                          className="text-neutral-600 hover:text-neutral-900 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                        >
+                          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        {/* Mobile view */}
+        <div className="md:hidden">
+          {!filteredTokens || filteredTokens.length === 0 ? (
+            <div className="flex justify-center items-center py-6 text-neutral-600 dark:text-gray-400 bg-gray-800/60 rounded-xl">
+              {t("wallet.noTokens")}
+            </div>
+          ) : (
+            filteredTokens.map((token: any, index: number) => (
+              <div key={index} className={`p-3 border-b border-theme-neutral-800/40 dark:border-neutral-800/50 hover:bg-gray-50 dark:hover:bg-neutral-800/30 cursor-pointer ${index % 2 === 0 ? 'bg-gray-50 dark:bg-[#1A1A1A]' : 'bg-white dark:bg-[#0F0F0F]'}`} onClick={() => router.push(`/trading?address=${token.token_address}`)}>
+                {/* Token Info Header */}
+                <div className="flex items-start gap-2 mb-3">
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    {token.token_logo_url && (
+                      <img
+                        src={token.token_logo_url}
+                        alt={token.token_name}
+                        className="w-8 h-8 rounded-full"
+                        onError={(e) => {
+                          e.currentTarget.src = '/placeholder.png';
+                        }}
+                      />
+                    )}
+                    <div className="min-w-0 flex gap-2">
+                      <div className="font-medium dark:text-theme-neutral-100 text-black text-sm truncate">{token.token_name}</div>
+                      <div className="text-xs dark:text-gray-400 text-black">{token.token_symbol}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Token Details Grid */}
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <div className="text-xs dark:text-gray-400 text-black mb-1">{t("wallet.balance")}</div>
+                    <div className="text-sm sm:text-base font-medium dark:text-theme-neutral-100 text-black">
+                      {token.token_balance.toFixed(token.token_decimals)}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs dark:text-gray-400 text-black mb-1">{t("wallet.price")}</div>
+                    <div className="text-sm sm:text-base font-medium dark:text-theme-neutral-100 text-black">
+                      ${token.token_price_usd.toFixed(6)}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs dark:text-gray-400 text-black mb-1">{t("wallet.value")}</div>
+                    <div className="text-sm sm:text-base font-medium dark:text-theme-neutral-100 text-black">
+                      ${token.token_balance_usd.toFixed(6)}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs dark:text-gray-400 text-black mb-1">{t("wallet.address")}</div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium dark:text-theme-neutral-100 text-black truncate max-w-[120px]">
+                        {truncateString(token.token_address, 12)}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigator.clipboard.writeText(token.token_address);
+                        }}
+                        className="text-neutral-600 hover:text-neutral-900 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                      >
+                        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </>
+    );
+  };
+
   return (
     <div className="shadow-inset dark:bg-theme-neutral-1000 rounded-xl p-2 sm:p-3 lg:overflow-hidden bg-white dark:bg-neutral-1000 flex flex-col h-full w-full">
       <div className="flex border-gray-200 dark:border-neutral-800 h-[30px] bg-gray-100  rounded-full dark:bg-[#333]">
         <button
-          className={`flex-1 rounded-full text-xs xl:text-sm cursor-pointer font-medium uppercase text-center ${activeTab === "all" ? "bg-blue-500 text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
+          className={`flex-1 rounded-full text-xs xl:text-sm cursor-pointer font-medium uppercase text-center ${activeTab === "all" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
           onClick={() => setActiveTab("all")}
         >
           {t("transactionHistory.allTransactions")}
         </button>
         <button
-          className={`flex-1 rounded-full cursor-pointer text-xs xl:text-sm font-medium uppercase text-center ${activeTab === "my" ? "bg-blue-500 text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
+          className={`flex-1 rounded-full cursor-pointer text-xs xl:text-sm font-medium uppercase text-center ${activeTab === "my" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
           onClick={() => setActiveTab("my")}
         >
           {t("transactionHistory.myTransactions")}
         </button>
         <button
-          className={`flex-1 rounded-full cursor-pointer text-xs xl:text-sm font-medium uppercase text-center ${activeTab === "holder" ? "bg-blue-500 text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
+          className={`flex-1 rounded-full cursor-pointer text-xs xl:text-sm font-medium uppercase text-center ${activeTab === "holder" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
           onClick={() => setActiveTab("holder")}
         >
           {t("transactionHistory.holders")}
+        </button>
+        <button
+          className={`flex-1 rounded-full cursor-pointer text-xs xl:text-sm font-medium uppercase text-center ${activeTab === "asset" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
+          onClick={() => setActiveTab("asset")}
+        >
+          {t("transactionHistory.assets")}
         </button>
       </div>
 
@@ -616,7 +799,8 @@ function TransactionHistoryContent() {
         <div className="flex-1 overflow-auto">
           {activeTab === "all" ? renderAllTransactionsTable() :
             activeTab === "my" ? renderMyTransactionsTable() :
-              renderHoldersTable()}
+              activeTab === "holder" ? renderHoldersTable() :
+                renderAssetsTable()}
         </div>
       </div>
     </div>

@@ -145,10 +145,6 @@ body {
   @apply max-w-[1920px] w-full container-glow;
 }
 
-.container-trading {
-  @apply container-glow;
-}
-
 .box-gradient {
   @apply border border-theme-neutral-900 bg-gradient-overlay from-theme-gradient-overlay-start to-theme-gradient-overlay-end backdrop-blur-[5px];
 }

@@ -1137,5 +1137,23 @@
         "content2": "最後に、戦略を適切に調整するために、指標、市場センチメント、資金の流れの動きを密接に監視することを忘れないでください。暗号通貨市場では、知識と反応速度があなたの最大の利点です。"
       }
     }
+  },
+  "pools": {
+    "title": "流動性プール",
+    "searchPlaceholder": "プールを検索...",
+    "createPoolBtn": "プール作成",
+    "detail": "プール詳細",
+    "join": "参加する",
+    "noResult": "検索条件に一致するプールが見つかりません。",
+    "createTitle": "新しいプールを作成",
+    "nameLabel": "プール名",
+    "namePlaceholder": "プール名を入力（例: SOL-USDC）",
+    "amountLabel": "数量",
+    "amountPlaceholder": "プール数量を入力（例: 1000）",
+    "descLabel": "説明",
+    "descPlaceholder": "プールについて説明してください...",
+    "lockNote": "注意: すべてのコインはプール作成日から365日間ロックされます。",
+    "creating": "作成中...",
+    "createBtn": "プール作成"
   }
 }

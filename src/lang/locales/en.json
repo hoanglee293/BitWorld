@@ -665,7 +665,7 @@
       "favorite": "Favorite",
       "category": "Category",
       "trending": "Trending",
-      "new": "New",
+      "new": "BITTWORLD",
       "noData": "No data"
     },
     "tokenInfo": {
@@ -1106,5 +1106,23 @@
         "content2": "Finally, don't forget to closely monitor indicators, market sentiment, and money flow movements to adjust strategies accordingly. In the crypto market, knowledge and reaction speed are your biggest advantages."
       }
     }
+  },
+  "pools": {
+    "title": "Liquidity Pools",
+    "searchPlaceholder": "Search pool...",
+    "createPoolBtn": "Create pool",
+    "detail": "Pool details",
+    "join": "Join",
+    "noResult": "No pools found matching your search.",
+    "createTitle": "Create New Pool",
+    "nameLabel": "Pool Name",
+    "namePlaceholder": "Enter pool name (e.g., SOL-USDC)",
+    "amountLabel": "Amount",
+    "amountPlaceholder": "Enter pool amount (e.g., 1000)",
+    "descLabel": "Description",
+    "descPlaceholder": "Describe your pool...",
+    "lockNote": "Note: All contributed coins will be locked for 365 days from the pool creation date.",
+    "creating": "Creating...",
+    "createBtn": "Create Pool"
   }
 }

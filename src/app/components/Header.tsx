@@ -127,8 +127,14 @@ const Header = () => {
 
     const listSidebar = [
         {
-            name: t('trading'),
+            name: t('trading.trade'),
             href: defaultAddress,
+            icon: LayoutDashboard,
+            logoPump: false,
+        },
+        {
+            name: t('pools.tab'),
+            href: '/pools',
             icon: LayoutDashboard,
             logoPump: false,
         },
@@ -143,7 +149,7 @@ const Header = () => {
     return (
         <>
             {/* NotifyProvider removed - using Toaster from ClientLayout */}
-            <header className="sticky top-0 w-full bg-white dark:bg-black border-b dark:border-none border-gray-200 dark:border-gray-800" style={{ zIndex: 50 }}>
+            <header className="sticky top-0 w-full bg-white dark:bg-[#141414] border-b dark:border-none shadow-lg border-gray-200 dark:border-gray-800" style={{ zIndex: 50 }}>
                 <div className='flex items-center justify-between px-4 2xl:px-10 2xl:py-3 py-1 '>
                     <div className='flex gap-4'>
                         <div className='flex items-center gap-[3vw]'>
@@ -207,11 +213,11 @@ const Header = () => {
                     </button>
 
                     <div className='hidden lg:flex items-center gap-2 2xl:gap-6'>
-                        {isAuthenticated && walletInfor && (
+                        {/* {isAuthenticated && walletInfor && (
                             <button className=' dark:bg-theme-primary-500 2xl:text-sm text-xs linear-gradient-blue text-theme-neutral-100 dark:text-neutral-100 font-medium px-3 md:px-4 py-[6px] rounded-full transition-colors whitespace-nowrap flex flex-col'>
                                 {walletInfor.solana_balance} SOL &ensp; {'$' + formatNumberWithSuffix3(walletInfor.solana_balance_usd)}
                             </button>
-                        )}
+                        )} */}
                         <div className="relative">
                             <input
                                 type="text"

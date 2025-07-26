@@ -334,29 +334,6 @@ const ListToken = () => {
     };
     return (
         <div className='dark:bg-theme-neutral-1000 bg-white shadow-inset rounded-md pr-0 pb-0 flex-1 pt-1 overflow-hidden'>
-            {/* <div className="relative mb-3 pr-3 px-3">
-                <div className="flex relative items-center dark:bg-neutral-800 bg-white rounded-full px-3 py-1 border-1 border-t-theme-primary-300 border-l-theme-primary-300 border-b-theme-secondary-400 border-r-theme-secondary-400">
-                    <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onPaste={handlePaste}
-                        placeholder={t('trading.interface.searchPlaceholder')}
-                        className="bg-transparent pl-6 w-full text-sm focus:outline-none dark:placeholder:text-theme-neutral-100 placeholder:text-theme-neutral-800"
-                    />
-                    {isSearching ? (
-                        <div className="absolute right-3 top-1.5">
-                            <div className="animate-spin h-4 w-4 border-2 border-neutral-400 border-t-transparent rounded-full"></div>
-                        </div>
-                    ) : (
-                        <Search className="absolute left-3 top-1.5 h-4 w-4 text-muted-foreground" />
-                    )}
-                </div>
-                {searchQuery.length > 0 && searchQuery.length < 2 && (
-                    <p className="text-xs text-neutral-400 mt-1 ml-2">{t('trading.interface.minSearchLength')}</p>
-                )}
-            </div> */}
-
             <div className='pr-1 h-full'>
                 <div
                     ref={scrollContainerRef}
@@ -377,7 +354,7 @@ const ListToken = () => {
                             className={`flex items-center gap-1 text-xs cursor-pointer p-1 px-3 rounded-md font-normal shrink-0 ${activeTab === "new" ? "text-theme-neutral-100 bg-theme-primary-500" : "dark:text-theme-neutral-100"}`}
                             onClick={() => handleTabChange("new")}
                         >
-                            {t('trading.listToken.new')} <PumpFun />
+                            {t('trading.listToken.new')}
                         </button>
                         <button
                             className={`text-xs cursor-pointer p-1 px-3 rounded-md font-normal shrink-0 ${activeTab === "favorite" ? "text-theme-neutral-100 bg-theme-primary-500" : "dark:text-theme-neutral-100"}`}
@@ -392,25 +369,25 @@ const ListToken = () => {
                     <div>
                         <div className="flex border-t border-b py-1 border-neutral-700 w-full">
                             <button
-                                className={`text-[10px] cursor-pointer p-[2px] px-3 rounded-md font-normal shrink-0 ${timeFilter === "5m" ? "text-theme-neutral-100 bg-theme-primary-500 bg-theme-primary-500" : "dark:text-theme-neutral-100"}`}
+                                className={`text-[10px] cursor-pointer p-[2px] px-3 rounded-md font-normal shrink-0 ${timeFilter === "5m" ? "text-theme-neutral-100 bg-theme-primary-500" : "dark:text-theme-neutral-100"}`}
                                 onClick={() => setTimeFilter("5m")}
                             >
                                 {t('tokenInfo.timeFrames.5m')}
                             </button>
                             <button
-                                className={`text-[10px] cursor-pointer p-[2px] px-3 rounded-md font-normal shrink-0 ${timeFilter === "1h" ? "text-theme-neutral-100 bg-theme-primary-500 bg-theme-primary-500" : "dark:text-theme-neutral-100"}`}
+                                className={`text-[10px] cursor-pointer p-[2px] px-3 rounded-md font-normal shrink-0 ${timeFilter === "1h" ? "text-theme-neutral-100 bg-theme-primary-500" : "dark:text-theme-neutral-100"}`}
                                 onClick={() => setTimeFilter("1h")}
                             >
                                 {t('tokenInfo.timeFrames.1h')}
                             </button>
                             <button
-                                className={`text-[10px] cursor-pointer p-[2px] px-3 rounded-md font-normal shrink-0 ${timeFilter === "4h" ? "text-theme-neutral-100 bg-theme-primary-500 bg-theme-primary-500" : "dark:text-theme-neutral-100"}`}
+                                className={`text-[10px] cursor-pointer p-[2px] px-3 rounded-md font-normal shrink-0 ${timeFilter === "4h" ? "text-theme-neutral-100 bg-theme-primary-500" : "dark:text-theme-neutral-100"}`}
                                 onClick={() => setTimeFilter("4h")}
                             >
                                 {t('tokenInfo.timeFrames.4h')}
                             </button>
                             <button
-                                className={`text-[10px] cursor-pointer p-[2px] px-3 rounded-md font-normal shrink-0 ${timeFilter === "24h" ? "text-theme-neutral-100 bg-theme-primary-500 bg-theme-primary-500" : "dark:text-theme-neutral-100"}`}
+                                className={`text-[10px] cursor-pointer p-[2px] px-3 rounded-md font-normal shrink-0 ${timeFilter === "24h" ? "text-theme-neutral-100 bg-theme-primary-500" : "dark:text-theme-neutral-100"}`}
                                 onClick={() => setTimeFilter("24h")}
                             >
                                 {t('tokenInfo.timeFrames.24h')}

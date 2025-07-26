@@ -186,30 +186,6 @@ export default function TradingPanel({
         }
     }, [handleEditSave])
 
-    const handleAmountEditClick = useCallback((index: number) => {
-        setEditingAmountIndex(index)
-        setEditAmountValue(amountValues[index].toString())
-    }, [amountValues])
-
-    const handleAmountEditSave = useCallback((index: number) => {
-        const newValue = Number(editAmountValue)
-        if (!isNaN(newValue) && newValue > 0) {
-            const newValues = [...amountValues]
-            newValues[index] = newValue
-            newValues.sort((a, b) => a - b)
-            setAmountValues(newValues)
-        }
-        setEditingAmountIndex(null)
-    }, [editAmountValue, amountValues, setAmountValues])
-
-    const handleAmountEditKeyPress = useCallback((e: React.KeyboardEvent, index: number) => {
-        if (e.key === 'Enter') {
-            handleAmountEditSave(index)
-        } else if (e.key === 'Escape') {
-            setEditingAmountIndex(null)
-        }
-    }, [handleAmountEditSave])
-
     const timeoutHandle = useCallback(() => {
         // Clear any existing timeout
         if (timeoutIdRef.current) {
@@ -301,11 +277,11 @@ export default function TradingPanel({
             setAmount(newAmount)
         }
     }, [tradeAmount, mode, percentage, isDirectAmountInput])
-   
+
     return (
-        <div className="h-full flex flex-col py-2 pl-2">
+        <div className="h-full flex flex-col py-3 pl-2">
             {/* Mode Tabs */}
-            <div className="flex group bg-gray-100 dark:bg-theme-neutral-1000 rounded-md h-[30px] mb-1">
+            <div className="flex group bg-gray-100 dark:bg-theme-neutral-1000 rounded-md h-[35px] mb-1">
                 <button
                     className={`flex-1 rounded-md text-sm cursor-pointer uppercase text-center ${mode === "buy" ? "border-green-500 text-green-600 dark:text-theme-green-200 border-1 bg-green-50 dark:bg-theme-green-100 font-semibold" : "text-gray-500 dark:text-neutral-400"}`}
                     onClick={() => setMode("buy")}
@@ -322,8 +298,8 @@ export default function TradingPanel({
 
             <div className="rounded-lg flex flex-col 2xl:justify-between gap-2 lg:gap-3 h-full overflow-y-auto pr-2">
                 {/* Amount Input */}
-                <div className="relative mt-2">
-                    <div className={`bg-gray-50 dark:bg-neutral-900 rounded-full border ${amountError ? 'border-red-500' : 'border-blue-200 dark:border-blue-500'} px-3 py-2 flex justify-between items-center ${height > 700 ? 'py-2' : 'h-[30px]'}`}>
+                <div className="relative mt-3">
+                    <div className={`bg-gray-50 dark:bg-neutral-900 rounded-md border ${amountError ? 'border-red-500' : 'border-blue-200 dark:border-gray-600'} px-3 flex justify-between items-center ${height > 700 ? 'py-1.5' : 'h-[30px]'}`}>
                         <input
                             type="number"
                             value={amount}
@@ -331,7 +307,7 @@ export default function TradingPanel({
                             className="bg-transparent w-full text-gray-900 dark:text-neutral-200 font-medium text-base focus:outline-none"
                         />
                         {!isDirectAmountInput && (
-                            <span className={`${STYLE_TEXT_BASE} text-blue-600 dark:text-theme-primary-300`}>
+                            <span className={`${STYLE_TEXT_BASE} text-theme-primary-500`}>
                                 {percentage.toFixed(2)}%
                             </span>
                         )}
@@ -359,50 +335,40 @@ export default function TradingPanel({
                     {/* Percentage Controls */}
                     {(!isDirectAmountInput || mode !== "buy") && (
                         <div>
-                            <div className="flex justify-between mb-1">
-                                <span className={STYLE_TEXT_BASE}>{t('trading.panel.percentage')}</span>
-                                <span className={`${STYLE_TEXT_BASE} text-blue-600 dark:text-theme-primary-300`}>
-                                    {percentage.toFixed(2)}%
-                                </span>
+
+                            <div className="relative">
+                                <div className="relative my-1">
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="100"
+                                        value={percentage}
+                                        onChange={handlePercentageChange}
+                                        className="w-full relative z-10 input-range"
+                                    />
+                                </div>
+                                <div className="flex justify-between mb-1">
+                                    <span className={STYLE_TEXT_BASE}>{t('trading.panel.percentage')}</span>
+                                    <span className={`${STYLE_TEXT_BASE} text-theme-primary-500`}>
+                                        {percentage.toFixed(2)}%
+                                    </span>
+                                </div>
+                                {/* Percentage Buttons */}
+                                <PercentageButtons
+                                    percentageValues={percentageValues}
+                                    percentage={percentage}
+                                    onSetPercentage={handleSetPercentage}
+                                    onEditClick={handleEditClick}
+                                    onEditSave={handleEditSave}
+                                    editingIndex={editingIndex}
+                                    editValue={editValue}
+                                    setEditValue={setEditValue}
+                                    onEditKeyPress={handleEditKeyPress}
+                                />
                             </div>
-                            <input
-                                type="range"
-                                min="0"
-                                max="100"
-                                value={percentage}
-                                onChange={handlePercentageChange}
-                                className="w-full"
-                            />
                         </div>
                     )}
                 </div>
-
-                {/* Percentage Buttons */}
-                <PercentageButtons
-                    percentageValues={percentageValues}
-                    percentage={percentage}
-                    onSetPercentage={handleSetPercentage}
-                    onEditClick={handleEditClick}
-                    onEditSave={handleEditSave}
-                    editingIndex={editingIndex}
-                    editValue={editValue}
-                    setEditValue={setEditValue}
-                    onEditKeyPress={handleEditKeyPress}
-                />
-
-                {/* Quick Amount Buttons */}
-                {mode === "buy" && (
-                    <AmountButtons
-                        amountValues={amountValues}
-                        onSetAmount={handleSetAmount}
-                        onEditClick={handleAmountEditClick}
-                        onEditSave={handleAmountEditSave}
-                        editingIndex={editingAmountIndex}
-                        editValue={editAmountValue}
-                        setEditValue={setEditAmountValue}
-                        onEditKeyPress={handleAmountEditKeyPress}
-                    />
-                )}
 
                 {/* Action Button */}
                 <div className="mt-3">

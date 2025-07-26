@@ -744,7 +744,7 @@
       "favorite": "Yêu thích",
       "category": "Danh mục",
       "trending": "Thịnh hành",
-      "new": "Mới",
+      "new": "MEME",
       "pumpfun": "Pumpfun",
       "memepumpfun": "Meme Pumpfun",
       "noData": "Không có dữ liệu"
@@ -1181,5 +1181,23 @@
         "content2": "Cuối cùng, đừng quên theo dõi sát các chỉ báo, tâm lý thị trường và chuyển động dòng tiền để điều chỉnh chiến lược phù hợp. Trong thị trường crypto, kiến thức và tốc độ phản ứng là lợi thế lớn nhất của bạn."
       }
     }
+  },
+  "pools": {
+    "title": "Pool thanh khoản",
+    "searchPlaceholder": "Tìm kiếm pool...",
+    "createPoolBtn": "Tạo pool",
+    "detail": "Chi tiết pool",
+    "join": "Tham gia",
+    "noResult": "Không tìm thấy pool nào phù hợp với tìm kiếm của bạn.",
+    "createTitle": "Tạo Pool mới",
+    "nameLabel": "Tên Pool",
+    "namePlaceholder": "Nhập tên pool (vd: SOL-USDC)",
+    "amountLabel": "Số lượng",
+    "amountPlaceholder": "Nhập số lượng pool (vd: 1000)",
+    "descLabel": "Mô tả",
+    "descPlaceholder": "Mô tả về pool của bạn...",
+    "lockNote": "Lưu ý: Toàn bộ coin được đóng góp sẽ bị khóa trong vòng 365 ngày kể từ thời điểm tạo pool.",
+    "creating": "Đang tạo...",
+    "createBtn": "Tạo Pool"
   }
 }

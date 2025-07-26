@@ -68,19 +68,6 @@ function useDebounce<T extends (...args: any[]) => any>(callback: T, delay: numb
     }, [callback, delay]);
 }
 
-// Add these new styles near the top with other style constants
-const modalContainerStyles = "fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4 sm:p-0"
-const modalContentStyles = "p-[1px] rounded-md bg-gradient-to-t from-theme-purple-100 to-theme-gradient-linear-end w-full max-w-[400px] lg:max-w-max sm:w-auto"
-const modalInnerStyles = "p-4 xl:p-6 bg-white dark:bg-theme-black-200 rounded-md shadow-[0px_0px_4px_0px_rgba(232,232,232,0.50)] outline outline-1 outline-offset-[-1px] outline-indigo-500 backdrop-blur-[5px]"
-const modalTitleStyles = "text-base xl:text-[18px] font-semibold text-indigo-500 backdrop-blur-sm boxShadow linear-200-bg uppercase leading-relaxed text-fill-transparent bg-clip-text"
-const modalInputStyles = "w-full px-3 py-1.5 bg-white dark:bg-theme-black-200 rounded-md text-sm sm:text-base placeholder:text-xs dark:text-theme-neutral-100 focus:outline-none focus:border-purple-500"
-const modalButtonStyles = "w-full sm:w-auto h-[30px] px-4 py-1.5 bg-gradient-to-l from-blue-950 to-purple-600 rounded-[30px] outline outline-1 outline-offset-[-1px] outline-indigo-500 backdrop-blur-sm flex justify-center items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
-const modalCancelButtonStyles = "w-full sm:w-auto h-[30px] px-4 py-1 rounded-[30px] outline outline-1 outline-offset-[-1px] outline-indigo-500 backdrop-blur-sm flex justify-center items-center gap-3"
-const modalButtonTextStyles = "text-xs sm:text-sm font-medium leading-none dark:text-white"
-const modalLabelStyles = "text-xs sm:text-sm font-normal leading-tight text-black dark:text-theme-neutral-100 mb-1"
-const modalErrorStyles = "text-[10px] sm:text-xs text-red-500 mt-1"
-const modalHelperTextStyles = "text-[8px] sm:text-[10px] font-normal leading-3 text-yellow-500 mt-1"
-
 // Add skeleton components
 const WalletCardSkeleton = () => (
     <div className={walletCardStyles}>

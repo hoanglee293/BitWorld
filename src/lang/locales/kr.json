@@ -691,7 +691,7 @@
       "meme": "밈",
       "favorite": "즐겨찾기",
       "trending": "인기",
-      "new": "신규",
+      "new": "BITTWORLD",
       "category": "테마",
       "noData": "데이터가 없습니다"
     },
@@ -1148,5 +1148,24 @@
         "content2": "마지막으로, 전략을 적절히 조정하기 위해 지표, 시장 심리, 자금 흐름 움직임을 면밀히 모니터링하는 것을 잊지 마세요. 암호화폐 시장에서는 지식과 반응 속도가 여러분의 가장 큰 장점입니다."
       }
     }
+  },
+  "pools": {
+    "title": "유동성 풀",
+    "searchPlaceholder": "풀 검색...",
+    "createPoolBtn": "풀 생성",
+    "detail": "풀 상세",
+    "join": "참여하기",
+    "noResult": "검색과 일치하는 풀이 없습니다.",
+    "createTitle": "새 풀 생성",
+    "nameLabel": "풀 이름",
+    "namePlaceholder": "풀 이름 입력 (예: SOL-USDC)",
+    "amountLabel": "수량",
+    "amountPlaceholder": "풀 수량 입력 (예: 1000)",
+    "descLabel": "설명",
+    "descPlaceholder": "풀에 대해 설명하세요...",
+    "lockNote": "참고: 모든 기여 코인은 풀 생성 시점부터 365일 동안 잠금됩니다.",
+    "creating": "생성 중...",
+    "createBtn": "풀 생성",
+    "tab": "풀"
   }
 }

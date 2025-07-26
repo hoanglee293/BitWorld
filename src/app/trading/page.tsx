@@ -55,7 +55,7 @@ const TradingPage = () => {
   if (windowWidth < 905) withDesktop = 'w-[35%]';
 
   return (
-    <div className={`h-[92vh] flex flex-col gap-2 xl:gap-4 container-trading relative z-40  ${isMobile ? 'px-2' : 'px-2'
+    <div className={`h-[92vh] flex flex-col gap-2 xl:gap-4 relative z-40  ${isMobile ? 'px-2' : 'px-2'
       }`}>
       {!isMobile && <Interface />}
 
@@ -114,14 +114,10 @@ const TradingPage = () => {
             {
               !isSmallScreen && (
                 <>
-                  <Panel defaultSize={17} minSize={12} maxSize={25} className="h-full overflow-hidden">
-                    <div className={`flex ${isMobile ? 'flex-row w-full lg:h-[200px]' : 'flex-col '} xl:gap-2 gap-1 lg:overflow-hidden`}>
+                  <div className={`flex ${isMobile ? 'flex-row w-full lg:h-[200px]' : 'flex-col '} xl:gap-2 gap-1 lg:overflow-hidden mr-4`}>
                       <TokenInfo />
                       {!isMobile && <ListToken />}
                     </div>
-                  </Panel>
-                  {/* Left Resize Handle for Center Column */}
-                  <PanelResizeHandle className="w-[2px] m-1 bg-theme-neutral-800 hover:bg-neutral-600 transition-colors relative z-400" />
                 </>
               )
             }
@@ -154,7 +150,7 @@ const TradingPage = () => {
             <PanelResizeHandle className="w-[2px] m-1 bg-theme-neutral-800 hover:bg-neutral-600 transition-colors relative z-400" />
 
             {/* Right Column */}
-            <Panel defaultSize={20} minSize={5} maxSize={30} className="h-full overflow-hidden">
+            <Panel defaultSize={16} minSize={5} maxSize={30} className="h-full overflow-hidden">
               <div className='h-full overflow-auto'>
                 <Control />
               </div>

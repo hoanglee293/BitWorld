@@ -835,8 +835,8 @@
     }
   },
   "transactionHistory": {
-    "allTransactions": "모든 거래",
-    "myTransactions": "내 거래",
+    "allTransactions": "전체 거래",
+    "myTransactions": "나의 거래",
     "time": "시간",
     "type": "유형",
     "price": "가격",
@@ -855,12 +855,12 @@
     "copied": "복사됨",
     "noTransactions": "거래 내역이 없습니다",
     "loading": "거래 내역을 불러오는 중...",
-    "holders": "보유자",
+    "holders": "전체 보유자",
     "ownerPercentage": "보유자 %",
     "percentage": "비율",
     "quoteValue": "참조 가격",
     "usdValue": "USD 가격",
-    "assets": "자산",
+    "assets": "나의 자산",
     "error": {
       "loadFailed": "거래 내역을 불러오는데 실패했습니다",
       "invalidAddress": "유효하지 않은 주소입니다"

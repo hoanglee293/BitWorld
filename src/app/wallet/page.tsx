@@ -338,13 +338,11 @@ export default function WalletPage() {
                         {isLoadingWalletInfor ? (
                             <>
                                 <WalletCardSkeleton />
-                                <WalletCardSkeleton />
-                                <WalletCardSkeleton />
                                 <UniversalAccountSkeleton />
                             </>
                         ) : (
                             <>
-                                <div className={`${walletCardStyles} !bg-gray-800`}>
+                                <div className={`${walletCardStyles} dark:!bg-gray-800`}>
                                     <div className="inline-flex justify-start items-center gap-2 w-full ">
                                         <div className="w-6 h-6 sm:w-8 sm:h-8 relative overflow-hidden flex-shrink-0">
                                             <img src="/solana.png" alt="Solana" className="w-full h-full object-cover" />

@@ -55,7 +55,7 @@ const TradingPage = () => {
   if (windowWidth < 905) withDesktop = 'w-[35%]';
 
   return (
-    <div className={`h-[92vh] flex flex-col gap-2 xl:gap-4 relative z-40  ${isMobile ? 'px-2' : 'px-2'
+    <div className={`h-[92vh] flex flex-col gap-2 xl:gap-4 relative z-40 pt-4 ${isMobile ? 'px-2' : 'px-2'
       }`}>
       {!isMobile && <Interface />}
 
@@ -150,7 +150,7 @@ const TradingPage = () => {
             <PanelResizeHandle className="w-[2px] m-1 bg-theme-neutral-800 hover:bg-neutral-600 transition-colors relative z-400" />
 
             {/* Right Column */}
-            <Panel defaultSize={16} minSize={5} maxSize={30} className="h-full overflow-hidden">
+            <Panel defaultSize={18} minSize={5} maxSize={30} className="h-full overflow-hidden">
               <div className='h-full overflow-auto'>
                 <Control />
               </div>

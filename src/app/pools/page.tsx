@@ -83,6 +83,86 @@ const mockPools: Pool[] = [
         amount: "2567890",
         isFavorite: false,
     },
+    {
+        id: "2",
+        name: "SOL-USDC",
+        symbol: "AXS",
+        icon: "/placeholder.svg?height=32&width=32",
+        leader: "9B8NF...bgpump",
+        members: 12,
+        amount: "2567890",
+        isFavorite: false,
+    },
+    {
+        id: "3",
+        name: "SOL-DemonCat",
+        symbol: "AXS",
+        icon: "/placeholder.svg?height=32&width=32",
+        leader: "9B8NF...bgpump",
+        members: 12,
+        amount: "2567890",
+        isFavorite: false,
+    },
+    {
+        id: "4",
+        name: "SOL-FBOOK",
+        symbol: "AXS",
+        icon: "/placeholder.svg?height=32&width=32",
+        leader: "9B8NF...bgpump",
+        members: 12,
+        amount: "2567890",
+        isFavorite: false,
+    },
+    {
+        id: "5",
+        name: "SOL-PresElect",
+        symbol: "AXS",
+        icon: "/placeholder.svg?height=32&width=32",
+        leader: "9B8NF...bgpump",
+        members: 12,
+        amount: "2567890",
+        isFavorite: false,
+    },
+    {
+        id: "2",
+        name: "SOL-USDC",
+        symbol: "AXS",
+        icon: "/placeholder.svg?height=32&width=32",
+        leader: "9B8NF...bgpump",
+        members: 12,
+        amount: "2567890",
+        isFavorite: false,
+    },
+    {
+        id: "3",
+        name: "SOL-DemonCat",
+        symbol: "AXS",
+        icon: "/placeholder.svg?height=32&width=32",
+        leader: "9B8NF...bgpump",
+        members: 12,
+        amount: "2567890",
+        isFavorite: false,
+    },
+    {
+        id: "4",
+        name: "SOL-FBOOK",
+        symbol: "AXS",
+        icon: "/placeholder.svg?height=32&width=32",
+        leader: "9B8NF...bgpump",
+        members: 12,
+        amount: "2567890",
+        isFavorite: false,
+    },
+    {
+        id: "5",
+        name: "SOL-PresElect",
+        symbol: "AXS",
+        icon: "/placeholder.svg?height=32&width=32",
+        leader: "9B8NF...bgpump",
+        members: 12,
+        amount: "2567890",
+        isFavorite: false,
+    },
 ]
 
 export default function LiquidityPools() {
@@ -232,7 +312,7 @@ export default function LiquidityPools() {
     )
 
     return (
-        <div className="min-h-screen dark:bg-black text-white">
+        <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white">
             {/* Main Content */}
             <main className="px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
                 <div className="container mx-auto max-w-7xl">
@@ -248,9 +328,9 @@ export default function LiquidityPools() {
                                     setSearchQuery(e.target.value);
                                 }}
                                 placeholder={t('pools.searchPlaceholder')}
-                                className="w-full sm:w-[11vw] 2xl:w-[19vw] rounded-full py-1.5 sm:py-2 pl-10 pr-4 text-sm focus:outline-none bg-gray-100 dark:bg-black text-gray-900 dark:text-neutral-200 focus:ring-1 focus:ring-blue-500 dark:focus:ring-[hsl(var(--ring))] border border-gray-500 placeholder:text-gray-500 dark:placeholder:text-neutral-400 placeholder:text-xs"
+                                className="w-full sm:w-[11vw] 2xl:w-[19vw] rounded-full py-1.5 sm:py-2 pl-10 pr-4 text-sm focus:outline-none bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600 placeholder:text-gray-500 dark:placeholder:text-gray-400 placeholder:text-xs"
                             />
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-muted-foreground" />
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-400" />
                         </div>
 
                         <div className="flex space-x-4 w-full sm:w-auto">
@@ -266,30 +346,30 @@ export default function LiquidityPools() {
                     {/* Mobile Card Layout */}
                     <div className="sm:hidden space-y-3">
                         {filteredPools.map((pool) => (
-                            <div key={pool.id} className="bg-[#262626] rounded-lg p-4 border border-gray-700">
+                            <div key={pool.id} className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-none">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-3">
                                         <img src="logo.png" alt={pool.name} className="w-8 h-8 rounded-full" />
                                         <div>
-                                            <div className="font-medium text-sm">{pool.name}</div>
-                                            <div className="text-xs text-gray-400">{pool.members} members</div>
+                                            <div className="font-medium text-sm text-gray-900 dark:text-white">{pool.name}</div>
+                                            <div className="text-xs text-gray-500 dark:text-gray-400">{pool.members} members</div>
                                         </div>
                                     </div>
                                     <button 
                                         onClick={() => toggleFavorite(pool.id)}
-                                        className="text-gray-500 hover:text-yellow-400 transition-colors p-1"
+                                        className="text-gray-400 hover:text-yellow-500 dark:text-gray-500 dark:hover:text-yellow-400 transition-colors p-1"
                                     >
-                                        <Star className={`w-5 h-5 ${pool.isFavorite ? "fill-yellow-400 text-yellow-400" : ""}`} />
+                                        <Star className={`w-5 h-5 ${pool.isFavorite ? "fill-yellow-500 text-yellow-500 dark:fill-yellow-400 dark:text-yellow-400" : ""}`} />
                                     </button>
                                 </div>
                                 
                                 <div className="space-y-2 text-xs mb-3">
                                     <div className="flex justify-between items-center">
-                                        <span className="text-gray-400">Leader:</span>
+                                        <span className="text-gray-500 dark:text-gray-400">Leader:</span>
                                         <div className="flex items-center space-x-2">
-                                            <span className="font-mono text-yellow-500">{truncateString(pool.leader, 8)}</span>
+                                            <span className="font-mono text-blue-600 dark:text-blue-400">{truncateString(pool.leader, 8)}</span>
                                             <button
-                                                className="text-gray-500 hover:text-white transition-colors p-1"
+                                                className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors p-1"
                                                 onClick={() => {
                                                     navigator.clipboard.writeText(pool.leader);
                                                     toast.success('Address copied to clipboard');
@@ -300,13 +380,13 @@ export default function LiquidityPools() {
                                         </div>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-gray-400">Amount:</span>
-                                        <span className="font-mono">{pool.amount}</span>
+                                        <span className="text-gray-500 dark:text-gray-400">Amount:</span>
+                                        <span className="font-mono text-gray-900 dark:text-white">{pool.amount}</span>
                                     </div>
                                 </div>
                                 
-                                <div className="pt-3 border-t border-gray-700">
-                                    <Button size="sm" className="w-full bg-transparent border border-theme-primary-500 text-white hover:bg-green-500 text-xs py-2">
+                                <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+                                    <Button size="sm" className="w-full bg-transparent border border-theme-primary-500 text-theme-primary-500 dark:text-white hover:bg-theme-primary-500 hover:text-white text-xs py-2">
                                         {walletInfor?.solana_address == pool.leader ? t('pools.detail') : t('pools.join')}
                                     </Button>
                                 </div>
@@ -315,45 +395,45 @@ export default function LiquidityPools() {
                     </div>
 
                     {/* Tablet Optimized Table */}
-                    <div className="hidden sm:block lg:hidden overflow-hidden z-20 dark:border-none border border-gray-400 rounded-md">
+                    <div className="hidden sm:block lg:hidden overflow-hidden z-20 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900">
                         <div className="overflow-x-auto">
                             <table className="w-full">
-                                <thead className="dark:bg-gray-900">
+                                <thead className="bg-gray-50 dark:bg-gray-800">
                                     <tr>
-                                        <th className="px-2 py-2 text-left text-xs font-medium text-neutral-800 dark:text-gray-300 w-[5%]">&ensp;</th>
-                                        <th className="px-2 py-2 text-left text-xs font-medium text-neutral-800 dark:text-gray-300 w-[30%]">Pool</th>
-                                        <th className="px-2 py-2 text-left text-xs font-medium text-neutral-800 dark:text-gray-300 w-[25%]">Leader</th>
-                                        <th className="px-2 py-2 text-left text-xs font-medium text-neutral-800 dark:text-gray-300 w-[20%]">Amount</th>
-                                        <th className="px-2 py-2 text-left text-xs font-medium text-neutral-800 dark:text-gray-300 w-[20%]">Action</th>
+                                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700 dark:text-gray-300 w-[5%]">&ensp;</th>
+                                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700 dark:text-gray-300 w-[30%]">Pool</th>
+                                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700 dark:text-gray-300 w-[25%]">Leader</th>
+                                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700 dark:text-gray-300 w-[20%]">Amount</th>
+                                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700 dark:text-gray-300 w-[20%]">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredPools.map((pool, index) => (
-                                        <tr key={pool.id} className={`border-t border-gray-700 ${index % 2 === 0 ? "bg-[#262626]" : "bg-[#171717]"}`}>
-                                            <td className="px-2 py-2 text-xs text-neutral-900 dark:text-gray-300">
+                                        <tr key={pool.id} className={`border-t border-gray-200 dark:border-gray-700 ${index % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800"}`}>
+                                            <td className="px-2 py-2 text-xs text-gray-900 dark:text-gray-300">
                                                 <div className="flex items-center gap-2">
                                                     <button
                                                         onClick={() => toggleFavorite(pool.id)}
-                                                        className="text-gray-500 hover:text-yellow-400 transition-colors p-1"
+                                                        className="text-gray-400 hover:text-yellow-500 dark:text-gray-500 dark:hover:text-yellow-400 transition-colors p-1"
                                                     >
-                                                        <Star className={`w-4 h-4 ${pool.isFavorite ? "fill-yellow-400 text-yellow-400" : ""}`} />
+                                                        <Star className={`w-4 h-4 ${pool.isFavorite ? "fill-yellow-500 text-yellow-500 dark:fill-yellow-400 dark:text-yellow-400" : ""}`} />
                                                     </button>
                                                 </div>
                                             </td>
-                                            <td className="px-2 py-2 text-xs text-neutral-900 dark:text-gray-300">
+                                            <td className="px-2 py-2 text-xs text-gray-900 dark:text-gray-300">
                                                 <div className="flex items-center gap-2">
                                                     <img src="logo.png" alt={pool.name} className="w-5 h-5 rounded-full" />
                                                     <div className="flex flex-col">
                                                         <div className="font-medium">{pool.name}</div>
-                                                        <div className="text-xs text-gray-400">{pool.members} members</div>
+                                                        <div className="text-xs text-gray-500 dark:text-gray-400">{pool.members} members</div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-2 py-2 text-xs text-neutral-900 dark:text-gray-300">
+                                            <td className="px-2 py-2 text-xs text-gray-900 dark:text-gray-300">
                                                 <div className="flex items-center space-x-1">
-                                                    <span className="font-mono text-sm text-yellow-500">{truncateString(pool.leader, 10)}</span>
+                                                    <span className="font-mono text-sm text-blue-600 dark:text-blue-400">{truncateString(pool.leader, 10)}</span>
                                                     <button
-                                                        className="text-gray-500 hover:text-white transition-colors p-1"
+                                                        className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors p-1"
                                                         onClick={() => {
                                                             navigator.clipboard.writeText(pool.leader);
                                                             toast.success('Address copied to clipboard');
@@ -363,11 +443,11 @@ export default function LiquidityPools() {
                                                     </button>
                                                 </div>
                                             </td>
-                                            <td className="px-2 py-2 text-xs text-neutral-900 dark:text-gray-300">
+                                            <td className="px-2 py-2 text-xs text-gray-900 dark:text-gray-300">
                                                 <span className="font-mono">{pool.amount}</span>
                                             </td>
-                                            <td className="px-2 py-2 text-xs text-neutral-900 dark:text-gray-300">
-                                                <Button size="sm" className="bg-transparent border border-theme-primary-500 dark:text-white text-black hover:bg-green-500 text-xs px-2 py-1">
+                                            <td className="px-2 py-2 text-xs text-gray-900 dark:text-gray-300">
+                                                <Button size="sm" className="bg-transparent border border-theme-primary-500 text-theme-primary-500 dark:text-white hover:bg-theme-primary-500 hover:text-white text-xs px-2 py-1">
                                                     {walletInfor?.solana_address == pool.leader ? t('pools.detail') : t('pools.join')}
                                                 </Button>
                                             </td>
@@ -379,33 +459,33 @@ export default function LiquidityPools() {
                     </div>
 
                     {/* Desktop Full Table */}
-                    <div className="hidden lg:block overflow-hidden z-20 dark:border-none border border-gray-400 rounded-md">
+                    <div className="hidden lg:block overflow-hidden z-20 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900">
                         <div className="overflow-x-auto -mx-4 sm:mx-0">
                             <table className="min-w-[800px] w-full">
-                                <thead className="dark:bg-gray-900">
+                                <thead className="bg-gray-50 dark:bg-gray-800">
                                     <tr>
-                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-neutral-800 dark:text-gray-300 w-[2%]">&ensp;</th>
-                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-neutral-800 dark:text-gray-300 w-auto">Pool</th>
-                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-neutral-800 dark:text-gray-300 w-[20%]">Leader</th>
-                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-neutral-800 dark:text-gray-300 w-[16%]">Members</th>
-                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-neutral-800 dark:text-gray-300 w-[16%]">Amount</th>
-                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-neutral-800 dark:text-gray-300 w-[12%]">Contributed</th>
+                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-[2%]">&ensp;</th>
+                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-auto">Pool</th>
+                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-[20%]">Leader</th>
+                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-[16%]">Members</th>
+                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-[16%]">Amount</th>
+                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-[12%]">Contributed</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredPools.map((pool, index) => (
-                                        <tr key={pool.id} className={`border-t border-gray-700 ${index % 2 === 0 ? "bg-[#262626]" : "bg-[#171717]"}`}>
-                                            <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-neutral-900 dark:text-gray-300">
+                                        <tr key={pool.id} className={`border-t border-gray-200 dark:border-gray-700 ${index % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800"}`}>
+                                            <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-300">
                                                 <div className="flex items-center gap-3">
                                                     <button
                                                         onClick={() => toggleFavorite(pool.id)}
-                                                        className="text-gray-500 hover:text-yellow-400 transition-colors"
+                                                        className="text-gray-400 hover:text-yellow-500 dark:text-gray-500 dark:hover:text-yellow-400 transition-colors"
                                                     >
-                                                        <Star className={`w-4 h-4 ${pool.isFavorite ? "fill-yellow-400 text-yellow-400" : ""}`} />
+                                                        <Star className={`w-4 h-4 ${pool.isFavorite ? "fill-yellow-500 text-yellow-500 dark:fill-yellow-400 dark:text-yellow-400" : ""}`} />
                                                     </button>
                                                 </div>
                                             </td>
-                                            <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-neutral-900 dark:text-gray-300">
+                                            <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-300">
                                                 <div className="flex items-center gap-3">
                                                     <img src="logo.png" alt={pool.name} className="w-5 h-5 sm:w-6 sm:h-6 rounded-full" />
                                                     <div className="flex flex-col ml-1">
@@ -413,11 +493,11 @@ export default function LiquidityPools() {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-neutral-900 dark:text-gray-300">
+                                            <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-300">
                                                 <div className="flex items-center space-x-2">
-                                                    <span className="font-mono text-sm text-yellow-500">{truncateString(pool.leader, 12)}</span>
+                                                    <span className="font-mono text-sm text-blue-600 dark:text-blue-400">{truncateString(pool.leader, 12)}</span>
                                                     <button
-                                                        className="text-gray-500 hover:text-white transition-colors"
+                                                        className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
                                                         onClick={() => {
                                                             navigator.clipboard.writeText(pool.leader);
                                                             toast.success('Address copied to clipboard');
@@ -427,14 +507,14 @@ export default function LiquidityPools() {
                                                     </button>
                                                 </div>
                                             </td>
-                                            <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-neutral-900 dark:text-gray-300">
+                                            <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-300">
                                                 {pool.members}
                                             </td>
-                                            <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-neutral-900 dark:text-gray-300">
+                                            <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-300">
                                                 <span className="font-mono">{pool.amount}</span>
                                             </td>
-                                            <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-neutral-900 dark:text-gray-300">
-                                                <Button size="sm" className="bg-transparent border border-theme-primary-500 dark:text-white text-black hover:bg-green-500 text-xs px-4 py-1">
+                                            <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-300">
+                                                <Button size="sm" className="bg-transparent border border-theme-primary-500 text-theme-primary-500 dark:text-white hover:bg-theme-primary-500 hover:text-white text-xs px-4 py-1">
                                                     {walletInfor?.solana_address == pool.leader ? t('pools.detail') : t('pools.join')}
                                                 </Button>
                                             </td>
@@ -446,7 +526,7 @@ export default function LiquidityPools() {
                     </div>
 
                     {filteredPools.length === 0 && (
-                        <div className="text-center py-12 text-gray-500">
+                        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
                             <p className="text-sm sm:text-base">{t('pools.noResult')}</p>
                         </div>
                     )}
@@ -455,9 +535,9 @@ export default function LiquidityPools() {
 
             {/* Create Pool Modal */}
             <Dialog open={isCreateModalOpen} onOpenChange={handleCloseModal}>
-                <DialogContent className="w-[95vw] sm:max-w-[500px] bg-[#121619] border border-gray-700 p-4 sm:p-5 mx-2">
+                <DialogContent className="w-[95vw] sm:max-w-[500px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-4 sm:p-5 mx-2">
                     <DialogHeader>
-                        <DialogTitle className="text-lg sm:text-xl font-semibold text-white">
+                        <DialogTitle className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
                             {t('pools.createTitle')}
                         </DialogTitle>
                     </DialogHeader>
@@ -472,11 +552,11 @@ export default function LiquidityPools() {
                                 className="hidden"
                             />
                             {imagePreview ? (
-                                <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto bg-theme-neutral-1000 rounded-md flex items-center justify-center">
+                                <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto bg-gray-100 dark:bg-gray-800 rounded-md flex items-center justify-center">
                                     <img
                                         src={imagePreview}
                                         alt="Preview"
-                                        className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-full border border-gray-500"
+                                        className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-full border border-gray-300 dark:border-gray-600"
                                     />
                                     <button
                                         type="button"
@@ -491,12 +571,12 @@ export default function LiquidityPools() {
                                     </button>
                                 </div>
                             ) : (
-                                <div className="flex flex-col items-center justify-center pt-4 sm:pt-5 pb-5 sm:pb-6 bg-theme-neutral-1000 rounded-md cursor-pointer" onClick={() => document.getElementById('pool-image')?.click()}>
-                                    <Upload className="w-6 h-6 sm:w-8 sm:h-8 mb-3 sm:mb-4 text-gray-400" />
-                                    <p className="mb-2 text-xs sm:text-sm text-gray-400 text-center">
+                                <div className="flex flex-col items-center justify-center pt-4 sm:pt-5 pb-5 sm:pb-6 bg-gray-100 dark:bg-gray-800 rounded-md cursor-pointer border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 transition-colors" onClick={() => document.getElementById('pool-image')?.click()}>
+                                    <Upload className="w-6 h-6 sm:w-8 sm:h-8 mb-3 sm:mb-4 text-gray-400 dark:text-gray-500" />
+                                    <p className="mb-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center">
                                         <span className="font-semibold">Click to upload</span> or drag and drop
                                     </p>
-                                    <p className="text-xs text-gray-500 text-center">
+                                    <p className="text-xs text-gray-500 dark:text-gray-500 text-center">
                                         PNG, JPG, WEBP up to 2MB
                                     </p>
                                 </div>
@@ -506,7 +586,7 @@ export default function LiquidityPools() {
                     <div className="space-y-4">
                         {/* Pool Name */}
                         <div className="space-y-2">
-                            <Label htmlFor="pool-name" className="text-white text-sm sm:text-base">
+                            <Label htmlFor="pool-name" className="text-gray-900 dark:text-white text-sm sm:text-base">
                                 {t('pools.nameLabel')} *
                             </Label>
                             <Input
@@ -514,12 +594,12 @@ export default function LiquidityPools() {
                                 value={createForm.name}
                                 onChange={(e) => setCreateForm(prev => ({ ...prev, name: e.target.value }))}
                                 placeholder={t('pools.namePlaceholder')}
-                                className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400 text-sm sm:text-base"
+                                className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                             />
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="pool-amount" className="text-white text-sm sm:text-base">
+                            <Label htmlFor="pool-amount" className="text-gray-900 dark:text-white text-sm sm:text-base">
                                 {t('pools.amountLabel')} *
                             </Label>
                             <Input
@@ -527,13 +607,13 @@ export default function LiquidityPools() {
                                 value={createForm.amount}
                                 onChange={(e) => setCreateForm(prev => ({ ...prev, amount: Number(e.target.value) }))}
                                 placeholder={t('pools.amountPlaceholder')}
-                                className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400 text-sm sm:text-base"
+                                className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                             />
                         </div>
 
                         {/* Pool Description */}
                         <div className="space-y-2">
-                            <Label htmlFor="pool-description" className="text-white text-sm sm:text-base">
+                            <Label htmlFor="pool-description" className="text-gray-900 dark:text-white text-sm sm:text-base">
                                 {t('pools.descLabel')} *
                             </Label>
                             <Textarea
@@ -541,10 +621,10 @@ export default function LiquidityPools() {
                                 value={createForm.description}
                                 onChange={(e) => setCreateForm(prev => ({ ...prev, description: e.target.value }))}
                                 placeholder={t('pools.descPlaceholder')}
-                                className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400 min-h-[80px] sm:min-h-[100px] text-sm sm:text-base"
+                                className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 min-h-[80px] sm:min-h-[100px] text-sm sm:text-base focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                             />
                         </div>
-                        <div className="text-xs text-red-500 italic leading-4">{t('pools.lockNote')}</div>
+                        <div className="text-xs text-red-500 dark:text-red-400 italic leading-4">{t('pools.lockNote')}</div>
                     </div>
 
                     <div className="flex justify-center w-full items-center mt-4">

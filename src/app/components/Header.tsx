@@ -166,7 +166,7 @@ const Header = () => {
                                 />
                             </Link>
                             {/* Desktop Navigation */}
-                            <nav className='hidden md:flex items-center 2xl:gap-[3vw] md:gap-[1vw]'>
+                            <nav className='hidden md:flex items-center xl:gap-[3vw]'>
                                 {listSidebar.map((item, index) => (
                                     <Link
                                         href={item.href}
@@ -232,7 +232,7 @@ const Header = () => {
                                     }
                                 }}
                                 placeholder={t('searchPlaceholder')}
-                                className="rounded-full py-2 pl-10 pr-4 w-[11vw] 2xl:w-[13vw] text-sm focus:outline-none bg-gray-100 dark:bg-black text-gray-900 dark:text-neutral-200 focus:ring-1 focus:ring-blue-500 dark:focus:ring-[hsl(var(--ring))] max-h-[30px] border border-gray-500 placeholder:text-gray-500 dark:placeholder:text-neutral-400 placeholder:text-xs"
+                                className="rounded-full py-2 pl-10 pr-4 w-[18vw] 2xl:w-[13vw] text-sm focus:outline-none bg-gray-100 dark:bg-black text-gray-900 dark:text-neutral-200 focus:ring-1 focus:ring-blue-500 dark:focus:ring-[hsl(var(--ring))] max-h-[30px] border border-gray-500 placeholder:text-gray-500 dark:placeholder:text-neutral-400 placeholder:text-xs"
                             />
                             <Search className="absolute left-3 top-2 h-4 w-4 text-gray-500 dark:text-muted-foreground" />
                         </div>

@@ -1109,6 +1109,7 @@
   },
   "pools": {
     "title": "Liquidity Pools",
+    "tab": "Pools",
     "searchPlaceholder": "Search pool...",
     "createPoolBtn": "Create pool",
     "detail": "Pool details",
@@ -1123,6 +1124,39 @@
     "descPlaceholder": "Describe your pool...",
     "lockNote": "Note: All contributed coins will be locked for 365 days from the pool creation date.",
     "creating": "Creating...",
-    "createBtn": "Create Pool"
+    "createBtn": "Create Pool",
+    "detailPage": {
+      "backToPools": "Back to Pools",
+      "poolNotFound": "Pool not found",
+      "aboutPool": "About this Pool",
+      "stakeInPool": "Stake in Pool",
+      "amountToStake": "Amount to Stake",
+      "minimumAmount": "Minimum: 1,000,000 tokens",
+      "stakeNow": "Stake Now",
+      "staking": "Staking...",
+      "youAreCreator": "You are the creator of this pool",
+      "managePool": "Manage Pool",
+      "copy": "Copy",
+      "share": "Share",
+      "manage": "Manage",
+      "overview": "Overview",
+      "members": "Members",
+      "transactions": "Transactions",
+      "totalVolume": "Total Volume",
+      "membersCount": "Members",
+      "created": "Created",
+      "status": "Status",
+      "poolMembers": "Pool Members",
+      "transactionHistory": "Transaction History",
+      "member": "Member",
+      "creator": "Creator",
+      "stakeAmount": "Stake Amount",
+      "joinDate": "Join Date",
+      "role": "Role",
+      "type": "Type",
+      "amount": "Amount",
+      "user": "User",
+      "date": "Date"
+    }
   }
 }

@@ -398,7 +398,7 @@ const ChatWidget = () => {
               <span className="dark:text-white font-bold">{t("masterTrade.manage.chat.communityChatroom")}</span>
               <img src={"/ethereum.png"} alt="ethereum-icon" width={15} height={15} />
             </div>
-            <div className="flex-1 overflow-y-auto p-3 pb-1 lg:mx-4 dark:mx-0 rounded-md lg:bg-gray-300 bg-white  dark:bg-neutral-900">
+            <div className="flex-1 overflow-y-auto p-3 pb-1 lg:mx-4 dark:mx-0 rounded-md lg:bg-gray-200 bg-white  dark:bg-neutral-900">
               {messages.map((msg) => (
                 <ChatMessage key={msg.id} message={msg} />
               ))}

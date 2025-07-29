@@ -17,7 +17,7 @@ function LoginEmailContent() {
   const { t } = useLang()
 
   const handleReturnHome = () => {
-    router.push('/dashboard')
+    router.push('/trading?address=6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN')
   }
 
   useEffect(() => {
@@ -30,7 +30,7 @@ function LoginEmailContent() {
           const response = await login(code, refCode || undefined)
           // Handle successful login here
           loginAuth(response.data.token)
-          router.push('/dashboard')
+          router.push('/trading?address=6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN')
         } catch (error: any) {
           if(error.status === 400) {
             setShowErrorModal(true)

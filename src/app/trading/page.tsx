@@ -114,7 +114,7 @@ const TradingPage = () => {
             {
               !isSmallScreen && (
                 <>
-                  <div className={`flex ${isMobile ? 'flex-row w-full lg:h-[200px]' : 'flex-col '} xl:gap-2 gap-1 lg:overflow-hidden mr-4`}>
+                  <div className={`flex ${isMobile ? 'flex-row w-full lg:h-[200px]' : 'flex-col '} xl:gap-2 gap-1 lg:overflow-hidden mr-2`}>
                       <TokenInfo />
                       {!isMobile && <ListToken />}
                     </div>

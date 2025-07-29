@@ -342,7 +342,7 @@ export default function WalletPage() {
                             </>
                         ) : (
                             <>
-                                <div className={`${walletCardStyles} dark:!bg-gray-800`}>
+                                <div className={`${walletCardStyles} dark:!bg-gray-800 !bg-gray-300`}>
                                     <div className="inline-flex justify-start items-center gap-2 w-full ">
                                         <div className="w-6 h-6 sm:w-8 sm:h-8 relative overflow-hidden flex-shrink-0">
                                             <img src="/solana.png" alt="Solana" className="w-full h-full object-cover" />
@@ -379,7 +379,7 @@ export default function WalletPage() {
                                     </div>
                                 </div>
 
-                                <div className={`${walletCardStyles} dark:bg-gradient-to-r from-[#36D2B8] to-[#00A276] border-theme-primary-300 bg-white z-10 relative`}>
+                                <div className={`${walletCardStyles} bg-gradient-to-r from-[#36D2B8] to-[#00A276] border-theme-primary-300 bg-white z-10 relative`}>
                                     <div className="inline-flex justify-start items-center gap-2.5 w-full z-40 relative">
                                         <div className="justify-start text-Colors-Neutral-100 text-base font-semibold uppercase leading-normal truncate">
                                             {t('wallet.universalAccount')}
@@ -426,7 +426,7 @@ export default function WalletPage() {
                                     <div className="flex justify-between lg:justify-start lg:items-end gap-4 w-full z-40">
                                         <div className="flex flex-col justify-start items-start gap-3 min-w-0">
                                             <div className="w-full flex flex-col justify-center items-start">
-                                                <div className="text-right justify-start text-Colors-Neutral-100 text-xl font-bold leading-9 truncate">
+                                                <div className="text-right justify-start text-theme-neutral-1000 text-xl font-bold leading-9 truncate">
                                                     {walletInfor?.solana_balance} SOL
                                                 </div>
                                                 <div className="inline-flex justify-start items-center gap-1.5 flex-wrap">
@@ -436,7 +436,7 @@ export default function WalletPage() {
                                                     <div className="text-right justify-start text-white text-[16px] font-medium leading-relaxed">
                                                         (0.00%)
                                                     </div>
-                                                    <div className="text-right justify-start text-Colors-Neutral-100 text-[16px] font-medium leading-relaxed">
+                                                    <div className="text-right justify-start text-theme-neutral-1000 text-[16px] font-medium leading-relaxed">
                                                         24H
                                                     </div>
                                                 </div>
@@ -448,7 +448,7 @@ export default function WalletPage() {
                                                     <div className="w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 bg-white text-[#1FC16B] border border-neutral-200 rounded-full flex justify-center items-center group  transition-all duration-500 hover:scale-105 hover:shadow-lg hover:shadow-theme-primary-500/30 active:scale-95">
                                                         <ArrowDownToLine className="w-2.5 h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4" />
                                                     </div>
-                                                    <div className="text-center text-Colors-Neutral-100 text-[9px] md:text-[10px] font-semibold">
+                                                    <div className="text-center text-theme-neutral-1000 text-[9px] md:text-[10px] font-semibold">
                                                         {t('wallet.receive')}
                                                     </div>
                                                 </button>
@@ -459,7 +459,7 @@ export default function WalletPage() {
                                                     <div className="w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 bg-white text-[#1FC16B] border border-neutral-200 rounded-full flex justify-center items-center transition-all hover:scale-105">
                                                         <ArrowUpFromLine className="w-2.5 h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4" />
                                                     </div>
-                                                    <div className="text-center text-Colors-Neutral-100 text-[9px] md:text-[10px] font-semibold">
+                                                    <div className="text-center text-theme-neutral-1000 text-[9px] md:text-[10px] font-semibold">
                                                         {t('wallet.send')}
                                                     </div>
                                                 </button>

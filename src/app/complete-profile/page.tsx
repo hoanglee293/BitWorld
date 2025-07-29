@@ -48,7 +48,7 @@ export default function CompleteProfile() {
 
     useEffect(() => {
         if (walletInfor?.wallet_nick_name) {
-            router.push("/dashboard");
+            router.push("/trading?address=6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN");
         }
     }, [walletInfor, router]);
 
@@ -104,7 +104,7 @@ export default function CompleteProfile() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="bittworld_uid">{t("tglogin.bittworld_uid")}</Label>
+                            <Label htmlFor="bittworld_uid">BITTWORD UID</Label>
                             <Input
                                 id="bittworld_uid"
                                 {...register("bittworld_uid", {

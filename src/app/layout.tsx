@@ -12,7 +12,7 @@ export default function RootLayout({
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <title>{process.env.NEXT_PUBLIC_APP_NAME}</title>
-        <link rel="icon" href="/logo.png" type="image/png" />
+        <link rel="icon" href="/logo-dark.png" type="image/png" />
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"

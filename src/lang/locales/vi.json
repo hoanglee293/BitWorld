@@ -1,5 +1,9 @@
 {
   "connect": "Kết nối",
+  "errors": {
+    "notFound": "Trang không tồn tại",
+    "goHome": "Quay về trang chủ"
+  },
   "phantomWarning": {
     "title": "Thông báo",
     "message": "Tính năng copy trade chỉ hỗ trợ cho tài khoản đăng nhập bằng telegram hoặc google",

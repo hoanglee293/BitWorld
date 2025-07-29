@@ -1,5 +1,9 @@
 {
   "connect": "Connect",
+  "errors": {
+    "notFound": "Page not found",
+    "goHome": "Go to home"
+  },
   "phantomWarning": {
     "title": "Notice",
     "message": "Copy trade feature only supports accounts logged in via Telegram or Google",

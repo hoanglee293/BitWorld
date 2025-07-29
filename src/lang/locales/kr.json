@@ -1,5 +1,9 @@
 {
   "connect": "로그인",
+  "errors": {
+    "notFound": "페이지를 찾을 수 없습니다",
+    "goHome": "홈으로 이동"
+  },
   "phantomWarning": {
     "title": "알림",
     "message": "카피 트레이딩 기능을 사용하려면 Google 계정 또는 Telegram 계정으로 로그인해야 합니다.",

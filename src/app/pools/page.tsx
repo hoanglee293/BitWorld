@@ -275,7 +275,7 @@ export default function LiquidityPools() {
                                     }`}
                                 onClick={() => handleFilterChange('all')}
                             >
-                                {t('pools.filterAll')} ({listNumberTab[0]})
+                                {t('pools.filterAll')}
                             </Button>
                             <Button
                                 className={`text-xs sm:text-sm font-medium px-3 sm:px-4 py-2 sm:py-2 h-auto sm:max-h-[30px] w-full sm:w-auto transition-colors ${activeFilter === 'created'
@@ -284,7 +284,7 @@ export default function LiquidityPools() {
                                     }`}
                                 onClick={() => handleFilterChange('created')}
                             >
-                                {t('pools.filterCreated')} ({listNumberTab[1]})
+                                {t('pools.filterCreated')}
                             </Button>
                             <Button
                                 className={`text-xs sm:text-sm font-medium px-3 sm:px-4 py-2 sm:py-2 h-auto sm:max-h-[30px] w-full sm:w-auto transition-colors ${activeFilter === 'joined'
@@ -293,7 +293,7 @@ export default function LiquidityPools() {
                                     }`}
                                 onClick={() => handleFilterChange('joined')}
                             >
-                                {t('pools.filterJoined')} ({listNumberTab[2]})
+                                {t('pools.filterJoined')}
                             </Button>
                             <div className="relative w-full sm:w-auto">
                                 <input

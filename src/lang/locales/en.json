@@ -1152,6 +1152,7 @@
     "poolCreateFailed": "Failed to create pool. Please try again.",
     "stakeSuccess": "Stake successful!",
     "stakeFailed": "Failed to stake pool. Please try again.",
+    "insufficientTokenBalance": "Insufficient token balance. Current: {current}, Required: {required}",
     "detailPage": {
       "backToPools": "Back to Pools",
       "poolNotFound": "Pool not found",

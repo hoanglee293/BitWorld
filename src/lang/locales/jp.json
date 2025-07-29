@@ -1182,6 +1182,7 @@
     "poolCreateFailed": "プールの作成に失敗しました。もう一度お試しください。",
     "stakeSuccess": "ステークが成功しました！",
     "stakeFailed": "プールのステークに失敗しました。もう一度お試しください。",
+    "insufficientTokenBalance": "トークン残高が不足しています。現在: {current}, 必要: {required}",
     "detailPage": {
       "backToPools": "プールに戻る",
       "poolNotFound": "プールが見つかりません",

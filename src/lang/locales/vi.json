@@ -1226,6 +1226,7 @@
     "poolCreateFailed": "Tạo pool thất bại. Vui lòng thử lại.",
     "stakeSuccess": "Stake thành công!",
     "stakeFailed": "Stake pool thất bại. Vui lòng thử lại.",
+    "insufficientTokenBalance": "Số dư token không đủ. Hiện tại: {current}, Cần: {required}",
     "detailPage": {
       "backToPools": "Quay lại Pools",
       "poolNotFound": "Không tìm thấy pool",

@@ -86,10 +86,6 @@ export default function LiquidityPools() {
             toast.success(t('pools.poolCreatedSuccess'));
             queryClient.invalidateQueries({ queryKey: ["airdrop-pools"] });
             handleCloseModal();
-        },
-        onError: (error: any) => {
-            const message = error.response?.data?.message || t('pools.poolCreateFailed');
-            toast.error(message);
         }
     });
 
@@ -101,10 +97,6 @@ export default function LiquidityPools() {
         onSuccess: (data) => {
             toast.success(t('pools.stakeSuccess'));
             queryClient.invalidateQueries({ queryKey: ["airdrop-pools"] });
-        },
-        onError: (error: any) => {
-            const message = error.response?.data?.message || t('pools.stakeFailed');
-            toast.error(message);
         }
     });
 
@@ -180,15 +172,29 @@ export default function LiquidityPools() {
             };
             console.log(poolData)
             await createPoolMutation.mutateAsync(poolData);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Create pool error:', error);
+            const errorMessage = error.response?.data?.message;
+            // Check if it's an insufficient balance error
+            if (errorMessage && errorMessage.includes('Insufficient token') && errorMessage.includes('Current:') && errorMessage.includes('Required:')) {
+                // Extract current and required values from the error message
+                const currentMatch = errorMessage.match(/Current:\s*(\d+)/);
+                const requiredMatch = errorMessage.match(/Required:\s*(\d+)/);
+                
+                if (currentMatch && requiredMatch) {
+                    const current = currentMatch[1];
+                    const required = requiredMatch[1];
+                    const message = t('pools.insufficientTokenBalance', { current, required });
+                    toast.error(message);
+                }
+            } 
         } finally {
             setIsSubmitting(false)
         }
     }
 
     const handleStakePool = async (poolId: number, stakeAmount: number) => {
-        if (stakeAmount < 1) {
+        if (stakeAmount < 1000000) {
             toast.error(t('pools.minStakeRequired'))
             return
         }

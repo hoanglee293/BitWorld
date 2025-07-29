@@ -1193,6 +1193,7 @@
     "poolCreateFailed": "풀 생성에 실패했습니다. 다시 시도해 주세요.",
     "stakeSuccess": "스테이크 성공!",
     "stakeFailed": "풀 스테이크에 실패했습니다. 다시 시도해 주세요.",
+    "insufficientTokenBalance": "토큰 잔액이 부족합니다. 현재: {current}, 필요: {required}",
     "tab": "풀",
     "detailPage": {
       "backToPools": "풀로 돌아가기",

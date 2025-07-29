@@ -2,20 +2,30 @@
 
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { ArrowLeft, Star, Users, TrendingUp, Calendar, Settings, Copy, Share2, MoreVertical } from "lucide-react"
+import { ArrowLeft, Star, Users, TrendingUp, Calendar, Settings, Copy, Share2, MoreVertical, ChevronDown } from "lucide-react"
 import { Button } from "@/app/components/ui/button"
 import { toast } from 'react-hot-toast'
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { getInforWallet } from "@/services/api/TelegramWalletService"
 import { useAuth } from "@/hooks/useAuth"
 import { useLang } from '@/lang/useLang'
-import { 
+import {
     getAirdropPoolDetail,
     stakeAirdropPool,
     type AirdropPool,
     type StakePoolRequest
 } from "@/services/api/PoolServices"
 import { truncateString } from "@/utils/format"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/ui/alert-dialog"
 
 interface PoolMember {
     memberId: number
@@ -48,6 +58,7 @@ export default function PoolDetail() {
     const [activeTab, setActiveTab] = useState<'overview' | 'members' | 'transactions'>('overview')
     const [stakeAmount, setStakeAmount] = useState(1000000)
     const [isStaking, setIsStaking] = useState(false)
+    const [isConfirmingStake, setIsConfirmingStake] = useState(false)
 
     // Query để lấy thông tin wallet
     const { data: walletInfor } = useQuery({
@@ -66,7 +77,7 @@ export default function PoolDetail() {
     console.log(poolDetail)
     // Lấy dữ liệu members từ API response
     const members = poolDetail?.members || []
-    
+
     // Mock data cho transactions (trong thực tế sẽ lấy từ API riêng)
     const [transactions] = useState<PoolTransaction[]>([
         {
@@ -84,38 +95,49 @@ export default function PoolDetail() {
             return await stakeAirdropPool(data)
         },
         onSuccess: (data) => {
-            toast.success('Stake successful!')
+            toast.success(t('pools.detailPage.stakeSuccessful'))
             queryClient.invalidateQueries({ queryKey: ["pool-detail", poolId] })
             setIsStaking(false)
+            setIsConfirmingStake(false)
         },
         onError: (error: any) => {
-            const message = error.response?.data?.message || 'Failed to stake pool. Please try again.'
+            let message = t('pools.detailPage.stakeFailed')
+            
+            // Check if it's an insufficient balance error
+            if (error.response?.data?.message?.includes('Insufficient token')) {
+                const errorMessage = error.response.data.message
+                // Extract current and required values from error message
+                const currentMatch = errorMessage.match(/Current: (\d+)/)
+                const requiredMatch = errorMessage.match(/Required: (\d+)/)
+                
+                if (currentMatch && requiredMatch) {
+                    const current = parseInt(currentMatch[1])
+                    const required = parseInt(requiredMatch[1])
+                    message = t('pools.detailPage.insufficient_token_balance', {
+                        current: current.toLocaleString(),
+                        required: required.toLocaleString()
+                    })
+                }
+            }
+            
             toast.error(message)
             setIsStaking(false)
+            setIsConfirmingStake(false)
         }
     })
 
     const handleStake = async () => {
         if (stakeAmount < 1000000) {
-            toast.error('Minimum stake amount is 1,000,000 tokens')
+            toast.error(t('pools.detailPage.minimumStakeAmount'))
             return
         }
 
-        setIsStaking(true)
-        try {
-            const stakeData: StakePoolRequest = {
-                poolId: parseInt(poolId),
-                stakeAmount
-            }
-            await stakePoolMutation.mutateAsync(stakeData)
-        } catch (error) {
-            console.error('Stake pool error:', error)
-        }
+        setIsConfirmingStake(true)
     }
 
     const copyPoolLink = () => {
         navigator.clipboard.writeText(window.location.href)
-        toast.success('Pool link copied to clipboard!')
+        toast.success(t('pools.detailPage.poolLinkCopied'))
     }
 
     const sharePool = () => {
@@ -155,13 +177,13 @@ export default function PoolDetail() {
     if (!poolDetail) {
         return (
             <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white">
-                <div className="flex items-center justify-center min-h-screen">
-                                            <div className="text-center">
-                            <h2 className="text-xl font-semibold mb-2">{t('pools.detailPage.poolNotFound')}</h2>
-                            <Button onClick={() => router.push('/pools')}>
-                                {t('pools.detailPage.backToPools')}
-                            </Button>
-                        </div>
+                <div className="flex items-center justify-center min-h-screen px-4">
+                    <div className="text-center">
+                        <h2 className="text-xl sm:text-2xl font-semibold mb-4">{t('pools.detailPage.poolNotFound')}</h2>
+                        <Button onClick={() => router.push('/pools')} className="text-base px-6 py-3">
+                            {t('pools.detailPage.backToPools')}
+                        </Button>
+                    </div>
                 </div>
             </div>
         )
@@ -171,11 +193,11 @@ export default function PoolDetail() {
 
     return (
         <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white">
-            {/* Header */}
-            <div className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 mb-5">
-                <div className="px-4 sm:px-6 lg:px-8 py-2">
+            {/* Header - Responsive */}
+            <div className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 mb-4 sm:mb-5">
+                <div className="px-3 sm:px-4 lg:px-8 py-3 sm:py-2">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 sm:gap-4">
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -184,193 +206,246 @@ export default function PoolDetail() {
                             >
                                 <ArrowLeft className="w-5 h-5" />
                             </Button>
-                                                                    <div className="flex items-center gap-3">
-                                            <img 
-                                                src={poolDetail.logo || "/logo.png"} 
-                                                alt={poolDetail.name} 
-                                                className="w-10 h-10 rounded-full"
-                                                onError={(e) => {
-                                                    const target = e.target as HTMLImageElement;
-                                                    target.src = "/logo.png";
-                                                }}
-                                            />
-                                            <div>
-                                                <h1 className="text-xl font-bold">{poolDetail.name}</h1>
-                                                <p className="text-sm text-gray-500 dark:text-gray-400">#{poolDetail.poolId} • {poolDetail.slug}</p>
-                                            </div>
-                                        </div>
+                            <div className="flex items-center gap-2 sm:gap-3">
+                                <img
+                                    src={poolDetail.logo || "/logo.png"}
+                                    alt={poolDetail.name}
+                                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
+                                    onError={(e) => {
+                                        const target = e.target as HTMLImageElement;
+                                        target.src = "/logo.png";
+                                    }}
+                                />
+                                <div className="min-w-0 flex-1">
+                                    <h1 className="text-lg sm:text-xl font-bold truncate">{poolDetail.name}</h1>
+                                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">
+                                        #{poolDetail.poolId} • {poolDetail.slug}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1 sm:gap-2">
                             <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={copyPoolLink}
-                                className="flex items-center gap-2"
+                                className="hidden sm:flex items-center gap-2 text-xs sm:text-sm"
                             >
-                                <Copy className="w-4 h-4" />
-                                {t('pools.detailPage.copy')}
+                                <Copy className="w-3 h-3 sm:w-4 sm:h-4" />
+                                <span className="hidden sm:inline">{t('pools.detailPage.copy')}</span>
                             </Button>
                             <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={sharePool}
-                                className="flex items-center gap-2"
+                                className="hidden sm:flex items-center gap-2 text-xs sm:text-sm"
                             >
-                                <Share2 className="w-4 h-4" />
-                                {t('pools.detailPage.share')}
+                                <Share2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                                <span className="hidden sm:inline">{t('pools.detailPage.share')}</span>
                             </Button>
+                            {/* Mobile action buttons */}
+                            <div className="flex sm:hidden gap-1">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={copyPoolLink}
+                                    className="p-2"
+                                >
+                                    <Copy className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={sharePool}
+                                    className="p-2"
+                                >
+                                    <Share2 className="w-4 h-4" />
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Main Content */}
-            <div className="px-4 sm:px-6 lg:px-8 py-6">
+            <div className="px-3 sm:px-4 lg:px-8 py-4 sm:py-6">
                 <div className="max-w-7xl mx-auto">
-                    {/* Pool Stats Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                        <div className="bg-white dark:bg-gray-800 rounded-lg px-4 py-3 border border-gray-200 dark:border-gray-700">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                                    <TrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                    {/* Pool Stats Cards - Responsive Grid */}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg px-3 sm:px-4 py-3 sm:py-4 border border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                                <div className="p-1.5 sm:p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                                    <TrendingUp className="w-4 h-4 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
                                 </div>
-                                <div>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('pools.detailPage.totalVolume')}</p>
-                                    <p className="text-base font-semibold">{formatNumber(poolDetail.totalVolume)}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bg-white dark:bg-gray-800 rounded-lg px-4 py-3 border border-gray-200 dark:border-gray-700">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
-                                    <Users className="w-6 h-6 text-green-600 dark:text-green-400" />
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('pools.detailPage.membersCount')}</p>
-                                    <p className="text-base font-semibold">{poolDetail.memberCount}</p>
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">{t('pools.detailPage.totalVolume')}</p>
+                                    <p className="text-sm sm:text-base font-semibold truncate">{formatNumber(poolDetail.totalVolume)}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-white dark:bg-gray-800 rounded-lg px-4 py-3 border border-gray-200 dark:border-gray-700">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
-                                    <Calendar className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+                        <div className="bg-white dark:bg-gray-800 rounded-lg px-3 sm:px-4 py-3 sm:py-4 border border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                                <div className="p-1.5 sm:p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+                                    <Users className="w-4 h-4 sm:w-6 sm:h-6 text-green-600 dark:text-green-400" />
                                 </div>
-                                <div>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('pools.detailPage.created')}</p>
-                                    <p className="text-base font-semibold">{formatDate(poolDetail.creationDate)}</p>
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">{t('pools.detailPage.membersCount')}</p>
+                                    <p className="text-sm sm:text-base font-semibold">{poolDetail.memberCount}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-white dark:bg-gray-800 rounded-lg px-4 py-3 border border-gray-200 dark:border-gray-700">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-purple-800 rounded-lg">
-                                    <Star className="w-6 h-6 text-yellow-300"/>
+                        <div className="bg-white dark:bg-gray-800 rounded-lg px-3 sm:px-4 py-3 sm:py-4 border border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                                <div className="p-1.5 sm:p-2 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
+                                    <Calendar className="w-4 h-4 sm:w-6 sm:h-6 text-yellow-600 dark:text-yellow-400" />
                                 </div>
-                                <div className="text-base font-semibold uppercase">
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">{t('pools.detailPage.status')}</p>
-                                    {poolDetail.status}
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">{t('pools.detailPage.created')}</p>
+                                    <p className="text-sm sm:text-base font-semibold truncate">{formatDate(poolDetail.creationDate)}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white dark:bg-gray-800 rounded-lg px-3 sm:px-4 py-3 sm:py-4 border border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                                <div className="p-1.5 sm:p-2 bg-purple-800 rounded-lg">
+                                    <Star className="w-4 h-4 sm:w-6 sm:h-6 text-yellow-300" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 capitalize truncate">{t('pools.detailPage.status')}</p>
+                                    <p className="text-sm sm:text-base font-semibold uppercase truncate">{poolDetail.status}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Tabs */}
-                    <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
-                        <nav className="flex space-x-8">
+                    {/* Tabs - Responsive */}
+                    <div className="border-b border-gray-200 dark:border-gray-700 mb-4 sm:mb-6">
+                        {/* Desktop Tabs */}
+                        <nav className="hidden sm:flex space-x-6 lg:space-x-8">
                             <button
                                 onClick={() => setActiveTab('overview')}
-                                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                                    activeTab === 'overview'
-                                        ? 'border-theme-primary-500 text-theme-primary-500'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                }`}
+                                className={`py-2 px-1 border-b-2 font-medium text-sm lg:text-base ${activeTab === 'overview'
+                                    ? 'border-theme-primary-500 text-theme-primary-500'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                    }`}
                             >
                                 {t('pools.detailPage.overview')}
                             </button>
+                            {poolDetail?.members && (
                             <button
                                 onClick={() => setActiveTab('members')}
-                                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                                    activeTab === 'members'
-                                        ? 'border-theme-primary-500 text-theme-primary-500'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                }`}
+                                className={`py-2 px-1 border-b-2 font-medium text-sm lg:text-base ${activeTab === 'members'
+                                    ? 'border-theme-primary-500 text-theme-primary-500'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                    }`}
                             >
                                 {t('pools.detailPage.members')} ({members.length})
                             </button>
-                            <button
-                                onClick={() => setActiveTab('transactions')}
-                                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                                    activeTab === 'transactions'
-                                        ? 'border-theme-primary-500 text-theme-primary-500'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                }`}
-                            >
-                                {t('pools.detailPage.transactions')} ({transactions.length})
-                            </button>
+                            )}
                         </nav>
+                        
+                        {/* Mobile Tabs - Pill Style */}
+                        <div className="sm:hidden">
+                            <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                                <button
+                                    onClick={() => setActiveTab('overview')}
+                                    className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-colors ${
+                                        activeTab === 'overview'
+                                            ? 'bg-white dark:bg-gray-800 text-theme-primary-500 shadow-sm'
+                                            : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                                    }`}
+                                >
+                                    {t('pools.detailPage.overview')}
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('members')}
+                                    className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-colors ${
+                                        activeTab === 'members'
+                                            ? 'bg-white dark:bg-gray-800 text-theme-primary-500 shadow-sm'
+                                            : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                                    }`}
+                                >
+                                    {t('pools.detailPage.members')} ({members.length})
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Tab Content */}
-                    <div className="space-y-6">
+                    <div className="space-y-4 sm:space-y-6">
                         {/* Overview Tab */}
                         {activeTab === 'overview' && (
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                                 {/* Pool Description */}
                                 <div className="lg:col-span-2">
-                                    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-                                        <h3 className="text-lg font-semibold mb-4">{t('pools.detailPage.aboutPool')}</h3>
-                                        <p className="leading-relaxed text-theme-primary-500 text-base">
-                                            Description: &ensp; <span className="font-mono italic text-gray-500 dark:text-gray-400 text-sm">{poolDetail.describe || "This is a community-driven liquidity pool focused on providing sustainable returns to its members through strategic token staking and yield farming opportunities."}</span>
+                                    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
+                                        <h3 className="text-base sm:text-lg font-semibold mb-4">{t('pools.detailPage.aboutPool')}</h3>
+                                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-3">
+                                            <span className="text-sm sm:text-base text-gray-500 dark:text-gray-400">{t('pools.detailPage.creatorAddress')}</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-mono text-yellow-500 italic text-sm sm:text-base">{truncateString(poolDetail.creatorAddress, 12)}</span>
+                                                <Copy className="w-3 h-3 sm:w-4 sm:h-4 cursor-pointer" onClick={() => {
+                                                    navigator.clipboard.writeText(poolDetail.creatorAddress)
+                                                    toast.success(t('pools.detailPage.copiedToClipboard'))
+                                                }} />
+                                            </div>
+                                        </div>
+                                        <p className="leading-relaxed text-theme-primary-500 text-sm sm:text-base mb-4">
+                                            {t('pools.detailPage.description')} &ensp; <span className="font-mono italic text-gray-500 dark:text-gray-400 text-xs sm:text-sm">{poolDetail.describe || "This is a community-driven liquidity pool focused on providing sustainable returns to its members through strategic token staking and yield farming opportunities."}</span>
                                         </p>
-                                        
-                                        <div className="mt-6 space-y-3">
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-gray-500 dark:text-gray-400">Pool ID:</span>
+
+                                        <div className="space-y-2 sm:space-y-3 text-sm sm:text-base">
+                                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
+                                                <span className="text-gray-500 dark:text-gray-400">{t('pools.detailPage.poolId')}</span>
                                                 <span className="font-mono">{poolDetail.poolId}</span>
                                             </div>
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-gray-500 dark:text-gray-400">Creation Date:</span>
+                                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
+                                                <span className="text-gray-500 dark:text-gray-400">{t('pools.detailPage.creationDate')}</span>
                                                 <span>{formatDate(poolDetail.creationDate)}</span>
                                             </div>
                                             {poolDetail.endDate && (
-                                                <div className="flex justify-between items-center">
-                                                    <span className="text-gray-500 dark:text-gray-400">End Date:</span>
+                                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
+                                                    <span className="text-gray-500 dark:text-gray-400">{t('pools.detailPage.endDate')}</span>
                                                     <span>{formatDate(poolDetail.endDate)}</span>
                                                 </div>
                                             )}
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-gray-500 dark:text-gray-400">Status:</span>
-                                                <span className={`px-3 py-1 rounded text-xs uppercase font-semibold ${
-                                                    poolDetail.status === 'active' ? 'bg-green-100 text-green-800' :
+                                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
+                                                <span className="text-gray-500 dark:text-gray-400">{t('pools.detailPage.status')}</span>
+                                                <span className={`px-2 sm:px-3 py-1 rounded text-xs uppercase font-semibold ${poolDetail.status === 'active' ? 'bg-green-100 text-green-800' :
                                                     poolDetail.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                                    'bg-red-100 text-red-800'
-                                                }`}>
+                                                        'bg-red-100 text-red-800'
+                                                    }`}>
                                                     {poolDetail.status}
                                                 </span>
                                             </div>
                                             {poolDetail.transactionHash && (
-                                                <div className="flex justify-between items-center">
-                                                    <span className="text-gray-500 dark:text-gray-400">Transaction Hash:</span>
-                                                    <span className="font-mono text-yellow-500 italic text-xs">{truncateString(poolDetail.transactionHash, 16)}</span>
+                                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
+                                                    <span className="text-gray-500 dark:text-gray-400">{t('pools.detailPage.transactionHash')}</span>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-mono text-yellow-500 italic text-xs">{truncateString(poolDetail.transactionHash, 16)}</span>
+                                                        <Copy className="w-3 h-3 cursor-pointer" onClick={() => {
+                                                            navigator.clipboard.writeText(poolDetail.transactionHash)
+                                                            toast.success(t('pools.detailPage.copiedToClipboard'))
+                                                        }} />
+                                                    </div>
                                                 </div>
                                             )}
                                             {poolDetail.userStakeInfo && (
                                                 <>
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="text-gray-500 dark:text-gray-400">Pool Stake:</span>
+                                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
+                                                        <span className="text-gray-500 dark:text-gray-400">{t('pools.detailPage.poolStake')}</span>
                                                         <span className="font-mono text-[#53DAE6]">{formatNumber(poolDetail.userStakeInfo.totalStaked)}</span>
                                                     </div>
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="text-gray-500 dark:text-gray-400">Stake Count:</span>
+                                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
+                                                        <span className="text-gray-500 dark:text-gray-400">{t('pools.detailPage.stakeCount')}</span>
                                                         <span>{poolDetail.userStakeInfo.stakeCount}</span>
                                                     </div>
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="text-gray-500 dark:text-gray-400">Join Date:</span>
-                                                        <span className="text-gray-500 dark:text-gray-400 italic text-sm">{formatDate(poolDetail.userStakeInfo.joinDate)}</span>
+                                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
+                                                        <span className="text-gray-500 dark:text-gray-400">{t('pools.detailPage.joinDate')}</span>
+                                                        <span className="text-gray-500 dark:text-gray-400 italic text-xs sm:text-sm">{formatDate(poolDetail.userStakeInfo.joinDate)}</span>
                                                     </div>
                                                 </>
                                             )}
@@ -380,13 +455,13 @@ export default function PoolDetail() {
 
                                 {/* Stake Section */}
                                 <div className="lg:col-span-1">
-                                    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-                                        <h3 className="text-lg font-semibold mb-4">{t('pools.detailPage.stakeInPool')}</h3>
-                                        
+                                    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
+                                        <h3 className="text-base sm:text-lg font-semibold mb-4">{t('pools.detailPage.stakeInPool')}</h3>
+
                                         {!isCreator ? (
                                             <div className="space-y-4">
                                                 <div>
-                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                    <label className="block text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300 mb-2">
                                                         {t('pools.detailPage.amountToStake')}
                                                     </label>
                                                     <input
@@ -394,42 +469,60 @@ export default function PoolDetail() {
                                                         value={stakeAmount}
                                                         onChange={(e) => setStakeAmount(Number(e.target.value))}
                                                         min="1000000"
-                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-theme-primary-500 focus:border-transparent"
-                                                        placeholder="Enter amount"
+                                                        className="w-full px-3 outline-none py-3 sm:py-2 text-base border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-theme-primary-500 focus:border-transparent"
+                                                        placeholder={t('pools.detailPage.enterAmount')}
                                                     />
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
                                                         {t('pools.detailPage.minimumAmount')}
                                                     </p>
                                                 </div>
-                                                
+
                                                 <Button
                                                     onClick={handleStake}
                                                     disabled={isStaking || stakePoolMutation.isPending}
-                                                    className="w-full bg-theme-primary-500 hover:bg-green-500 text-white"
+                                                    className="w-full bg-theme-primary-500 hover:bg-green-500 text-white py-3 sm:py-2 text-base"
                                                 >
                                                     {isStaking || stakePoolMutation.isPending ? t('pools.detailPage.staking') : t('pools.detailPage.stakeNow')}
                                                 </Button>
                                             </div>
                                         ) : (
-                                            <div className="text-center py-4">
-                                                <p className="text-gray-500 dark:text-gray-400 mb-4">
+                                            <div className="text-center">
+                                                <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-4">
                                                     {t('pools.detailPage.youAreCreator')}
                                                 </p>
-                                                <div className="space-y-2 mb-4 text-sm">
+                                                <div className="space-y-2 mb-4 text-sm sm:text-base">
                                                     <div className="flex justify-between">
-                                                        <span className="text-gray-500 dark:text-gray-400">Your Staked:</span>
+                                                        <span className="text-gray-500 dark:text-gray-400">{t('pools.detailPage.yourStaked')}</span>
                                                         <span className="font-mono">{formatNumber(poolDetail.userStakeInfo?.totalStaked || 0)}</span>
                                                     </div>
                                                     <div className="flex justify-between">
-                                                        <span className="text-gray-500 dark:text-gray-400">Staked Count:</span>
+                                                        <span className="text-gray-500 dark:text-gray-400">{t('pools.detailPage.stakedCount')}</span>
                                                         <span>{poolDetail.userStakeInfo?.stakeCount || 0}</span>
                                                     </div>
                                                 </div>
+                                                <div>
+                                                    <label className="block text-sm sm:text-base text-theme-primary-500 mb-2 uppercase font-semibold">
+                                                        {t('pools.detailPage.amountToStake')}
+                                                    </label>
+                                                                                                    <input
+                                                    type="number"
+                                                    value={stakeAmount}
+                                                    onChange={(e) => setStakeAmount(Number(e.target.value))}
+                                                    min="1000000"
+                                                    className="w-full px-3 py-3 sm:py-2 text-base outline-none border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-theme-primary-500 focus:border-transparent"
+                                                    placeholder={t('pools.detailPage.enterAmount')}
+                                                />
+                                                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                                        {t('pools.detailPage.minimumAmount')}
+                                                    </p>
+                                                </div>
+
                                                 <Button
-                                                    variant="default"
-                                                    className="w-full bg-theme-primary-500 hover:bg-green-500 text-white"
+                                                    onClick={handleStake}
+                                                    disabled={isStaking || stakePoolMutation.isPending}
+                                                    className="w-full bg-theme-primary-500 hover:bg-green-500 text-white mt-4 py-3 sm:py-2 text-base"
                                                 >
-                                                   Stake
+                                                    {isStaking || stakePoolMutation.isPending ? t('pools.detailPage.staking') : t('pools.detailPage.stakeNow')}
                                                 </Button>
                                             </div>
                                         )}
@@ -441,23 +534,25 @@ export default function PoolDetail() {
                         {/* Members Tab */}
                         {activeTab === 'members' && (
                             <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                                <div className="p-3 border-b border-gray-200 dark:border-gray-700">
-                                    <h3 className="text-lg font-semibold">{t('pools.detailPage.poolMembers')}</h3>
+                                <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700">
+                                    <h3 className="text-base sm:text-lg font-semibold">{t('pools.detailPage.poolMembers')}</h3>
                                 </div>
-                                <div className="overflow-x-auto">
+                                
+                                {/* Desktop Table */}
+                                <div className="hidden sm:block overflow-x-auto">
                                     <table className="w-full">
                                         <thead className="bg-gray-50 dark:bg-gray-700">
                                             <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                     {t('pools.detailPage.member')}
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                     {t('pools.detailPage.stakeAmount')}
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                     {t('pools.detailPage.joinDate')}
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                     {t('pools.detailPage.role')}
                                                 </th>
                                             </tr>
@@ -465,49 +560,47 @@ export default function PoolDetail() {
                                         <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                             {members.map((member: PoolMember) => (
                                                 <tr key={member.memberId}>
-                                                                                                <td className="px-6 py-2 whitespace-nowrap">
-                                                <div className="flex items-center">
-                                                    <img
-                                                        className="h-8 w-8 rounded-full"
-                                                        src="/user-icon.png"
-                                                        alt={member.nickname}
-                                                    />
-                                                    <div className="ml-4">
-                                                        <div className="text-sm font-medium text-gray-900 dark:text-white">
-                                                            {member.nickname}
+                                                    <td className="px-4 sm:px-6 py-3 whitespace-nowrap">
+                                                        <div className="flex items-center">
+                                                            <img
+                                                                className="h-8 w-8 rounded-full"
+                                                                src="/user-icon.png"
+                                                                alt={member.nickname}
+                                                            />
+                                                            <div className="ml-3 sm:ml-4">
+                                                                <div className="text-sm font-medium text-gray-900 dark:text-white">
+                                                                    {member.nickname}
+                                                                </div>
+                                                                <div className="text-xs text-yellow-500 italic flex items-center gap-1">
+                                                                    {member.solanaAddress.slice(0, 8)}...{member.solanaAddress.slice(-8)}
+                                                                    <Copy className="w-3 h-3" />
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <div className="text-xs text-yellow-500 italic flex items-center gap-1">
-                                                            {member.solanaAddress.slice(0, 8)}...{member.solanaAddress.slice(-8)}
-                                                            <Copy className="w-3 h-3" />
+                                                    </td>
+                                                    <td className="px-4 sm:px-6 py-3 whitespace-nowrap">
+                                                        <div className="text-sm text-gray-900 dark:text-white font-mono">
+                                                            {formatNumber(member.totalStaked)}
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-2 whitespace-nowrap">
-                                                <div className="text-sm text-gray-900 dark:text-white font-mono">
-                                                    {formatNumber(member.totalStaked)}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-2 whitespace-nowrap">
-                                                <div className="text-sm text-gray-500 dark:text-gray-400">
-                                                    {formatDate(member.joinDate)}
-                                                </div>
-                                            </td>
-                                                    <td className="px-6 py-2 whitespace-nowrap">
-                                                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                                            member.isCreator
-                                                                ? 'bg-purple-100 text-purple-800'
-                                                                : 'bg-gray-100 text-gray-800'
-                                                        }`}>
+                                                    </td>
+                                                    <td className="px-4 sm:px-6 py-3 whitespace-nowrap">
+                                                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                                                            {formatDate(member.joinDate)}
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-4 sm:px-6 py-3 whitespace-nowrap">
+                                                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${member.isCreator
+                                                            ? 'bg-purple-100 text-purple-800'
+                                                            : 'bg-gray-100 text-gray-800'
+                                                            }`}>
                                                             {member.isCreator ? t('pools.detailPage.creator') : t('pools.detailPage.member')}
                                                         </span>
                                                         <div className="mt-1">
-                                                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                                                member.status === 'active' ? 'bg-green-100 text-green-800' :
+                                                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${member.status === 'active' ? 'bg-green-100 text-green-800' :
                                                                 member.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                                                member.status === 'withdraw' ? 'bg-blue-100 text-blue-800' :
-                                                                'bg-red-100 text-red-800'
-                                                            }`}>
+                                                                    member.status === 'withdraw' ? 'bg-blue-100 text-blue-800' :
+                                                                        'bg-red-100 text-red-800'
+                                                                }`}>
                                                                 {member.status}
                                                             </span>
                                                         </div>
@@ -517,29 +610,88 @@ export default function PoolDetail() {
                                         </tbody>
                                     </table>
                                 </div>
+
+                                {/* Mobile Card Layout */}
+                                <div className="sm:hidden">
+                                    <div className="p-3 space-y-3">
+                                        {members.map((member: PoolMember) => (
+                                            <div key={member.memberId} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 space-y-3">
+                                                <div className="flex items-center gap-3">
+                                                    <img
+                                                        className="h-10 w-10 rounded-full"
+                                                        src="/user-icon.png"
+                                                        alt={member.nickname}
+                                                    />
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                                            {member.nickname}
+                                                        </div>
+                                                        <div className="text-xs text-yellow-500 italic flex items-center gap-1">
+                                                            {member.solanaAddress.slice(0, 8)}...{member.solanaAddress.slice(-8)}
+                                                            <Copy className="w-3 h-3" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="grid grid-cols-2 gap-3 text-sm">
+                                                    <div>
+                                                        <span className="text-gray-500 dark:text-gray-400">{t('pools.detailPage.stakeAmount')}</span>
+                                                        <div className="font-mono text-gray-900 dark:text-white">
+                                                            {formatNumber(member.totalStaked)}
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-gray-500 dark:text-gray-400">Join Date:</span>
+                                                        <div className="text-gray-900 dark:text-white">
+                                                            {formatDate(member.joinDate)}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="flex flex-wrap gap-2">
+                                                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${member.isCreator
+                                                        ? 'bg-purple-100 text-purple-800'
+                                                        : 'bg-gray-100 text-gray-800'
+                                                        }`}>
+                                                        {member.isCreator ? t('pools.detailPage.creator') : t('pools.detailPage.member')}
+                                                    </span>
+                                                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${member.status === 'active' ? 'bg-green-100 text-green-800' :
+                                                        member.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                                            member.status === 'withdraw' ? 'bg-blue-100 text-blue-800' :
+                                                                'bg-red-100 text-red-800'
+                                                        }`}>
+                                                        {member.status}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         )}
 
                         {/* Transactions Tab */}
                         {activeTab === 'transactions' && (
                             <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                                <div className="py-3 px-6 border-b border-gray-200 dark:border-gray-700">
-                                    <h3 className="text-lg font-semibold">{t('pools.detailPage.transactionHistory')}</h3>
+                                <div className="py-3 px-4 sm:px-6 border-b border-gray-200 dark:border-gray-700">
+                                    <h3 className="text-base sm:text-lg font-semibold">{t('pools.detailPage.transactionHistory')}</h3>
                                 </div>
-                                <div className="overflow-x-auto">
+                                
+                                {/* Desktop Table */}
+                                <div className="hidden sm:block overflow-x-auto">
                                     <table className="w-full">
                                         <thead className="bg-gray-50 dark:bg-gray-700">
                                             <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                     {t('pools.detailPage.type')}
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                     {t('pools.detailPage.amount')}
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                     {t('pools.detailPage.user')}
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                                                     {t('pools.detailPage.date')}
                                                 </th>
                                             </tr>
@@ -547,26 +699,25 @@ export default function PoolDetail() {
                                         <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                             {transactions.map((tx) => (
                                                 <tr key={tx.id}>
-                                                    <td className="px-6 py-2 whitespace-nowrap">
-                                                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                                            tx.type === 'stake' ? 'bg-green-100 text-green-800' :
+                                                    <td className="px-4 sm:px-6 py-3 whitespace-nowrap">
+                                                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${tx.type === 'stake' ? 'bg-green-100 text-green-800' :
                                                             tx.type === 'unstake' ? 'bg-red-100 text-red-800' :
-                                                            'bg-blue-100 text-blue-800'
-                                                        }`}>
+                                                                'bg-blue-100 text-blue-800'
+                                                            }`}>
                                                             {tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}
                                                         </span>
                                                     </td>
-                                                    <td className="px-6 py-2 whitespace-nowrap">
+                                                    <td className="px-4 sm:px-6 py-3 whitespace-nowrap">
                                                         <div className="text-sm text-gray-900 dark:text-white font-mono">
                                                             {formatNumber(tx.amount)}
                                                         </div>
                                                     </td>
-                                                    <td className="px-6 py-2 whitespace-nowrap">
+                                                    <td className="px-4 sm:px-6 py-3 whitespace-nowrap">
                                                         <div className="text-sm text-gray-900 dark:text-white">
                                                             {tx.user}
                                                         </div>
                                                     </td>
-                                                    <td className="px-6 py-2 whitespace-nowrap">
+                                                    <td className="px-4 sm:px-6 py-3 whitespace-nowrap">
                                                         <div className="text-sm text-gray-500 dark:text-gray-400">
                                                             {formatDateTime(tx.timestamp)}
                                                         </div>
@@ -576,11 +727,74 @@ export default function PoolDetail() {
                                         </tbody>
                                     </table>
                                 </div>
+
+                                {/* Mobile Card Layout */}
+                                <div className="sm:hidden">
+                                    <div className="p-3 space-y-3">
+                                        {transactions.map((tx) => (
+                                            <div key={tx.id} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 space-y-3">
+                                                <div className="flex items-center justify-between">
+                                                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${tx.type === 'stake' ? 'bg-green-100 text-green-800' :
+                                                        tx.type === 'unstake' ? 'bg-red-100 text-red-800' :
+                                                            'bg-blue-100 text-blue-800'
+                                                        }`}>
+                                                        {tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}
+                                                    </span>
+                                                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                                                        {formatDateTime(tx.timestamp)}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="grid grid-cols-2 gap-3 text-sm">
+                                                    <div>
+                                                        <span className="text-gray-500 dark:text-gray-400">Amount:</span>
+                                                        <div className="font-mono text-gray-900 dark:text-white">
+                                                            {formatNumber(tx.amount)}
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-gray-500 dark:text-gray-400">User:</span>
+                                                        <div className="text-gray-900 dark:text-white truncate">
+                                                            {tx.user}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>
                 </div>
             </div>
+
+            <AlertDialog open={isConfirmingStake} onOpenChange={setIsConfirmingStake}>
+                <AlertDialogContent className="bg-white dark:bg-gray-800 max-w-sm sm:max-w-md mx-4">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="text-base sm:text-lg">{t('pools.detailPage.confirmStake')}</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm sm:text-base">
+                            {t('pools.detailPage.confirmStakeMessage').replace('{amount}', formatNumber(stakeAmount)).replace('{poolName}', poolDetail.name)}
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                        <AlertDialogCancel onClick={() => setIsConfirmingStake(false)} className="w-full sm:w-auto">
+                            {t('pools.detailPage.cancel')}
+                        </AlertDialogCancel>
+                        <AlertDialogAction className="bg-theme-primary-500 hover:bg-green-500 text-white w-full sm:w-auto" onClick={() => {
+                            setIsConfirmingStake(false)
+                            setIsStaking(true)
+                            const stakeData: StakePoolRequest = {
+                                poolId: parseInt(poolId),
+                                stakeAmount
+                            }
+                            stakePoolMutation.mutate(stakeData)
+                        }}>
+                            {isStaking || stakePoolMutation.isPending ? t('pools.detailPage.staking') : t('pools.detailPage.stakeNow')}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     )
 } 

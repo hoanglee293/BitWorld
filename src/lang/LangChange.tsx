@@ -30,35 +30,35 @@ export const LangChange = () => {
         ))}
       </div>
 
-      {/* Thông tin phát hiện ngôn ngữ trình duyệt */}
+      {/* Browser language detection information */}
       <div className="mt-4 p-3 bg-gray-50 rounded-md">
         <h3 className="font-semibold text-sm text-gray-700 mb-2">
-          Thông tin ngôn ngữ trình duyệt:
+          Browser Language Information:
         </h3>
         
         {isDetecting ? (
-          <p className="text-sm text-gray-500">Đang phát hiện ngôn ngữ...</p>
+          <p className="text-sm text-gray-500">Detecting language...</p>
         ) : (
           <div className="space-y-1 text-sm">
             <p>
-              <span className="font-medium">Ngôn ngữ hiện tại:</span> {lang}
+              <span className="font-medium">Current language:</span> {lang}
             </p>
             <p>
-              <span className="font-medium">Ngôn ngữ trình duyệt:</span> {browserLang}
+              <span className="font-medium">Browser language:</span> {browserLang}
             </p>
             {languageInfo && (
               <>
                 <p>
-                  <span className="font-medium">Mã ngôn ngữ:</span> {languageInfo.language}
+                  <span className="font-medium">Language code:</span> {languageInfo.language}
                 </p>
                 <p>
-                  <span className="font-medium">Danh sách ngôn ngữ:</span> {languageInfo.languages.join(', ')}
+                  <span className="font-medium">Language list:</span> {languageInfo.languages.join(', ')}
                 </p>
               </>
             )}
             {browserLang !== lang && (
               <p className="text-orange-600 text-xs">
-                💡 Ngôn ngữ trình duyệt khác với ngôn ngữ hiện tại
+                💡 Browser language differs from current language
               </p>
             )}
           </div>

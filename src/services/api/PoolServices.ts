@@ -11,6 +11,8 @@ export interface AirdropPool {
   totalVolume: number;
   creationDate: string;
   endDate: string;
+  creatorAddress: string;
+  creatorBittworldUid: string;
   status: 'pending' | 'active' | 'end' | 'error';
   userStakeInfo?: {
     isCreator: boolean;
@@ -38,7 +40,7 @@ export interface PoolDetail extends AirdropPool {
 
 export interface CreatePoolRequest {
   name: string;
-  logo: string;
+  logo: File | string;
   describe: string;
   initialAmount: number;
 }
@@ -70,12 +72,12 @@ export interface StakePoolResponse {
 /**
  * Lấy danh sách tất cả các airdrop pools đang hoạt động
  */
-export const getAirdropPools = async (sortBy?: string, sortOrder?: string, type?: string) => {
+export const getAirdropPools = async (sortBy?: string, sortOrder?: string, filterType?: string) => {
   try {
     const params = new URLSearchParams();
     if (sortBy) params.append('sortBy', sortBy);
     if (sortOrder) params.append('sortOrder', sortOrder);
-    if (type) params.append('type', type);
+    if (filterType) params.append('filterType', filterType);
     
     const response = await axiosClient.get(`/airdrops/pools?${params.toString()}`);
     return response.data;
@@ -107,7 +109,26 @@ export const getAirdropPoolDetail = async (poolId: number, sortBy?: string, sort
  */
 export const createAirdropPool = async (data: CreatePoolRequest) => {
   try {
-    const response = await axiosClient.post('/airdrops/create-pool', data);
+    let response;
+    
+    // Nếu logo là File, sử dụng FormData
+    if (data.logo instanceof File) {
+      const formData = new FormData();
+      formData.append('name', data.name);
+      formData.append('logo', data.logo);
+      formData.append('describe', data.describe);
+      formData.append('initialAmount', data.initialAmount.toString());
+      
+      response = await axiosClient.post('/airdrops/create-pool', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    } else {
+      // Nếu logo là string (base64 hoặc URL), gửi JSON
+      response = await axiosClient.post('/airdrops/create-pool', data);
+    }
+    
     return response.data;
   } catch (error) {
     console.error("Error creating airdrop pool:", error);

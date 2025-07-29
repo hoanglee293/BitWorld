@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Search, Star, Settings, ChevronDown, Copy, Upload, X } from "lucide-react"
 import { Button } from "@/app/components/ui/button"
@@ -66,6 +66,8 @@ export default function LiquidityPools() {
 
     const [searchQuery, setSearchQuery] = useState("")
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+    const [listNumberTab, setListNumberTab] = useState<number[]>([0, 0, 0])
+    const isFirstRender = useRef<boolean>(true)
     const [createForm, setCreateForm] = useState<CreatePoolForm>({
         name: "",
         description: "",
@@ -81,12 +83,12 @@ export default function LiquidityPools() {
             return await createAirdropPool(data);
         },
         onSuccess: (data) => {
-            toast.success('Pool created successfully!');
+            toast.success(t('pools.poolCreatedSuccess'));
             queryClient.invalidateQueries({ queryKey: ["airdrop-pools"] });
             handleCloseModal();
         },
         onError: (error: any) => {
-            const message = error.response?.data?.message || 'Failed to create pool. Please try again.';
+            const message = error.response?.data?.message || t('pools.poolCreateFailed');
             toast.error(message);
         }
     });
@@ -97,11 +99,11 @@ export default function LiquidityPools() {
             return await stakeAirdropPool(data);
         },
         onSuccess: (data) => {
-            toast.success('Stake successful!');
+            toast.success(t('pools.stakeSuccess'));
             queryClient.invalidateQueries({ queryKey: ["airdrop-pools"] });
         },
         onError: (error: any) => {
-            const message = error.response?.data?.message || 'Failed to stake pool. Please try again.';
+            const message = error.response?.data?.message || t('pools.stakeFailed');
             toast.error(message);
         }
     });
@@ -123,14 +125,15 @@ export default function LiquidityPools() {
         const file = event.target.files?.[0]
         if (file) {
             // Validate file type
+
             if (!file.type.startsWith('image/')) {
-                toast.error('Please upload an image file')
+                toast.error(t('pools.uploadImageFile'))
                 return
             }
 
             // Validate file size (2MB limit)
             if (file.size > 2 * 1024 * 1024) {
-                toast.error('Image size should be less than 2MB')
+                toast.error(t('pools.uploadImageSize'))
                 return
             }
 
@@ -147,22 +150,22 @@ export default function LiquidityPools() {
 
     const handleCreatePool = async () => {
         if (!createForm.name.trim()) {
-            toast.error('Pool name is required')
+            toast.error(t('pools.poolNameRequired'))
             return
         }
 
         if (!createForm.description.trim()) {
-            toast.error('Pool description is required')
+            toast.error(t('pools.poolDescRequired'))
             return
         }
 
         if (!createForm.image) {
-            toast.error('Pool image is required')
+            toast.error(t('pools.poolImageRequired'))
             return
         }
 
         if (createForm.amount < 1000000) {
-            toast.error('Minimum amount is 1,000,000 tokens')
+            toast.error(t('pools.minAmountRequired'))
             return
         }
 
@@ -171,11 +174,11 @@ export default function LiquidityPools() {
         try {
             const poolData: CreatePoolRequest = {
                 name: createForm.name,
-                logo: imagePreview || "",
+                logo: createForm.image || "",
                 describe: createForm.description,
                 initialAmount: createForm.amount
             };
-
+            console.log(poolData)
             await createPoolMutation.mutateAsync(poolData);
         } catch (error) {
             console.error('Create pool error:', error);
@@ -186,7 +189,7 @@ export default function LiquidityPools() {
 
     const handleStakePool = async (poolId: number, stakeAmount: number) => {
         if (stakeAmount < 1) {
-            toast.error('Minimum stake amount is 1 token')
+            toast.error(t('pools.minStakeRequired'))
             return
         }
 
@@ -232,6 +235,13 @@ export default function LiquidityPools() {
         return 0;
     };
 
+    useEffect(() => {
+        if (isFirstRender.current && pools.length > 0) {
+            setListNumberTab([getPoolCount('all'), getPoolCount('created'), getPoolCount('joined')])
+            isFirstRender.current = false
+        }
+    }, [pools])
+
     // Format số lượng
     const formatNumber = (num: number) => {
         return new Intl.NumberFormat().format(num);
@@ -254,30 +264,30 @@ export default function LiquidityPools() {
                         <div className="flex items-center gap-3">
                             <Button
                                 className={`text-xs sm:text-sm font-medium px-3 sm:px-4 py-2 sm:py-2 h-auto sm:max-h-[30px] w-full sm:w-auto transition-colors ${activeFilter === 'all'
-                                        ? 'text-theme-primary-500 underline underline-offset-8'
-                                        : 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                    ? 'text-theme-primary-500 underline underline-offset-8'
+                                    : 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                                     }`}
                                 onClick={() => handleFilterChange('all')}
                             >
-                                All ({getPoolCount('all')})
+                                {t('pools.filterAll')} ({listNumberTab[0]})
                             </Button>
                             <Button
                                 className={`text-xs sm:text-sm font-medium px-3 sm:px-4 py-2 sm:py-2 h-auto sm:max-h-[30px] w-full sm:w-auto transition-colors ${activeFilter === 'created'
-                                        ? 'text-theme-primary-500 underline underline-offset-8'
-                                        : 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                    ? 'text-theme-primary-500 underline underline-offset-8'
+                                    : 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                                     }`}
                                 onClick={() => handleFilterChange('created')}
                             >
-                                Created ({getPoolCount('created')})
+                                {t('pools.filterCreated')} ({listNumberTab[1]})
                             </Button>
                             <Button
                                 className={`text-xs sm:text-sm font-medium px-3 sm:px-4 py-2 sm:py-2 h-auto sm:max-h-[30px] w-full sm:w-auto transition-colors ${activeFilter === 'joined'
-                                        ? 'text-theme-primary-500 underline underline-offset-8'
-                                        : 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                    ? 'text-theme-primary-500 underline underline-offset-8'
+                                    : 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                                     }`}
                                 onClick={() => handleFilterChange('joined')}
                             >
-                                Joined ({getPoolCount('joined')})
+                                {t('pools.filterJoined')} ({listNumberTab[2]})
                             </Button>
                             <div className="relative w-full sm:w-auto">
                                 <input
@@ -287,7 +297,7 @@ export default function LiquidityPools() {
                                         setSearchQuery(e.target.value);
                                     }}
                                     placeholder={t('pools.searchPlaceholder')}
-                                    className="w-full sm:w-[11vw] 2xl:w-[19vw] rounded-full py-1.5 pl-10 pr-4 text-sm focus:outline-none bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600 placeholder:text-gray-500 dark:placeholder:text-gray-400 placeholder:text-xs"
+                                    className="w-full sm:w-[11vw] xl:w-[17vw] rounded-full py-1.5 pl-10 pr-4 text-sm focus:outline-none bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600 placeholder:text-gray-500 dark:placeholder:text-gray-400 placeholder:text-xs"
                                 />
                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-400" />
                             </div>
@@ -308,7 +318,7 @@ export default function LiquidityPools() {
                     {isLoadingPools && (
                         <div className="text-center py-12">
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-theme-primary-500 mx-auto"></div>
-                            <p className="mt-2 text-gray-500">Loading pools...</p>
+                            <p className="mt-2 text-gray-500">{t('pools.loadingPools')}</p>
                         </div>
                     )}
 
@@ -329,7 +339,7 @@ export default function LiquidityPools() {
                                         />
                                         <div>
                                             <div className="font-medium text-sm text-gray-900 dark:text-white">{pool.name}</div>
-                                            <div className="text-xs text-gray-500 dark:text-gray-400">{pool.memberCount} members</div>
+                                            <div className="text-xs text-gray-500 dark:text-gray-400">{pool.memberCount} {t('pools.members')}</div>
                                         </div>
                                     </div>
                                     <button
@@ -342,11 +352,11 @@ export default function LiquidityPools() {
 
                                 <div className="space-y-2 text-xs mb-3">
                                     <div className="flex justify-between">
-                                        <span className="text-gray-500 dark:text-gray-400">Volume:</span>
+                                        <span className="text-gray-500 dark:text-gray-400">{t('pools.volume')}:</span>
                                         <span className="font-mono text-gray-900 dark:text-white">{formatNumber(pool.totalVolume)}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-gray-500 dark:text-gray-400">Created:</span>
+                                        <span className="text-gray-500 dark:text-gray-400">{t('pools.created')}:</span>
                                         <span className="text-gray-900 dark:text-white">{formatDate(pool.creationDate)}</span>
                                     </div>
                                 </div>
@@ -379,10 +389,10 @@ export default function LiquidityPools() {
                                 <thead className="bg-gray-50 dark:bg-gray-800">
                                     <tr>
                                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700 dark:text-gray-300 w-[5%]">&ensp;</th>
-                                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700 dark:text-gray-300 w-[30%]">Pool</th>
-                                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700 dark:text-gray-300 w-[20%]">Members</th>
-                                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700 dark:text-gray-300 w-[20%]">Volume</th>
-                                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700 dark:text-gray-300 w-[10%]">Action</th>
+                                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700 dark:text-gray-300 w-[30%]">{t('pools.poolName')}</th>
+                                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700 dark:text-gray-300 w-[20%]">{t('pools.members')}</th>
+                                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700 dark:text-gray-300 w-[20%]">{t('pools.volume')}</th>
+                                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700 dark:text-gray-300 w-[10%]">{t('pools.action')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -411,7 +421,7 @@ export default function LiquidityPools() {
                                                     />
                                                     <div className="flex flex-col">
                                                         <div className="font-medium">{pool.name}</div>
-                                                        <div className="text-xs text-gray-500 dark:text-gray-400">{pool.memberCount} members</div>
+                                                        <div className="text-xs text-gray-500 dark:text-gray-400">{pool.memberCount} {t('pools.members')}</div>
                                                     </div>
                                                 </div>
                                             </td>
@@ -450,12 +460,12 @@ export default function LiquidityPools() {
                                 <thead className="bg-gray-50 dark:bg-gray-800">
                                     <tr>
                                         <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-[2%]">&ensp;</th>
-                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-auto">Pool Name</th>
-                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-auto">UID Leader</th>
-                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-auto">Leader Address</th>
-                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-[16%]">Members</th>
-                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-[16%]">Volume</th>
-                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-[12%]">Created</th>
+                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-auto">{t('pools.poolName')}</th>
+                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-auto">{t('pools.uidLeader')}</th>
+                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-auto">{t('pools.leaderAddress')}</th>
+                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-[16%]">{t('pools.members')}</th>
+                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-[16%]">{t('pools.volume')}</th>
+                                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-[12%]">{t('pools.created')}</th>
                                         <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-[12%]"></th>
                                     </tr>
                                 </thead>
@@ -489,10 +499,10 @@ export default function LiquidityPools() {
                                                 </div>
                                             </td>
                                             <td className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-900 dark:text-gray-300">
-                                                {index % 2 === 0 ? "0x12345" : "7890x23"}
+                                                {pool?.creatorBittworldUid || "N/A"}
                                             </td>
                                             <td className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-yellow-500 italic flex items-center min-h-12 gap-2">
-                                                {index % 2 === 0 ? truncateString("5iudi96uW7jotcrxjs7rWq4fphajnfdWvdcG2Yxt9Kzy", 12) : truncateString("i96uW7jotcrxjs7rWq4fphajnfdWvt9Kzy5iuddcG2Yx", 12)}
+                                                {truncateString(pool.creatorAddress, 12)}
                                                 <Copy className="w-3 h-3" />
                                             </td>
                                             <td className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-900 dark:text-gray-300">
@@ -509,14 +519,10 @@ export default function LiquidityPools() {
                                                     size="sm"
                                                     className="bg-transparent border border-theme-primary-500 text-theme-primary-500 dark:text-white hover:bg-theme-primary-500 hover:text-white text-xs px-4 py-1"
                                                     onClick={() => {
-                                                        if (pool.userStakeInfo?.isCreator) {
-                                                            router.push(`/pools/${pool.poolId}`);
-                                                        } else {
-                                                            handleStakePool(pool.poolId, 1000000);
-                                                        }
+                                                        router.push(`/pools/${pool.poolId}`)
                                                     }}
                                                 >
-                                                    {pool.userStakeInfo?.isCreator ? t('pools.detail') : t('pools.join')}
+                                                    {t('pools.detail')}
                                                 </Button>
                                             </td>
                                         </tr>
@@ -532,8 +538,8 @@ export default function LiquidityPools() {
                                 {activeFilter === 'all'
                                     ? t('pools.noResult')
                                     : activeFilter === 'created'
-                                        ? 'No pools created yet'
-                                        : 'No pools joined yet'
+                                        ? t('pools.noCreatedPools')
+                                        : t('pools.noJoinedPools')
                                 }
                             </p>
                         </div>
@@ -582,10 +588,10 @@ export default function LiquidityPools() {
                                 <div className="flex flex-col items-center justify-center pt-4 sm:pt-5 pb-5 sm:pb-6 bg-gray-100 dark:bg-gray-800 rounded-md cursor-pointer border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 transition-colors" onClick={() => document.getElementById('pool-image')?.click()}>
                                     <Upload className="w-6 h-6 sm:w-8 sm:h-8 mb-3 sm:mb-4 text-gray-400 dark:text-gray-500" />
                                     <p className="mb-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center">
-                                        <span className="font-semibold">Click to upload</span> or drag and drop
+                                        <span className="font-semibold">{t('pools.uploadImage')}</span> {t('pools.uploadDragDrop')}
                                     </p>
                                     <p className="text-xs text-gray-500 dark:text-gray-500 text-center">
-                                        PNG, JPG, WEBP up to 2MB
+                                        {t('pools.uploadFormats')}
                                     </p>
                                 </div>
                             )}

@@ -209,7 +209,7 @@ const Control = () => {
     <div className='flex flex-col h-full gap-4 '>
       <PanelGroup direction="vertical" className="h-full">
         {/* Chart Panel */}
-        <Panel defaultSize={37} minSize={15} maxSize={40} className={`${classLayout} lg:overflow-hidden relative`}>
+        <Panel defaultSize={40} minSize={20} maxSize={40} className={`${classLayout} lg:overflow-hidden relative`}>
           <Suspense fallback={<div className="flex items-center min-h-[500px] justify-center h-full ">Loading...</div>}>
             <TradingPanel
               defaultMode={activeTab as TradingMode}
@@ -224,7 +224,7 @@ const Control = () => {
         <PanelResizeHandle className="h-[2px] m-1 bg-theme-neutral-800 hover:bg-neutral-600 transition-colors relative z-400" />
 
         {/* Transaction History Panel */}
-        <Panel defaultSize={60} minSize={20} maxSize={70} className={`${classLayout} lg:overflow-hidden relative`}>
+        <Panel defaultSize={60} minSize={20} maxSize={80} className={`${classLayout} lg:overflow-hidden relative`}>
           <div className='transition-all duration-100 overflow-hidden rounded-md flex h-full'>
             <div className='flex flex-1 w-full'>
               <Suspense fallback={<div className="flex items-center justify-center h-full">Loading...</div>}>

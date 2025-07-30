@@ -87,8 +87,12 @@ function TransactionHistoryContent() {
     enabled: isAuthenticated,
   });
 
-  // Filter tokens with price >= 0.000001
-  const filteredTokens = tokenList?.tokens?.filter((token: any) => token.token_balance_usd >= 0.05) || [];
+  // Filter tokens: SOL/USDT tokens are always shown, others need balance >= 0.005
+  const filteredTokens = tokenList?.tokens?.filter((token: any) => 
+    token.token_symbol === "SOL" || 
+    token.token_symbol === "USDT" || 
+    token.token_balance_usd >= 0.005
+  ) || [];
 
   // WebSocket connection setup
   useEffect(() => {
@@ -767,28 +771,28 @@ function TransactionHistoryContent() {
   };
 
   return (
-    <div className="shadow-inset dark:bg-theme-neutral-1000 rounded-md p-2 sm:p-3 lg:overflow-hidden bg-white dark:bg-neutral-1000 flex flex-col h-full w-full">
-      <div className="flex border-gray-200 dark:border-neutral-800 h-[30px] bg-gray-100  rounded-full dark:bg-[#333]">
+    <div className="shadow-inset dark:bg-theme-neutral-1000 rounded-md p-2 sm:p-3 lg:overflow-hidden bg-white dark:bg-neutral-1000 flex flex-col w-full h-full ">
+      <div className="flex border-gray-200 dark:border-neutral-800 h-[30px] bg-gray-100  rounded-full dark:bg-[#333] overflow-x-auto">
         <button
-          className={`flex-1 rounded-full text-xs xl:text-sm cursor-pointer font-medium uppercase text-center ${activeTab === "all" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
+          className={`flex-1 rounded-full text-[9px] xl:text-sm cursor-pointer font-medium uppercase text-center ${activeTab === "all" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
           onClick={() => setActiveTab("all")}
         >
           {t("transactionHistory.allTransactions")}
         </button>
         <button
-          className={`flex-1 rounded-full cursor-pointer text-xs xl:text-sm font-medium uppercase text-center ${activeTab === "my" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
+          className={`flex-1 rounded-full cursor-pointer text-[9px] xl:text-sm font-medium uppercase text-center ${activeTab === "my" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
           onClick={() => setActiveTab("my")}
         >
           {t("transactionHistory.myTransactions")}
         </button>
         <button
-          className={`flex-1 rounded-full cursor-pointer text-xs xl:text-sm font-medium uppercase text-center ${activeTab === "holder" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
+          className={`px-4 md:flex-1 rounded-full cursor-pointer text-[9px] xl:text-sm font-medium uppercase text-center ${activeTab === "holder" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
           onClick={() => setActiveTab("holder")}
         >
           {t("transactionHistory.holders")}
         </button>
         <button
-          className={`flex-1 rounded-full cursor-pointer text-xs xl:text-sm font-medium uppercase text-center ${activeTab === "asset" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
+          className={`px-4 md:flex-1 rounded-full cursor-pointer text-[9px] xl:text-sm font-medium uppercase text-center ${activeTab === "asset" ? "text-white bg-theme-primary-500" : "text-red-500 dark:text-red-500"}`}
           onClick={() => setActiveTab("asset")}
         >
           {t("transactionHistory.assets")}

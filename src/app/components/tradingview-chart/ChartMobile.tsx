@@ -35,7 +35,7 @@ export default function ChartMobile({ className }: { className?: string }) {
   const { theme } = useThemeToggle();
   const chartContainerRef = useRef<HTMLDivElement>(null)
   const chartRef = useRef<ChartWithSeries | null>(null)
-  const [timeFrame, setTimeFrame] = useState('1m')
+  const [timeFrame, setTimeFrame] = useState('1h')
   const [displayMode, setDisplayMode] = useState<'Price' | 'MCap'>(() => {
     if (typeof window !== 'undefined') {
       const storedValue = localStorage.getItem('chartShowMarketCap')

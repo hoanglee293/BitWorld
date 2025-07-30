@@ -107,16 +107,17 @@ const ListToken = () => {
                 filteredList = topCoins;
                 break;
             case "new":
-                filteredList = newCoins?.map(token => ({
-                    ...token,
-                    market_cap: token.marketCap * 100,
-                    volume_24h_usd: token.marketCap * 100,
-                    volume_24h_change_percent: 0,
-                    volume_1h_change_percent: 0,
-                    volume_4h_change_percent: 0,
-                    volume_5m_change_percent: 0,
-                    poolAddress: token.address
-                }));
+                // filteredList = newCoins?.map(token => ({
+                //     ...token,
+                //     market_cap: token.marketCap * 100,
+                //     volume_24h_usd: token.marketCap * 100,
+                //     volume_24h_change_percent: 0,
+                //     volume_1h_change_percent: 0,
+                //     volume_4h_change_percent: 0,
+                //     volume_5m_change_percent: 0,
+                //     poolAddress: token.address
+                // }));
+                filteredList= []
                 break;
             case "favorite":
                 filteredList = myWishlist?.tokens || [];
@@ -232,12 +233,12 @@ const ListToken = () => {
             await SolonaTokenService.toggleWishlist(data);
 
             // Show success notification
-            notify({
-                message: isAdding
-                    ? `${t("tableDashboard.toast.add")} ${t("tableDashboard.toast.wishlist")} ${t("tableDashboard.toast.success")}`
-                    : `${t("tableDashboard.toast.remove")} ${t("tableDashboard.toast.wishlist")} ${t("tableDashboard.toast.success")}`,
-                type: 'success'
-            });
+            // notify({
+            //     message: isAdding
+            //         ? `${t("tableDashboard.toast.add")} ${t("tableDashboard.toast.wishlist")} ${t("tableDashboard.toast.success")}`
+            //         : `${t("tableDashboard.toast.remove")} ${t("tableDashboard.toast.wishlist")} ${t("tableDashboard.toast.success")}`,
+            //     type: 'success'
+            // });
         } catch (error) {
             // Show error notification
             notify({
@@ -365,7 +366,7 @@ const ListToken = () => {
                     </div>
 
                 </div>
-                {activeTab !== "favorite" && activeTab !== "new" && (
+                {/* {activeTab !== "favorite" && activeTab !== "new" && (
                     <div>
                         <div className="flex border-t border-b py-1 border-neutral-700 w-full">
                             <button
@@ -395,100 +396,109 @@ const ListToken = () => {
 
                         </div>
                     </div>
-                )}
+                )} */}
 
                 <div className="flex-grow h-[calc(100%-20px)] custom-scroll overflow-y-scroll mt-2">
-                    {Array.isArray(tokenList) && tokenList?.filter(e => categoryOption?.length > 0 ? e?.category?.name === categoryOption : true)?.map((item: any, i: number) => {
-                        const address = searchQuery.length > 0 ? item.poolAddress : item.address;
-                        return (
-                            <div
-                                key={i}
-                                className="flex items-center gap-2 justify-between border-b h-[45px] border-neutral-800 group dark:hover:bg-neutral-800/50 hover:bg-theme-green-300 rounded "
-                            >
-                                <div className='flex items-center'>
-                                    <button
-                                        className={`text-neutral-500 px-2 py-2 cursor-pointer ${isToggling[item.address] ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                        onClick={() => !isToggling[item.address] && handleToggleWishlist({
-                                            token_address: item.address,
-                                            status: isTokenInWishlist(item.address) ? "off" : "on"
-                                        })}
-                                        disabled={isToggling[item.address]}
-                                    >
-                                        <Star className={`w-4 h-4 ${isTokenInWishlist(item.address) ? "text-yellow-500 fill-yellow-500" : "text-neutral-500 hover:text-yellow-400"}`} />
-                                    </button>
+                    {Array.isArray(tokenList) && tokenList?.filter(e => categoryOption?.length > 0 ? e?.category?.name === categoryOption : true)?.length > 0 ? (
+                        tokenList?.filter(e => categoryOption?.length > 0 ? e?.category?.name === categoryOption : true)?.map((item: any, i: number) => {
+                            const address = searchQuery.length > 0 ? item.poolAddress : item.address;
+                            return (
+                                <div
+                                    key={i}
+                                    className="flex items-center gap-2 justify-between border-b h-[45px] border-neutral-800 group dark:hover:bg-neutral-800/50 hover:bg-theme-green-300 rounded "
+                                >
+                                    <div className='flex items-center'>
+                                        <button
+                                            className={`text-neutral-500 px-2 py-2 cursor-pointer ${isToggling[item.address] ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                            onClick={() => !isToggling[item.address] && handleToggleWishlist({
+                                                token_address: item.address,
+                                                status: isTokenInWishlist(item.address) ? "off" : "on"
+                                            })}
+                                            disabled={isToggling[item.address]}
+                                        >
+                                            <Star className={`w-4 h-4 ${isTokenInWishlist(item.address) ? "text-yellow-500 fill-yellow-500" : "text-neutral-500 hover:text-yellow-400"}`} />
+                                        </button>
 
-                                </div>
-                                <div className='flex-1 flex items-center justify-between cursor-pointer' onClick={() => handleChangeToken(address)}>
-                                    <div className="flex items-center gap-2 ">
-                                        <img
-                                            src={item?.logo_uri || item?.logoUrl || "/logo.png"}
-                                            alt=""
-                                            width={24}
-                                            height={24}
-                                            className='w-[24px] h-[24px] rounded-full object-cover'
-                                            onError={(e) => {
-                                                const target = e.target as HTMLImageElement;
-                                                target.src = "/logo.png";
-                                            }}
-                                        />
-                                        {item?.program?.includes("pumpfun") && (
-                                            <span className='cursor-pointer' onClick={() => window.open(`https://pump.fun/coin/${address}`, '_blank')}>{(item?.market == "pumpfun" || item?.program == "pumpfun-amm" || item?.program == "pumpfun") && <PumpFun />}</span>
-                                        )}
-                                        {item?.program?.includes("orca") && (
+                                    </div>
+                                    <div className='flex-1 flex items-center justify-between cursor-pointer' onClick={() => handleChangeToken(address)}>
+                                        <div className="flex items-center gap-2 ">
                                             <img
-                                                src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE/logo.png"
-                                                alt="orca logo"
-                                                width={12}
-                                                height={12}
-                                                className="rounded-full"
+                                                src={item?.logo_uri || item?.logoUrl || "/logo.png"}
+                                                alt=""
+                                                width={24}
+                                                height={24}
+                                                className='w-[24px] h-[24px] rounded-full object-cover'
+                                                onError={(e) => {
+                                                    const target = e.target as HTMLImageElement;
+                                                    target.src = "/logo.png";
+                                                }}
                                             />
-                                        )}
-                                        {item?.program?.includes("meteora") && (
-                                            <img
-                                                src="https://www.meteora.ag/icons/v2.svg"
-                                                alt="metora logo"
-                                                width={12}
-                                                height={12}
-                                                className="rounded-full"
-                                            />
-                                        )}
-                                        {item?.program?.includes("raydium") && (
-                                            <img
-                                                src="https://raydium.io/favicon.ico"
-                                                alt="raydium logo"
-                                                width={12}
-                                                height={12}
-                                                className="rounded-full"
-                                            />
-                                        )}
-                                        <div className='flex gap-1 items-center'>
-
-                                            <span className='text-xs font-light dark:text-neutral-300 text-neutral-800'>{item.symbol}</span>
+                                            {item?.program?.includes("pumpfun") && (
+                                                <span className='cursor-pointer' onClick={() => window.open(`https://pump.fun/coin/${address}`, '_blank')}>{(item?.market == "pumpfun" || item?.program == "pumpfun-amm" || item?.program == "pumpfun") && <PumpFun />}</span>
+                                            )}
+                                            {item?.program?.includes("orca") && (
+                                                <img
+                                                    src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE/logo.png"
+                                                    alt="orca logo"
+                                                    width={12}
+                                                    height={12}
+                                                    className="rounded-full"
+                                                />
+                                            )}
+                                            {item?.program?.includes("meteora") && (
+                                                <img
+                                                    src="https://www.meteora.ag/icons/v2.svg"
+                                                    alt="metora logo"
+                                                    width={12}
+                                                    height={12}
+                                                    className="rounded-full"
+                                                />
+                                            )}
+                                            {item?.program?.includes("raydium") && (
+                                                <img
+                                                    src="https://raydium.io/favicon.ico"
+                                                    alt="raydium logo"
+                                                    width={12}
+                                                    height={12}
+                                                    className="rounded-full"
+                                                />
+                                            )}
+                                            <div className='flex gap-1 items-center'>
+                                                <span className='text-xs font-light dark:text-neutral-300 text-neutral-800'>{item.symbol}</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="text-right pr-3 flex flex-col gap-1 cursor-pointer" onClick={() => handleChangeToken(address)}>
-                                        <span className='dark:text-theme-neutral-100 text-theme-neutral-800 text-xs font-medium'>${formatNumberWithSuffix(item.volume_usd)}</span>
-                                        {activeTab === "new" ? (
-                                            <span className="text-xs font-medium dark:text-theme-neutral-100 text-theme-neutral-800">
-                                                {getRelativeTime(item.createdAt)}
-                                            </span>
-                                        ) : (
-                                            item.volume_change_percent !== undefined && (
-                                                <span className={`text-xs font-medium ${item.volume_change_percent > 0
-                                                    ? 'text-theme-green-200'
-                                                    : item.volume_change_percent < 0
-                                                        ? 'text-theme-red-100'
-                                                        : 'dark:text-theme-neutral-100 text-theme-neutral-800'
-                                                    }`}>{formatNumberWithSuffix(item.volume_change_percent) ?? 0}%</span>
-                                            )
-                                        )}
+                                        <div className="text-right pr-3 flex flex-col gap-1 cursor-pointer" onClick={() => handleChangeToken(address)}>
+                                            <span className='dark:text-theme-neutral-100 text-theme-neutral-800 text-xs font-medium'>${formatNumberWithSuffix(item.volume_usd)}</span>
+                                            {activeTab === "new" ? (
+                                                <span className="text-xs font-medium dark:text-theme-neutral-100 text-theme-neutral-800">
+                                                    {getRelativeTime(item.createdAt)}
+                                                </span>
+                                            ) : (
+                                                item.volume_change_percent !== undefined && (
+                                                    <span className={`text-xs font-medium ${item.volume_change_percent > 0
+                                                        ? 'text-theme-green-200'
+                                                        : item.volume_change_percent < 0
+                                                            ? 'text-theme-red-100'
+                                                            : 'dark:text-theme-neutral-100 text-theme-neutral-800'
+                                                        }`}>{formatNumberWithSuffix(item.volume_change_percent) ?? 0}%</span>
+                                                )
+                                            )}
+                                        </div>
+
                                     </div>
 
                                 </div>
-
+                            )
+                        })
+                    ) : (
+                        <div className="flex items-center justify-center h-full">
+                            <div className="text-center">
+                                <div className="text-neutral-500 dark:text-neutral-400 text-sm mb-2">
+                                    {t('common.noData') || 'Không có dữ liệu'}
+                                </div>
                             </div>
-                        )
-                    })}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

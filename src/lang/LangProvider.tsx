@@ -43,14 +43,14 @@ export const LangProvider: React.FC<LangProviderProps> = ({
     const savedLang = localStorage.getItem("lang") as LangCodes;
     const detectedLang = detectBrowserLanguage();
     
-    let finalLang: LangCodes = 'kr';
+    let finalLang: LangCodes = 'en';
     
     if (savedLang && ['en', 'vi', 'kr', 'jp'].includes(savedLang)) {
       finalLang = savedLang;
     } else if (initialLang && ['en', 'vi', 'kr', 'jp'].includes(initialLang)) {
       finalLang = initialLang;
-    } else if (detectedLang) {
-      finalLang = detectedLang;
+    } else {
+      finalLang = "en";
     }
     
     setLang(finalLang);

@@ -300,8 +300,12 @@ export default function WalletPage() {
     });
 
     console.log("tokenList", tokenList)
-    // Filter tokens with price >= 0.000001
-    const filteredTokens = tokenList?.tokens?.filter((token: Token) => token.token_balance_usd >= 0.05) || [];
+    // Filter tokens: SOL/USDT tokens are always shown, others need balance >= 0.005
+    const filteredTokens = tokenList?.tokens?.filter((token: Token) => 
+        token.token_symbol === "SOL" || 
+        token.token_symbol === "USDT" || 
+        token.token_balance_usd >= 0.005
+    ) || [];
     console.log("filteredTokens", filteredTokens)
     const { data: walletInfor, refetch, isLoading: isLoadingWalletInfor } = useQuery({
         queryKey: ["wallet-infor"],

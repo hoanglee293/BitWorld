@@ -180,14 +180,14 @@ export default function LiquidityPools() {
                 // Extract current and required values from the error message
                 const currentMatch = errorMessage.match(/Current:\s*(\d+)/);
                 const requiredMatch = errorMessage.match(/Required:\s*(\d+)/);
-                
+
                 if (currentMatch && requiredMatch) {
                     const current = currentMatch[1];
                     const required = requiredMatch[1];
                     const message = t('pools.insufficientTokenBalance', { current, required });
                     toast.error(message);
                 }
-            } 
+            }
         } finally {
             setIsSubmitting(false)
         }
@@ -262,39 +262,41 @@ export default function LiquidityPools() {
         <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white">
             {/* Main Content */}
             <main className="px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-10">
-                <div className="container mx-auto max-w-7xl">
-                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-theme-primary-500 mb-6 sm:mb-8 lg:mb-12">{t('pools.title')}</h1>
+                <div className="md:container mx-auto lg:max-w-7xl">
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-theme-primary-500 mb-6 sm:mb-8 lg:mb-12">BITTWORLD POOL</h1>
 
                     {/* Search and Actions */}
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6">
-                        <div className="flex items-center gap-3">
-                            <Button
-                                className={`text-xs sm:text-sm font-medium px-3 sm:px-4 py-2 sm:py-2 h-auto sm:max-h-[30px] w-full sm:w-auto transition-colors ${activeFilter === 'all'
-                                    ? 'text-theme-primary-500 underline underline-offset-8'
-                                    : 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                                    }`}
-                                onClick={() => handleFilterChange('all')}
-                            >
-                                {t('pools.filterAll')}
-                            </Button>
-                            <Button
-                                className={`text-xs sm:text-sm font-medium px-3 sm:px-4 py-2 sm:py-2 h-auto sm:max-h-[30px] w-full sm:w-auto transition-colors ${activeFilter === 'created'
-                                    ? 'text-theme-primary-500 underline underline-offset-8'
-                                    : 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                                    }`}
-                                onClick={() => handleFilterChange('created')}
-                            >
-                                {t('pools.filterCreated')}
-                            </Button>
-                            <Button
-                                className={`text-xs sm:text-sm font-medium px-3 sm:px-4 py-2 sm:py-2 h-auto sm:max-h-[30px] w-full sm:w-auto transition-colors ${activeFilter === 'joined'
-                                    ? 'text-theme-primary-500 underline underline-offset-8'
-                                    : 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                                    }`}
-                                onClick={() => handleFilterChange('joined')}
-                            >
-                                {t('pools.filterJoined')}
-                            </Button>
+                        <div className="flex flex-col sm:flex-row items-center gap-3 w-full">
+                            <div className="flex items-center gap-3 w-full sm:w-auto">
+                                <Button
+                                    className={`text-xs flex-1 sm:text-sm font-medium px-3 sm:px-4 py-2 sm:py-2 h-auto sm:max-h-[30px] w-full sm:w-auto transition-colors ${activeFilter === 'all'
+                                        ? 'text-theme-primary-500 underline underline-offset-8'
+                                        : 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                        }`}
+                                    onClick={() => handleFilterChange('all')}
+                                >
+                                    {t('pools.filterAll')}
+                                </Button>
+                                <Button
+                                    className={`text-xs flex-1 sm:text-sm font-medium px-3 sm:px-4 py-2 sm:py-2 h-auto sm:max-h-[30px] w-full sm:w-auto transition-colors ${activeFilter === 'created'
+                                        ? 'text-theme-primary-500 underline underline-offset-8'
+                                        : 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                        }`}
+                                    onClick={() => handleFilterChange('created')}
+                                >
+                                    {t('pools.filterCreated')}
+                                </Button>
+                                <Button
+                                    className={`text-xs flex-1 sm:text-sm font-medium px-3 sm:px-4 py-2 sm:py-2 h-auto sm:max-h-[30px] w-full sm:w-auto transition-colors ${activeFilter === 'joined'
+                                        ? 'text-theme-primary-500 underline underline-offset-8'
+                                        : 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                        }`}
+                                    onClick={() => handleFilterChange('joined')}
+                                >
+                                    {t('pools.filterJoined')}
+                                </Button>
+                            </div>
                             <div className="relative w-full sm:w-auto">
                                 <input
                                     type="text"
@@ -371,17 +373,9 @@ export default function LiquidityPools() {
                                     <Button
                                         size="sm"
                                         className="w-full bg-transparent border border-theme-primary-500 text-theme-primary-500 dark:text-white hover:bg-theme-primary-500 hover:text-white text-xs py-2"
-                                        onClick={() => {
-                                            if (pool.userStakeInfo?.isCreator) {
-                                                // Navigate to pool detail
-                                                router.push(`/pools/${pool.poolId}`);
-                                            } else {
-                                                // Show stake modal or navigate to stake page
-                                                handleStakePool(pool.poolId, 1000000);
-                                            }
-                                        }}
+                                        onClick={() => router.push(`/pools/${pool.poolId}`)}
                                     >
-                                        {pool.userStakeInfo?.isCreator ? t('pools.detail') : t('pools.join')}
+                                        {t('pools.detail')}
                                     </Button>
                                 </div>
                             </div>

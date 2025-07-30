@@ -105,6 +105,29 @@ export const getAirdropPoolDetail = async (poolId: number, sortBy?: string, sort
 };
 
 /**
+ * Lấy chi tiết pool theo id hoặc slug (API mới)
+ * @param idOrSlug id hoặc slug của pool
+ * @param sortBy transactionDate | stakeAmount | memberId | status
+ * @param sortOrder asc | desc
+ */
+export const getAirdropPoolDetailV1 = async (
+  idOrSlug: string | number,
+  sortBy: 'transactionDate' | 'stakeAmount' | 'memberId' | 'status' = 'transactionDate',
+  sortOrder: 'asc' | 'desc' = 'desc'
+) => {
+  try {
+    const params = new URLSearchParams();
+    if (sortBy) params.append('sortBy', sortBy);
+    if (sortOrder) params.append('sortOrder', sortOrder);
+    const response = await axiosClient.get(`/airdrops/pool-detail/${idOrSlug}?${params.toString()}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching pool detail v1:", error);
+    return { success: false, data: null };
+  }
+};
+
+/**
  * Tạo một airdrop pool mới
  */
 export const createAirdropPool = async (data: CreatePoolRequest) => {

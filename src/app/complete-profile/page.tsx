@@ -40,7 +40,7 @@ export default function CompleteProfile() {
             wallet_id: (payloadToken as any)?.wallet_id || '',
             name: '',
             nick_name: '',
-            country: langList[0].code,
+            country: "kr",
             bittworld_uid: ''
         },
         mode: 'onChange'
@@ -88,17 +88,17 @@ export default function CompleteProfile() {
                         <input type="hidden" {...register("wallet_id")} />
                         
                         <div className="space-y-2">
-                            <Label htmlFor="name">{t("tglogin.name")}</Label>
+                            <Label htmlFor="nick_name">{t("tglogin.name")}</Label>
                             <Input
-                                id="name"
-                                {...register("name", {
+                                id="nick_name"
+                                {...register("nick_name", {
                                     required: t("tglogin.nameRequired")
                                 })}
                                 placeholder={t("tglogin.namePlaceholder")}
                             />
-                            {errors.name && (
+                            {errors.nick_name && (
                                 <p className="text-sm text-red-500">
-                                    {errors.name.message}
+                                    {errors.nick_name.message}
                                 </p>
                             )}
                         </div>
@@ -110,7 +110,7 @@ export default function CompleteProfile() {
                                 {...register("bittworld_uid", {
                                     required: t("tglogin.nicknameRequired")
                                 })}
-                                placeholder={t("tglogin.nicknamePlaceholder")}
+                                placeholder={t("tglogin.uid")}
                             />
                             {errors.nick_name && (
                                 <p className="text-sm text-red-500">
@@ -118,55 +118,9 @@ export default function CompleteProfile() {
                                 </p>
                             )}
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="nick_name">{t("tglogin.nickname")}</Label>
-                            <Input
-                                id="nick_name"
-                                {...register("nick_name", {
-                                    required: t("tglogin.nicknameRequired")
-                                })}
-                                placeholder={t("tglogin.nicknamePlaceholder")}
-                            />
-                            {errors.nick_name && (
-                                <p className="text-sm text-red-500">
-                                    {errors.nick_name.message}
-                                </p>
-                            )}
-                        </div>
+                        
 
-                        <div className="space-y-2">
-                            <Label htmlFor="country">{t("tglogin.country")}</Label>
-                            <Select
-                                onValueChange={(value) => setValue("country", value)}
-                                value={watch("country")}
-                                required
-                            >
-                                <SelectTrigger id="country" className={errors.country ? "border-red-500" : ""}>
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {langList.map((lang) => (
-                                        <SelectItem key={lang.code} value={lang.code}>
-                                            <div className="flex items-center gap-2">
-                                                <img 
-                                                    src={lang.flag} 
-                                                    alt={lang.name} 
-                                                    className="w-5 h-3 object-cover"
-                                                />
-                                                <span>{lang.name}</span>
-                                            </div>
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            {errors.country && (
-                                <p className="text-sm text-red-500">
-                                    {t("tglogin.countryRequired")}
-                                </p>
-                            )}
-                        </div>
-
-                        <Button type="submit" className="w-full border">
+                        <Button type="submit" className="w-full border bg-theme-neutral-800 text-white">
                             {t("tglogin.submit")}
                         </Button>
                     </form>

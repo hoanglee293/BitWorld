@@ -470,8 +470,8 @@ export default function SearchModal({ isOpen, onClose, onSelectToken, searchQuer
 
               {filteredAndSortedTokens.length === 0 && (
                 <div className="text-center py-6 sm:py-8 text-gray-400">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-full bg-gray-800 flex items-center justify-center">
-                    <Search className="h-6 w-6 sm:h-8 sm:w-8 opacity-50" />
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-full bg-theme-primary-500 flex items-center justify-center">
+                    <Search className="h-6 w-6 sm:h-8 sm:w-8 opacity-50 text-white" />
                   </div>
                   <p className="text-sm sm:text-base">{t('searchModal.noResults')}</p>
                 </div>

@@ -17,7 +17,6 @@ export const langConfig: {
   listLangs: [
     { id: 1, name: "Korea", code: "kr", translationKey: "languages.korea", flag: "https://flagcdn.com/w40/kr.png" },
     { id: 2, name: "English", code: "en", translationKey: "languages.english", flag: "https://flagcdn.com/w40/gb.png" },
-    { id: 3, name: "Vietnamese", code: "vi", translationKey: "languages.vietnamese", flag: "https://flagcdn.com/w40/vn.png" }
   ],
   langsApp: {
     en,
@@ -30,7 +29,7 @@ export const langConfig: {
 // Hàm phát hiện ngôn ngữ của trình duyệt
 export const detectBrowserLanguage = (): LangCodes => {
   if (typeof window === 'undefined') {
-    return 'kr'; // Fallback cho SSR
+    return 'en'; // Fallback cho SSR
   }
 
   const browserLang = navigator.language || navigator.languages?.[0] || 'kr';
@@ -61,7 +60,7 @@ export const detectBrowserLanguage = (): LangCodes => {
     return primaryMatch;
   }
 
-  return 'kr'; // Fallback mặc định
+  return 'en'; // Fallback mặc định
 };
 
 // Hàm hỗ trợ lấy dữ liệu từ object lồng nhau

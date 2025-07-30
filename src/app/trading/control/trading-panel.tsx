@@ -281,24 +281,24 @@ export default function TradingPanel({
     return (
         <div className="h-full flex flex-col py-3 pl-2">
             {/* Mode Tabs */}
-            <div className="flex group bg-gray-100 dark:bg-theme-neutral-1000 rounded-md h-[35px] mb-1">
+            <div className="flex group bg-gray-100 dark:bg-theme-neutral-1000 rounded-md 2xl:h-[35px] h-[30px] mb-1">
                 <button
-                    className={`flex-1 rounded-md text-sm cursor-pointer uppercase text-center ${mode === "buy" ? "border-green-500 text-green-600 dark:text-theme-green-200 border-1 bg-green-50 dark:bg-theme-green-100 font-semibold" : "text-gray-500 dark:text-neutral-400"}`}
+                    className={`flex-1 rounded-md 2xl:text-sm text-xs cursor-pointer uppercase text-center ${mode === "buy" ? "border-green-500 text-green-600 dark:text-theme-green-200 border-1 bg-green-50 dark:bg-theme-green-100 font-semibold" : "text-gray-500 dark:text-neutral-400"}`}
                     onClick={() => setMode("buy")}
                 >
                     {t('trading.panel.buy')}
                 </button>
                 <button
-                    className={`flex-1 rounded-md cursor-pointer text-sm uppercase text-center ${mode === "sell" ? "border-red-500 text-red-600 dark:text-theme-red-100 border-1 bg-red-50 dark:bg-theme-red-300 font-semibold" : "text-gray-500 dark:text-neutral-400"}`}
+                    className={`flex-1 rounded-md cursor-pointer 2xl:text-sm text-xs uppercase text-center ${mode === "sell" ? "border-red-500 text-red-600 dark:text-theme-red-100 border-1 bg-red-50 dark:bg-theme-red-300 font-semibold" : "text-gray-500 dark:text-neutral-400"}`}
                     onClick={() => setMode("sell")}
                 >
                     {t('trading.panel.sell')}
                 </button>
             </div>
 
-            <div className="rounded-lg flex flex-col 2xl:justify-between gap-2 lg:gap-3 h-full overflow-y-auto pr-2">
+            <div className="rounded-lg flex flex-col md:justify-between gap-2 lg:gap-3 h-full overflow-y-auto pr-2">
                 {/* Amount Input */}
-                <div className="relative mt-3">
+                <div className="relative mt-3 flex flex-col gap-2">
                     <div className={`bg-gray-50 dark:bg-neutral-900 rounded-md border ${amountError ? 'border-red-500' : 'border-blue-200 dark:border-gray-600'} px-3 flex justify-between items-center ${height > 700 ? 'py-1.5' : 'h-[30px]'}`}>
                         <input
                             type="number"
@@ -313,7 +313,7 @@ export default function TradingPanel({
                         )}
                     </div>
                     {amountError && (
-                        <div className="text-red-500 text-sm mt-2">
+                        <div className="text-red-500 text-sm">
                             {amountError}
                         </div>
                     )}
@@ -338,23 +338,106 @@ export default function TradingPanel({
 
                             <div className="relative">
                                 <div className="relative my-1">
-                                    <input
-                                        type="range"
-                                        min="0"
-                                        max="100"
-                                        value={percentage}
-                                        onChange={handlePercentageChange}
-                                        className="w-full relative z-10 input-range"
-                                    />
-                                </div>
-                                <div className="flex justify-between mb-1">
-                                    <span className={STYLE_TEXT_BASE}>{t('trading.panel.percentage')}</span>
-                                    <span className={`${STYLE_TEXT_BASE} text-theme-primary-500`}>
-                                        {percentage.toFixed(2)}%
-                                    </span>
+                                    {/* Custom Slider */}
+                                    <div className="relative">
+                                        {/* Slider Track - Clickable */}
+                                        <div 
+                                            className="relative h-1 bg-gray-600 dark:bg-gray-700 rounded-full cursor-pointer hover:bg-gray-500 dark:hover:bg-gray-600 transition-colors duration-200"
+                                            onClick={(e) => {
+                                                const rect = e.currentTarget.getBoundingClientRect();
+                                                const clickX = e.clientX - rect.left;
+                                                const trackWidth = rect.width;
+                                                const percentage = (clickX / trackWidth) * 100;
+                                                const newValue = Math.round(percentage);
+                                                
+                                                setPercentage(newValue)
+                                                setIsDirectAmountInput(false)
+                                                if (isConnected) {
+                                                    const balance = mode === "buy" ? tradeAmount?.sol_balance || 0 : tradeAmount?.token_balance || 0
+                                                    const newAmount = ((balance * newValue) / 100).toFixed(6)
+                                                    setAmount(newAmount)
+                                                    validateAmount(Number(newAmount))
+                                                    if (mode === "buy") {
+                                                        const numericAmount = Number(newAmount)
+                                                        setAmountUSD((numericAmount * exchangeRate).toFixed(2))
+                                                    }
+                                                }
+                                            }}
+                                        >
+                                            {/* Progress Fill */}
+                                            <div 
+                                                className="absolute h-full bg-blue-600 dark:bg-blue-500 rounded-full transition-all duration-200"
+                                                style={{ width: `${percentage}%` }}
+                                            />
+                                        </div>
+                                        
+                                        {/* Slider Marks */}
+                                        <div className="flex justify-between mt-2 relative z-30">
+                                            {[0, 25, 50, 75, 100].map((mark) => {
+                                                const isActive = percentage >= mark;
+                                                return (
+                                                    <div key={mark} className="flex flex-col items-center min-w-[40px] sm:min-w-auto" onClick={() => {
+                                                        setPercentage(mark)
+                                                        setIsDirectAmountInput(false)
+                                                        if (isConnected) {
+                                                            const balance = mode === "buy" ? tradeAmount?.sol_balance || 0 : tradeAmount?.token_balance || 0
+                                                            const newAmount = ((balance * mark) / 100).toFixed(6)
+                                                            setAmount(newAmount)
+                                                            validateAmount(Number(newAmount))
+                                                            if (mode === "buy") {
+                                                                const numericAmount = Number(newAmount)
+                                                                setAmountUSD((numericAmount * exchangeRate).toFixed(2))
+                                                            }
+                                                        }
+                                                    }}>
+                                                        <button
+                                                            className={`w-3 h-3 rounded-full mb-1 transition-all duration-200 hover:scale-125 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
+                                                                isActive
+                                                                    ? 'bg-blue-600 dark:bg-blue-500 border-2 border-cyan-400 dark:border-cyan-300 shadow-lg'
+                                                                    : 'bg-gray-600 dark:bg-gray-700 hover:bg-gray-500 dark:hover:bg-gray-600'
+                                                            }`}
+                                                        />
+                                                        <span className={`text-xs font-medium transition-colors duration-200 ${
+                                                            isActive 
+                                                                ? 'text-cyan-400 dark:text-cyan-300' 
+                                                                : 'text-white dark:text-gray-200'
+                                                        }`}>
+                                                            {mark}%
+                                                        </span>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                        
+                                        {/* Hidden Range Input for Drag Functionality */}
+                                        <input
+                                            type="range"
+                                            min="0"
+                                            max="100"
+                                            step="1"
+                                            value={percentage}
+                                            onChange={(e) => {
+                                                const value = Number(e.target.value)
+                                                setPercentage(value)
+                                                setIsDirectAmountInput(false)
+                                                if (isConnected) {
+                                                    const balance = mode === "buy" ? tradeAmount?.sol_balance || 0 : tradeAmount?.token_balance || 0
+                                                    const newAmount = ((balance * value) / 100).toFixed(6)
+                                                    setAmount(newAmount)
+                                                    validateAmount(Number(newAmount))
+                                                    if (mode === "buy") {
+                                                        const numericAmount = Number(newAmount)
+                                                        setAmountUSD((numericAmount * exchangeRate).toFixed(2))
+                                                    }
+                                                }
+                                            }}
+                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                            style={{ pointerEvents: 'auto' }}
+                                        />
+                                    </div>
                                 </div>
                                 {/* Percentage Buttons */}
-                                <PercentageButtons
+                                {/* <PercentageButtons
                                     percentageValues={percentageValues}
                                     percentage={percentage}
                                     onSetPercentage={handleSetPercentage}
@@ -364,18 +447,18 @@ export default function TradingPanel({
                                     editValue={editValue}
                                     setEditValue={setEditValue}
                                     onEditKeyPress={handleEditKeyPress}
-                                />
+                                /> */}
                             </div>
                         </div>
                     )}
                 </div>
 
                 {/* Action Button */}
-                <div className="mt-3">
+                <div >
                     <button
                         onClick={handleSubmit}
                         disabled={isButtonDisabled || isLoading}
-                        className={`w-full py-2 rounded-full text-white font-semibold text-sm transition-colors relative ${isButtonDisabled || isLoading
+                        className={`w-full 2xl:py-2 py-1 rounded-full text-white font-semibold text-sm transition-colors relative ${isButtonDisabled || isLoading
                             ? "bg-gray-400 cursor-not-allowed dark:bg-gray-600"
                             : mode === "buy"
                                 ? "bg-green-500 hover:bg-green-600 dark:bg-theme-green-200 dark:hover:bg-theme-green-200/90"

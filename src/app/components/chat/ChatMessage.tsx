@@ -18,7 +18,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
             height={20}
             className="rounded-full ring-2 ring-theme-primary-400/20 dark:ring-theme-primary-400/30"
           /> */}
-          {currentLang?.flag ? <img src={currentLang?.flag} alt={currentLang?.name} className="w-[15px] h-[15px] rounded-full object-cover" /> : <img src="https://flagcdn.com/w40/gb.png" alt="token" className="w-[15px] h-[15px] rounded-full object-cover" />}
+          {/* {currentLang?.flag ? <img src={currentLang?.flag} alt={currentLang?.name} className="w-[15px] h-[15px] rounded-full object-cover" /> : <img src="https://flagcdn.com/w40/gb.png" alt="token" className="w-[15px] h-[15px] rounded-full object-cover" />} */}
           
           <div className="font-medium text-xs  text-theme-primary-500 dark:text-theme-primary-300">
             {message.sender.name} :

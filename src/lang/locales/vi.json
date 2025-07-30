@@ -1071,7 +1071,8 @@
     "country": "Quốc Gia",
     "namePlaceholder": "Nhập tên của bạn",
     "nicknamePlaceholder": "Nhập biệt danh của bạn",
-    "submit": "Gửi"
+    "submit": "Gửi",
+    "uid": "Nhập UID của bạn"
   },
   "security": {
     "enter_password": "Nhập mật khẩu của bạn",

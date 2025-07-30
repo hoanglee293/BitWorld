@@ -1,4 +1,4 @@
-export const STYLE_TEXT_BASE = "text-gray-600 dark:text-neutral-200 text-sm font-normal"
+export const STYLE_TEXT_BASE = "text-gray-600 dark:text-neutral-200 2xl:text-sm text-xs font-normal"
 
 export const SELECT_STYLES = {
     control: (base: any) => ({

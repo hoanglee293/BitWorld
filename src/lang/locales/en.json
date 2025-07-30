@@ -846,7 +846,8 @@
       "copied": "Copied!"
     },
     "actions": "Actions",
-    "close": "Close"
+    "close": "Close",
+    "noData": "No data"
   },
   "universal_account": {
     "google_auth_code": "Google Authenticator Code",
@@ -996,7 +997,12 @@
     "country": "Country",
     "namePlaceholder": "Enter your name",
     "nicknamePlaceholder": "Enter your nickname",
-    "submit": "Submit"
+    "submit": "Submit",
+    "uid": "Enter your Bittworld UID",
+    "nameRequired": "Name is required",
+    "nicknameRequired": "Nickname is required",
+    "submitFailed": "Failed to submit",
+    "submitSuccess": "Submit successfully"
   },
   "security": {
     "enter_password": "Enter your password",
@@ -1182,6 +1188,7 @@
       "transactionHistory": "Transaction History",
       "member": "Member",
       "creator": "Creator",
+      "stake": "Stake",
       "stakeAmount": "Stake Amount",
       "joinDate": "Join Date",
       "role": "Role",

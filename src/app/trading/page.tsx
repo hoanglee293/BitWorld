@@ -55,9 +55,9 @@ const TradingPage = () => {
   if (windowWidth < 905) withDesktop = 'w-[35%]';
 
   return (
-    <div className={`h-[92vh] flex flex-col gap-2 xl:gap-4 relative z-40 pt-4 ${isMobile ? 'px-2' : 'px-2'
+    <div className={`h-[93vh] flex flex-col gap-2 xl:gap-4 relative z-40 pt-4 ${isMobile ? 'px-2' : 'px-2'
       }`}>
-      {!isMobile && <Interface />}
+      {/* {!isMobile && <Interface />} */}
 
       {/* Sidebar Toggle Button for Small Screens */}
       {isSmallScreen && (
@@ -150,7 +150,7 @@ const TradingPage = () => {
             <PanelResizeHandle className="w-[2px] m-1 bg-theme-neutral-800 hover:bg-neutral-600 transition-colors relative z-400" />
 
             {/* Right Column */}
-            <Panel defaultSize={18} minSize={5} maxSize={30} className="h-full overflow-hidden">
+            <Panel defaultSize={22} minSize={5} maxSize={30} className="h-full overflow-hidden">
               <div className='h-full overflow-auto'>
                 <Control />
               </div>
@@ -165,7 +165,7 @@ const TradingPage = () => {
                 style={{ height: '300px' }}
                 className='dark:bg-theme-neutral-1000 shadow-inset bg-white rounded-md p-2 md:p-4 overflow-auto transition-all duration-100 relative'
               >
-                <ChartMobile className='h-full' />
+                <TradingViewChart className='h-full' />
               </div>
 
               <div className='h-1 m-1 md:m-2 bg-theme-neutral-800 cursor-row-resize hover:bg-neutral-600 transition-colors relative z-400' />

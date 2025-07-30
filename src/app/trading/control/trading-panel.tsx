@@ -400,7 +400,7 @@ export default function TradingPanel({
                                                         <span className={`text-xs font-medium transition-colors duration-200 ${
                                                             isActive 
                                                                 ? 'text-cyan-400 dark:text-cyan-300' 
-                                                                : 'text-white dark:text-gray-200'
+                                                                : 'text-black dark:text-gray-200'
                                                         }`}>
                                                             {mark}%
                                                         </span>

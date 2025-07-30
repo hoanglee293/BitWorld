@@ -59,7 +59,7 @@ export default function CompleteProfile() {
             return;
         }
         try {
-            const res = await TelegramWalletService.changeName(formData);
+            const res = await TelegramWalletService.changeName({...formData, name: formData.nick_name});
             refetch();
             router.push("/trading?address=6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN");
             setToastMessage(t("tglogin.submitSuccess"));

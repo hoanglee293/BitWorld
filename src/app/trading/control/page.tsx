@@ -174,7 +174,7 @@ const Control = () => {
                 }`}
             >
               <ChatIcon />
-              <span className="text-xs">{walletInfor?.role === 'master' ? t('trading.master') : t('trading.chat')}</span>
+              <span className="text-xs">{t('trading.chat')}</span>
             </button>
           </div>
         </div>

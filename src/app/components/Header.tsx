@@ -149,7 +149,7 @@ const Header = () => {
     return (
         <>
             {/* NotifyProvider removed - using Toaster from ClientLayout */}
-            <header className="sticky top-0 w-full bg-white dark:bg-[#141414] border-b dark:border-none shadow-lg border-gray-200 dark:border-gray-800" style={{ zIndex: 50 }}>
+            <header className="sticky top-0 w-full bg-white dark:bg-[#141414] border-b dark:border-none shadow-lg border-gray-200 dark:border-gray-800" style={{ zIndex: 55 }}>
                 <div className='flex items-center justify-between px-4 2xl:px-10 2xl:py-2 py-1 '>
                     <div className='flex gap-4'>
                         <div className='flex items-center gap-[3vw]'>

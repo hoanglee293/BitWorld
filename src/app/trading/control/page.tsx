@@ -209,7 +209,7 @@ const Control = () => {
     <div className='flex flex-col h-full gap-4 '>
       <PanelGroup direction="vertical" className="h-full">
         {/* Chart Panel */}
-        <Panel defaultSize={40} minSize={20} maxSize={40} className={`${classLayout} lg:overflow-hidden relative`}>
+        <Panel defaultSize={40} minSize={20} maxSize={80} className={`${classLayout} lg:overflow-hidden relative`}>
           <Suspense fallback={<div className="flex items-center min-h-[500px] justify-center h-full ">Loading...</div>}>
             <TradingPanel
               defaultMode={activeTab as TradingMode}

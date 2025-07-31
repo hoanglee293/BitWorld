@@ -333,6 +333,26 @@ const ListToken = () => {
         setCategoryOption(categorySlug)
         setSelectedCategory(categorySlug);
     };
+    const handleStarClick = async (token: any) => {
+        const status = myWishlist?.tokens?.some((t: { address: string }) => t.address === token.address) ? "off" : "on";
+        const data = {
+          token_address: token.address,
+          status: status,
+        };
+        
+        try {
+          // First call getTokenInforByAddress
+          await SolonaTokenService.getTokenInforByAddress(token.address);
+          
+          // Only after getTokenInforByAddress succeeds, call toggleWishlist
+          await SolonaTokenService.toggleWishlist(data);
+          refetchMyWishlist();
+          notify({ message: status === "on" ? `${t("tableDashboard.toast.add")} ${t("tableDashboard.toast.wishlist")} ${t("tableDashboard.toast.success")}` : `${t("tableDashboard.toast.remove")} ${t("tableDashboard.toast.wishlist")} ${t("tableDashboard.toast.success")}`, type: 'success' });
+        } catch (error) {
+          notify({ message: status === "on" ? `${t("tableDashboard.toast.add")} ${t("tableDashboard.toast.wishlist")} ${t("tableDashboard.toast.failed")}` : `${t("tableDashboard.toast.remove")} ${t("tableDashboard.toast.wishlist")} ${t("tableDashboard.toast.failed")}`, type: 'error' });
+        }
+      };
+
     return (
         <div className='dark:bg-theme-neutral-1000 bg-white shadow-inset rounded-md pr-0 pb-0 flex-1 pt-1 overflow-hidden'>
             <div className='pr-1 h-full'>
@@ -410,10 +430,7 @@ const ListToken = () => {
                                     <div className='flex items-center'>
                                         <button
                                             className={`text-neutral-500 px-2 py-2 cursor-pointer ${isToggling[item.address] ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                            onClick={() => !isToggling[item.address] && handleToggleWishlist({
-                                                token_address: item.address,
-                                                status: isTokenInWishlist(item.address) ? "off" : "on"
-                                            })}
+                                            onClick={() => !isToggling[item.address] && handleStarClick(item)}
                                             disabled={isToggling[item.address]}
                                         >
                                             <Star className={`w-4 h-4 ${isTokenInWishlist(item.address) ? "text-yellow-500 fill-yellow-500" : "text-neutral-500 hover:text-yellow-400"}`} />

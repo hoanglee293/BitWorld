@@ -301,9 +301,9 @@ export default function WalletPage() {
 
     console.log("tokenList", tokenList)
     // Filter tokens: SOL/USDT tokens are always shown, others need balance >= 0.005
-    const filteredTokens = tokenList?.tokens?.filter((token: Token) => 
-        token.token_symbol === "SOL" || 
-        token.token_symbol === "USDT" || 
+    const filteredTokens = tokenList?.tokens?.filter((token: Token) =>
+        token.token_symbol === "SOL" ||
+        token.token_symbol === "USDT" ||
         token.token_balance_usd >= 0.005
     ) || [];
     console.log("filteredTokens", filteredTokens)
@@ -430,7 +430,7 @@ export default function WalletPage() {
                                     <div className="flex justify-between lg:justify-start lg:items-end gap-4 w-full z-40">
                                         <div className="flex flex-col justify-start items-start gap-3 min-w-0">
                                             <div className="w-full flex flex-col justify-center items-start">
-                                                <div className="text-right justify-start text-theme-neutral-1000 text-xl font-bold leading-9 truncate">
+                                                <div className="text-right justify-start text-white text-xl font-bold leading-9 truncate">
                                                     {walletInfor?.solana_balance} SOL
                                                 </div>
                                                 <div className="inline-flex justify-start items-center gap-1.5 flex-wrap">
@@ -440,7 +440,7 @@ export default function WalletPage() {
                                                     <div className="text-right justify-start text-white text-[16px] font-medium leading-relaxed">
                                                         (0.00%)
                                                     </div>
-                                                    <div className="text-right justify-start text-theme-neutral-1000 text-[16px] font-medium leading-relaxed">
+                                                    <div className="text-right justify-start text-white text-[16px] font-medium leading-relaxed">
                                                         24H
                                                     </div>
                                                 </div>
@@ -452,7 +452,7 @@ export default function WalletPage() {
                                                     <div className="w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 bg-white text-[#1FC16B] border border-neutral-200 rounded-full flex justify-center items-center group  transition-all duration-500 hover:scale-105 hover:shadow-lg hover:shadow-theme-primary-500/30 active:scale-95">
                                                         <ArrowDownToLine className="w-2.5 h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4" />
                                                     </div>
-                                                    <div className="text-center text-theme-neutral-1000 text-[9px] md:text-[10px] font-semibold">
+                                                    <div className="text-center text-white text-[9px] md:text-[10px] font-semibold">
                                                         {t('wallet.receive')}
                                                     </div>
                                                 </button>
@@ -463,7 +463,7 @@ export default function WalletPage() {
                                                     <div className="w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 bg-white text-[#1FC16B] border border-neutral-200 rounded-full flex justify-center items-center transition-all hover:scale-105">
                                                         <ArrowUpFromLine className="w-2.5 h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4" />
                                                     </div>
-                                                    <div className="text-center text-theme-neutral-1000 text-[9px] md:text-[10px] font-semibold">
+                                                    <div className="text-center text-white text-[9px] md:text-[10px] font-semibold">
                                                         {t('wallet.send')}
                                                     </div>
                                                 </button>
@@ -502,6 +502,59 @@ export default function WalletPage() {
                                             </div>
                                         ) : (
                                             <div className={tableContainerStyles}>
+                                                <div className="mb-1 p-4 bg-transparent">
+                                                    <div className="flex flex-col sm:flex-row gap-4 justify-between">
+                                                        {/* SOL Balance */}
+                                                        <div className="flex-1 flex gap-2 items-center">
+                                                            <div className="text-sm text-gray-600 dark:text-gray-400 ">{t('wallet.solBalance')}</div>
+                                                            <div className="text-base font-bold text-blue-600 dark:text-blue-400">
+                                                                {(() => {
+                                                                    const solToken = filteredTokens.find((token: any) => token.token_symbol === "SOL");
+                                                                    return solToken ? solToken.token_balance.toFixed(4) : "0.0000";
+                                                                })()}
+                                                            </div>
+                                                            <div className="text-xs text-gray-500 dark:text-gray-500">
+                                                                ≈ ${(() => {
+                                                                    const solToken = filteredTokens.find((token: any) => token.token_symbol === "SOL");
+                                                                    return solToken ? (solToken.token_balance * solToken.token_price_usd).toFixed(2) : "0.00";
+                                                                })()} USD
+                                                            </div>
+                                                        </div>
+
+                                                        {/* USDT Balance */}
+                                                        <div className="flex-1 flex gap-2 items-center">
+                                                            <div className="text-sm text-gray-600 dark:text-gray-400 ">{t('wallet.usdtBalance')}</div>
+                                                            <div className="text-base font-bold text-green-600 dark:text-green-400">
+                                                                {(() => {
+                                                                    const usdtToken = filteredTokens.find((token: any) => token.token_symbol === "USDT");
+                                                                    return usdtToken ? usdtToken.token_balance.toFixed(2) : "0.00";
+                                                                })()}
+                                                            </div>
+                                                            <div className="text-xs text-gray-500 dark:text-gray-500">
+                                                                ≈ ${(() => {
+                                                                    const usdtToken = filteredTokens.find((token: any) => token.token_symbol === "USDT");
+                                                                    return usdtToken ? (usdtToken.token_balance * usdtToken.token_price_usd).toFixed(2) : "0.00";
+                                                                })()} USD
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Total Portfolio Value */}
+                                                        <div className="flex-1 flex gap-2 items-center">
+                                                            <div className="text-sm text-gray-600 dark:text-gray-400 ">{t('wallet.totalPortfolio')}</div>
+                                                            <div className="text-base font-bold text-purple-600 dark:text-purple-400">
+                                                                ${(() => {
+                                                                    const totalValue = filteredTokens.reduce((sum: number, token: any) => {
+                                                                        return sum + token.token_balance_usd;
+                                                                    }, 0);
+                                                                    return totalValue.toFixed(2);
+                                                                })()}
+                                                            </div>
+                                                            <div className="text-sm text-gray-500 dark:text-theme-primary-500">
+                                                                {filteredTokens.length} {t('wallet.tokens')}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <table className={tableStyles}>
                                                     <thead className="dark:bg-gray-900">
                                                         <tr>
@@ -609,7 +662,7 @@ export default function WalletPage() {
                                                                 }}
                                                                 className="text-gray-400 hover:text-gray-200 p-1 transition-colors"
                                                             >
-                                                               <Copy className="w-4 h-4" />
+                                                                <Copy className="w-4 h-4" />
                                                             </button>
                                                         </div>
                                                     </div>

@@ -191,7 +191,9 @@
     "tabs": {
       "trade": "TRADE",
       "chat": "CHAT",
-      "member": "MEMBER"
+      "member": "MEMBER",
+      "chatAll": "CHAT ALL",
+      "chatWithToken": "CHAT WITH TOKEN"
     },
     "unreadCount": "unread messages",
     "loading": "Loading...",

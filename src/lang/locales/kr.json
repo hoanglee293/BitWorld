@@ -201,7 +201,9 @@
     "tabs": {
       "trade": "거래",
       "chat": "채팅",
-      "member": "회원"
+      "member": "회원",
+      "chatAll": "전체 채팅",
+      "chatWithToken": "토큰 채팅"
     },
     "unreadCount": "읽지 않은 메시지",
     "loading": "로딩 중...",
@@ -488,7 +490,11 @@
     "resendCode": "인증 코드 재전송",
     "verify": "인증",
     "invalidCode": "인증 코드가 유효하지 않거나 만료되었습니다",
-    "walletNameNote": "주의: 지갑 이름과 닉네임은 이미 존재하는 지갑의 이름이나 닉네임과 중복될 수 없습니다."
+    "walletNameNote": "주의: 지갑 이름과 닉네임은 이미 존재하는 지갑의 이름이나 닉네임과 중복될 수 없습니다.",
+    "solBalance": "SOL 잔액",
+    "usdtBalance": "USDT 잔액",
+    "totalPortfolio": "총 포트폴리오",
+    "tokens": "토큰"
   },
   "searchPlaceholder": "토큰 이름/주소",
   "languages": {

@@ -474,7 +474,11 @@
     "confirmDeleteWalletAction": "ウォレットを削除",
     "cancel": "キャンセル",
     "delete": "削除",
-    "walletNameNote": "注意: ウォレット名とニックネームは既存のウォレット名およびニックネームと重複することはできません"
+    "walletNameNote": "注意: ウォレット名とニックネームは既存のウォレット名およびニックネームと重複することはできません",
+    "solBalance": "SOL残高",
+    "usdtBalance": "USDT残高",
+    "totalPortfolio": "総ポートフォリオ",
+    "tokens": "トークン"
   },
   "searchPlaceholder": "トークン名/アドレス",
   "languages": {

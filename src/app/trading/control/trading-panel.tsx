@@ -334,123 +334,88 @@ export default function TradingPanel({
 
                     {/* Percentage Controls */}
                     {(!isDirectAmountInput || mode !== "buy") && (
-                        <div>
-
-                            <div className="relative">
-                                <div className="relative my-1">
-                                    {/* Custom Slider */}
-                                    <div className="relative">
-                                        {/* Slider Track - Clickable */}
-                                        <div 
-                                            className="relative h-1 bg-gray-600 dark:bg-gray-700 rounded-full cursor-pointer hover:bg-gray-500 dark:hover:bg-gray-600 transition-colors duration-200"
-                                            onClick={(e) => {
-                                                const rect = e.currentTarget.getBoundingClientRect();
-                                                const clickX = e.clientX - rect.left;
-                                                const trackWidth = rect.width;
-                                                const percentage = (clickX / trackWidth) * 100;
-                                                const newValue = Math.round(percentage);
-                                                
-                                                setPercentage(newValue)
-                                                setIsDirectAmountInput(false)
-                                                if (isConnected) {
-                                                    const balance = mode === "buy" ? tradeAmount?.sol_balance || 0 : tradeAmount?.token_balance || 0
-                                                    const newAmount = ((balance * newValue) / 100).toFixed(6)
-                                                    setAmount(newAmount)
-                                                    validateAmount(Number(newAmount))
-                                                    if (mode === "buy") {
-                                                        const numericAmount = Number(newAmount)
-                                                        setAmountUSD((numericAmount * exchangeRate).toFixed(2))
-                                                    }
+                        <div className="mb-1">
+                            {/* <div className="flex justify-between mb-1">
+                                <span className={STYLE_TEXT_BASE}>{t('trading.panel.percentage')}</span>
+                                <span className={`${STYLE_TEXT_BASE} text-blue-600 dark:text-theme-primary-300`}>
+                                    {percentage.toFixed(2)}%
+                                </span>
+                            </div> */}
+                            <input
+                                type="range"
+                                min="0"
+                                max="100"
+                                value={percentage}
+                                onChange={handlePercentageChange}
+                                className="w-full relative z-30"
+                            />
+                            {/* Slider Marks */}
+                            <div className="flex justify-between relative z-20" style={{ marginTop: "-22.2px" }}>
+                                {[0, 25, 50, 75, 100].map((mark) => {
+                                    const isActive = percentage >= mark;
+                                    let positionStyle;
+                                    switch (mark) {
+                                        case 0:
+                                            positionStyle = "ml-0 items-center";
+                                            break;
+                                        case 25:
+                                            positionStyle = "ml-4 items-center";
+                                            break;
+                                        case 50:
+                                            positionStyle = "ml-3.5 items-center";
+                                            break;
+                                        case 75:
+                                            positionStyle = "ml-3.5 items-center";
+                                            break;
+                                        case 100:
+                                            positionStyle = "items-end";
+                                            break;
+                                    }
+                                    return (
+                                        <div key={mark} className={`flex flex-col gap-1 ${positionStyle}`} onClick={() => {
+                                            setPercentage(mark)
+                                            setIsDirectAmountInput(false)
+                                            if (isConnected) {
+                                                const balance = mode === "buy" ? tradeAmount?.sol_balance || 0 : tradeAmount?.token_balance || 0
+                                                const newAmount = ((balance * mark) / 100).toFixed(6)
+                                                setAmount(newAmount)
+                                                validateAmount(Number(newAmount))
+                                                if (mode === "buy") {
+                                                    const numericAmount = Number(newAmount)
+                                                    setAmountUSD((numericAmount * exchangeRate).toFixed(2))
                                                 }
-                                            }}
-                                        >
-                                            {/* Progress Fill */}
-                                            <div 
-                                                className="absolute h-full bg-blue-600 dark:bg-blue-500 rounded-full transition-all duration-200"
-                                                style={{ width: `${percentage}%` }}
+                                            }
+                                        }}>
+                                            <button
+                                                className={`w-[15px] h-[15px] rounded-full mb-1 transition-all duration-200 hover:scale-125 focus:outline-none focus:ring-2 focus:ring-blue-400 ${isActive
+                                                        ? 'bg-blue-600 dark:bg-blue-500 border-2 border-cyan-400 dark:border-cyan-300 shadow-lg'
+                                                        : 'bg-white dark:bg-white hover:bg-white dark:hover:bg-white'
+                                                    }`}
                                             />
+                                            <span className={`text-xs font-medium transition-colors duration-200 ${isActive
+                                                    ? 'text-cyan-400 dark:text-cyan-300'
+                                                    : 'text-black dark:text-gray-200'
+                                                }`}>
+                                                {mark}%
+                                            </span>
                                         </div>
-                                        
-                                        {/* Slider Marks */}
-                                        <div className="flex justify-between mt-2 relative z-30">
-                                            {[0, 25, 50, 75, 100].map((mark) => {
-                                                const isActive = percentage >= mark;
-                                                return (
-                                                    <div key={mark} className="flex flex-col items-center min-w-[40px] sm:min-w-auto" onClick={() => {
-                                                        setPercentage(mark)
-                                                        setIsDirectAmountInput(false)
-                                                        if (isConnected) {
-                                                            const balance = mode === "buy" ? tradeAmount?.sol_balance || 0 : tradeAmount?.token_balance || 0
-                                                            const newAmount = ((balance * mark) / 100).toFixed(6)
-                                                            setAmount(newAmount)
-                                                            validateAmount(Number(newAmount))
-                                                            if (mode === "buy") {
-                                                                const numericAmount = Number(newAmount)
-                                                                setAmountUSD((numericAmount * exchangeRate).toFixed(2))
-                                                            }
-                                                        }
-                                                    }}>
-                                                        <button
-                                                            className={`w-3 h-3 rounded-full mb-1 transition-all duration-200 hover:scale-125 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
-                                                                isActive
-                                                                    ? 'bg-blue-600 dark:bg-blue-500 border-2 border-cyan-400 dark:border-cyan-300 shadow-lg'
-                                                                    : 'bg-gray-600 dark:bg-gray-700 hover:bg-gray-500 dark:hover:bg-gray-600'
-                                                            }`}
-                                                        />
-                                                        <span className={`text-xs font-medium transition-colors duration-200 ${
-                                                            isActive 
-                                                                ? 'text-cyan-400 dark:text-cyan-300' 
-                                                                : 'text-black dark:text-gray-200'
-                                                        }`}>
-                                                            {mark}%
-                                                        </span>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                        
-                                        {/* Hidden Range Input for Drag Functionality */}
-                                        <input
-                                            type="range"
-                                            min="0"
-                                            max="100"
-                                            step="1"
-                                            value={percentage}
-                                            onChange={(e) => {
-                                                const value = Number(e.target.value)
-                                                setPercentage(value)
-                                                setIsDirectAmountInput(false)
-                                                if (isConnected) {
-                                                    const balance = mode === "buy" ? tradeAmount?.sol_balance || 0 : tradeAmount?.token_balance || 0
-                                                    const newAmount = ((balance * value) / 100).toFixed(6)
-                                                    setAmount(newAmount)
-                                                    validateAmount(Number(newAmount))
-                                                    if (mode === "buy") {
-                                                        const numericAmount = Number(newAmount)
-                                                        setAmountUSD((numericAmount * exchangeRate).toFixed(2))
-                                                    }
-                                                }
-                                            }}
-                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                            style={{ pointerEvents: 'auto' }}
-                                        />
-                                    </div>
-                                </div>
-                                {/* Percentage Buttons */}
-                                {/* <PercentageButtons
-                                    percentageValues={percentageValues}
-                                    percentage={percentage}
-                                    onSetPercentage={handleSetPercentage}
-                                    onEditClick={handleEditClick}
-                                    onEditSave={handleEditSave}
-                                    editingIndex={editingIndex}
-                                    editValue={editValue}
-                                    setEditValue={setEditValue}
-                                    onEditKeyPress={handleEditKeyPress}
-                                /> */}
+                                    );
+                                })}
                             </div>
                         </div>
                     )}
+
+                    <PercentageButtons
+                        percentageValues={percentageValues}
+                        percentage={percentage}
+                        onSetPercentage={handleSetPercentage}
+                        onEditClick={handleEditClick}
+                        onEditSave={handleEditSave}
+                        editingIndex={editingIndex}
+                        editValue={editValue}
+                        setEditValue={setEditValue}
+                        onEditKeyPress={handleEditKeyPress}
+                    />
                 </div>
 
                 {/* Action Button */}

@@ -90,8 +90,11 @@ const ChatWidget = () => {
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    // Only start dragging if clicking on the logo image itself
-    if (e.target === containerRef.current?.querySelector('.chat-logo img')) {
+    // Allow dragging from logo image or chat box header
+    const isLogoImage = e.target === containerRef.current?.querySelector('.chat-logo img');
+    const isChatHeader = e.currentTarget.closest('.chat-header');
+    
+    if (isLogoImage || isChatHeader) {
       e.preventDefault();
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
@@ -136,15 +139,19 @@ const ChatWidget = () => {
     if (isDragging) {
       setIsDragging(false);
       document.body.style.userSelect = "";
-    } else if (e.target === containerRef.current?.querySelector('.chat-logo')) {
-      // Only toggle if it wasn't a drag and clicked on the logo container
+    } else if (e.target === containerRef.current?.querySelector('.chat-logo') || 
+               e.target === containerRef.current?.querySelector('.chat-logo img')) {
+      // Only toggle if it wasn't a drag and clicked on the logo container or logo image
       setOpen(!open);
     }
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    // Only start dragging if touching the logo image itself
-    if (e.target === containerRef.current?.querySelector('.chat-logo img')) {
+    // Allow dragging from logo image or chat box header
+    const isLogoImage = e.target === containerRef.current?.querySelector('.chat-logo img');
+    const isChatHeader = e.currentTarget.closest('.chat-header');
+    
+    if (isLogoImage || isChatHeader) {
       e.preventDefault();
       if (containerRef.current) {
         const touch = e.touches[0];
@@ -199,8 +206,9 @@ const ChatWidget = () => {
   const handleTouchEnd = (e: TouchEvent) => {
     if (isDragging) {
       setIsDragging(false);
-    } else if (e.target === containerRef.current?.querySelector('.chat-logo')) {
-      // Only toggle if it wasn't a drag and tapped on the logo container
+    } else if (e.target === containerRef.current?.querySelector('.chat-logo') || 
+               e.target === containerRef.current?.querySelector('.chat-logo img')) {
+      // Only toggle if it wasn't a drag and tapped on the logo container or logo image
       setOpen(!open);
     }
   };
@@ -321,7 +329,7 @@ const ChatWidget = () => {
       await ChatService.sendAllMessage(inputMessage, lang);
       refetchChatAllHistories(); // Refetch chat history after sending
       setInputMessage("");
-      
+
       // Force scroll to bottom after sending message
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -386,17 +394,17 @@ const ChatWidget = () => {
         {open && (
           <div
             className={`${getBoxPositionClasses()} w-[calc(100vw-100px)] shadow-lg rounded-lg  lg:w-[30vw] h-[50vh] flex flex-col border border-gray-200 dark:border-t-theme-primary-300 dark:border-l-theme-primary-300 dark:border-b-theme-secondary-400 dark:border-r-theme-secondary-400`}
-            onMouseDown={(e) => {
-              e.stopPropagation();
-            }}
           >
             <div
-              className="flex items-center justify-center gap-2 p-2 cursor-move bg-gray-50 dark:bg-neutral-900 rounded-t-lg select-none"
+              className="flex items-center justify-center gap-2 p-2 cursor-move bg-gray-50 dark:bg-neutral-900 rounded-t-lg select-none chat-header"
               onMouseDown={handleMouseDown}
+              onTouchStart={handleTouchStart}
             >
-              <img src={"/ethereum.png"} alt="ethereum-icon" width={15} height={15} />
-              <span className="dark:text-white font-bold">{t("masterTrade.manage.chat.communityChatroom")}</span>
-              <img src={"/ethereum.png"} alt="ethereum-icon" width={15} height={15} />
+              <div className="flex items-center gap-2">
+                <img src={"/ethereum.png"} alt="ethereum-icon" width={15} height={15} />
+                <span className="dark:text-white font-bold">{t("masterTrade.manage.chat.communityChatroom")}</span>
+                <img src={"/ethereum.png"} alt="ethereum-icon" width={15} height={15} />
+              </div>
             </div>
             <div className="flex-1 overflow-y-auto p-3 pb-1 lg:mx-4 dark:mx-0 rounded-md lg:bg-gray-200 bg-white  dark:bg-neutral-900">
               {messages.map((msg) => (

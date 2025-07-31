@@ -514,6 +514,10 @@
     "cancel": "Hủy",
     "delete": "Xóa",
     "walletNameNote": "Lưu ý: Tên và Biệt danh ví không được trùng với tên và biệt danh của ví đã tồn tại",
+    "solBalance": "Số dư SOL",
+    "usdtBalance": "Số dư USDT",
+    "totalPortfolio": "Tổng Danh Mục",
+    "tokens": "token",
     "nicknameDuplicate": "Tên/ biệt danh ví đã tồn tại"
   },
   "searchPlaceholder": "Tên Token/ Địa chỉ",

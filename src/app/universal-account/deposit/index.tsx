@@ -38,7 +38,7 @@ const DepositWallet: React.FC<DepositWalletProps> = ({ walletAddress }) => {
                 </div>
 
                 {/* Address */}
-                <div className="relative flex bg-black rounded-lg pr-3 pl-2">
+                <div className="relative flex dark:bg-black rounded-lg pr-3 pl-2">
                     <div className="text-center rounded-lg p-3 text-sm dark:text-gray-300 text-black break-all">
                         {walletAddress}
                     </div>

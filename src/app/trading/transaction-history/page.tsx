@@ -86,13 +86,12 @@ function TransactionHistoryContent() {
     queryFn: getListBuyToken,
     enabled: isAuthenticated,
   });
-
   // Filter tokens: SOL/USDT tokens are always shown, others need balance >= 0.005
-  const filteredTokens = tokenList?.tokens?.filter((token: any) => 
-    token.token_symbol === "SOL" || 
-    token.token_symbol === "USDT" || 
+  const filteredTokens = (tokenList && 'tokens' in tokenList ? tokenList.tokens : []).filter((token: any) =>
+    token.token_symbol === "SOL" ||
+    token.token_symbol === "USDT" ||
     token.token_balance_usd >= 0.005
-  ) || [];
+  );
 
   // WebSocket connection setup
   useEffect(() => {
@@ -618,72 +617,128 @@ function TransactionHistoryContent() {
               {t("wallet.noTokens")}
             </div>
           ) : (
-            <table className="w-full text-sm table-fixed">
-              <thead className="sticky top-[-1px] z-10 bg-white dark:bg-[#0F0F0F]">
-                <tr className="border-b border-gray-200 dark:border-neutral-800">
-                  <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-auto">{t("wallet.token")}</th>
-                  <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-[15%]">{t("wallet.balance")}</th>
-                  <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-[15%]">{t("wallet.price")}</th>
-                  <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-[15%]">{t("wallet.value")}</th>
-                  <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-[20%]">{t("wallet.address")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredTokens.map((token: any, index: number) => (
-                  <tr key={index} className={`hover:bg-gray-100 dark:hover:bg-neutral-800/30 border-b border-gray-100 dark:border-neutral-800/50 cursor-pointer ${index % 2 === 0 ? 'bg-gray-50 dark:bg-[#1A1A1A]' : 'bg-white dark:bg-[#0F0F0F]'}`} onClick={() => router.push(`/trading?address=${token.token_address}`)}>
-                    <td className="px-4 py-2 text-gray-600 dark:text-neutral-300 text-xs font-medium flex-1">
-                      <div className="flex items-center gap-2">
-                        {token.token_logo_url && (
-                          <img
-                            src={token.token_logo_url}
-                            alt={token.token_name}
-                            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full"
-                            onError={(e) => {
-                              e.currentTarget.src = '/placeholder.png';
-                            }}
-                          />
-                        )}
-                        <div>
-                          <div className="font-medium text-neutral-900 dark:text-theme-neutral-100 text-xs sm:text-sm">{token.token_name}</div>
-                          <div className="text-[10px] sm:text-xs text-neutral-600 dark:text-gray-400">{token.token_symbol}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-2 text-green-600 text-xs font-medium truncate">
-                      {token.token_balance.toFixed(4)}
-                    </td>
-                    <td className="px-4 py-2 text-purple-600 text-xs font-medium truncate">
-                      ${token.token_price_usd.toFixed(6)}
-                    </td>
-                    <td className="px-4 py-2 text-gray-600 dark:text-neutral-300 text-xs font-medium truncate">
-                      ${token.token_balance_usd.toFixed(5)}
-                    </td>
-                    <td className="px-4 py-2 text-yellow-500 text-xs font-medium">
-                      <div className="flex items-center gap-2">
-                        <span className="truncate max-w-[100px] sm:max-w-[120px]">{truncateString(token.token_address, 12)}</span>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigator.clipboard.writeText(token.token_address);
-                          }}
-                          className="text-neutral-600 hover:text-neutral-900 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
-                        >
-                          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
+            <div>
+              {/* Asset Preview Section */}
+              <div className="mb-1 p-2 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="flex flex-col sm:flex-row gap-4 justify-between">
+                  {/* SOL Balance */}
+                  <div className="flex-1 flex gap-2 items-center">
+                    <div className="text-sm text-gray-600 dark:text-gray-400 ">{t('wallet.solBalance')}</div>
+                    <div className="text-base font-bold text-blue-600 dark:text-blue-400">
+                      {(() => {
+                        const solToken = filteredTokens.find((token: any) => token.token_symbol === "SOL");
+                        return solToken ? solToken.token_balance.toFixed(4) : "0.0000";
+                      })()}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-500">
+                      ≈ ${(() => {
+                        const solToken = filteredTokens.find((token: any) => token.token_symbol === "SOL");
+                        return solToken ? (solToken.token_balance * solToken.token_price_usd).toFixed(2) : "0.00";
+                      })()} USD
+                    </div>
+                  </div>
+
+                  {/* USDT Balance */}
+                  <div className="flex-1 flex gap-2 items-center">
+                    <div className="text-sm text-gray-600 dark:text-gray-400 ">{t('wallet.usdtBalance')}</div>
+                    <div className="text-base font-bold text-green-600 dark:text-green-400">
+                      {(() => {
+                        const usdtToken = filteredTokens.find((token: any) => token.token_symbol === "USDT");
+                        return usdtToken ? usdtToken.token_balance.toFixed(2) : "0.00";
+                      })()}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-500">
+                      ≈ ${(() => {
+                        const usdtToken = filteredTokens.find((token: any) => token.token_symbol === "USDT");
+                        return usdtToken ? (usdtToken.token_balance * usdtToken.token_price_usd).toFixed(2) : "0.00";
+                      })()} USD
+                    </div>
+                  </div>
+
+                  {/* Total Portfolio Value */}
+                  <div className="flex-1 flex gap-2 items-center">
+                    <div className="text-sm text-gray-600 dark:text-gray-400 ">{t('wallet.totalPortfolio')}</div>
+                    <div className="text-base font-bold text-purple-600 dark:text-purple-400">
+                      ${(() => {
+                        const totalValue = filteredTokens.reduce((sum: number, token: any) => {
+                          return sum + token.token_balance_usd;
+                        }, 0);
+                        return totalValue.toFixed(2);
+                      })()}
+                    </div>
+                    <div className="text-sm text-gray-500 dark:text-theme-primary-500">
+                      {filteredTokens.length} {t('wallet.tokens')}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <table className="w-full text-sm table-fixed">
+                <thead className="sticky top-[-1px] z-10 bg-white dark:bg-theme-primary-500/70">
+                  <tr className="border-b border-gray-200 dark:border-neutral-800">
+                    <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-auto">{t("wallet.token")}</th>
+                    <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-[15%]">{t("wallet.balance")}</th>
+                    <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-[15%]">{t("wallet.price")}</th>
+                    <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-[15%]">{t("wallet.value")}</th>
+                    <th className="px-4 py-2 text-left text-gray-700 dark:text-neutral-200 font-medium w-[20%]">{t("wallet.address")}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredTokens.map((token: any, index: number) => (
+                    <tr key={index} className={`hover:bg-gray-100 dark:hover:bg-neutral-800/30 border-b border-gray-100 dark:border-neutral-800/50 cursor-pointer ${index % 2 === 0 ? 'bg-gray-50 dark:bg-[#1A1A1A]' : 'bg-white dark:bg-[#0F0F0F]'}`} onClick={() => router.push(`/trading?address=${token.token_address}`)}>
+                      <td className="px-4 py-2 text-gray-600 dark:text-neutral-300 text-xs font-medium flex-1">
+                        <div className="flex items-center gap-2">
+                          {token.token_logo_url && (
+                            <img
+                              src={token.token_logo_url}
+                              alt={token.token_name}
+                              className="w-5 h-5 sm:w-6 sm:h-6 rounded-full"
+                              onError={(e) => {
+                                e.currentTarget.src = '/placeholder.png';
+                              }}
+                            />
+                          )}
+                          <div>
+                            <div className="font-medium text-neutral-900 dark:text-theme-neutral-100 text-xs sm:text-sm">{token.token_name}</div>
+                            <div className="text-[10px] sm:text-xs text-neutral-600 dark:text-gray-400">{token.token_symbol}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-2 text-green-600 text-xs font-medium truncate">
+                        {token.token_balance.toFixed(4)}
+                      </td>
+                      <td className="px-4 py-2 text-purple-600 text-xs font-medium truncate">
+                        ${token.token_price_usd.toFixed(6)}
+                      </td>
+                      <td className="px-4 py-2 text-gray-600 dark:text-neutral-300 text-xs font-medium truncate">
+                        ${token.token_balance_usd.toFixed(5)}
+                      </td>
+                      <td className="px-4 py-2 text-yellow-500 text-xs font-medium">
+                        <div className="flex items-center gap-2">
+                          <span className="truncate max-w-[100px] sm:max-w-[120px]">{truncateString(token.token_address, 12)}</span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigator.clipboard.writeText(token.token_address);
+                            }}
+                            className="text-neutral-600 hover:text-neutral-900 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                          >
+                            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path
+                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
 
@@ -772,27 +827,27 @@ function TransactionHistoryContent() {
 
   return (
     <div className="shadow-inset dark:bg-theme-neutral-1000 rounded-md p-2 sm:p-3 lg:overflow-hidden bg-white dark:bg-neutral-1000 flex flex-col w-full h-full ">
-      <div className="flex border-gray-200 dark:border-neutral-800 h-[30px] bg-gray-100  rounded-full dark:bg-[#333] overflow-x-auto">
+      <div className="flex border-gray-200 dark:border-neutral-800 h-[30px] bg-gray-100  rounded-md dark:bg-[#333] overflow-x-auto">
         <button
-          className={`flex-1 rounded-full text-[9px] xl:text-sm cursor-pointer font-medium uppercase text-center ${activeTab === "all" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
+          className={`flex-1 rounded-md text-[9px] xl:text-sm cursor-pointer font-medium uppercase text-center ${activeTab === "all" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
           onClick={() => setActiveTab("all")}
         >
           {t("transactionHistory.allTransactions")}
         </button>
         <button
-          className={`flex-1 rounded-full cursor-pointer text-[9px] xl:text-sm font-medium uppercase text-center ${activeTab === "my" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
+          className={`flex-1 rounded-md cursor-pointer text-[9px] xl:text-sm font-medium uppercase text-center ${activeTab === "my" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
           onClick={() => setActiveTab("my")}
         >
           {t("transactionHistory.myTransactions")}
         </button>
         <button
-          className={`px-4 md:flex-1 rounded-full cursor-pointer text-[9px] xl:text-sm font-medium uppercase text-center ${activeTab === "holder" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
+          className={`px-4 md:flex-1 rounded-md cursor-pointer text-[9px] xl:text-sm font-medium uppercase text-center ${activeTab === "holder" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
           onClick={() => setActiveTab("holder")}
         >
           {t("transactionHistory.holders")}
         </button>
         <button
-          className={`px-4 md:flex-1 rounded-full cursor-pointer text-[9px] xl:text-sm font-medium uppercase text-center ${activeTab === "asset" ? "text-white bg-theme-primary-500" : "text-red-500 dark:text-red-500"}`}
+          className={`px-4 md:flex-1 rounded-md cursor-pointer text-[9px] xl:text-sm font-medium uppercase text-center ${activeTab === "asset" ? "text-white bg-theme-primary-500" : "text-red-500 dark:text-red-500"}`}
           onClick={() => setActiveTab("asset")}
         >
           {t("transactionHistory.assets")}

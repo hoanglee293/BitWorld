@@ -425,7 +425,7 @@ const ListToken = () => {
                             return (
                                 <div
                                     key={i}
-                                    className="flex items-center gap-2 justify-between border-b h-[45px] border-neutral-800 group dark:hover:bg-neutral-800/50 hover:bg-theme-green-300 rounded "
+                                    className="flex items-center gap-2 justify-between border-b 2xl:h-[45px] h-[35px] border-neutral-800 group dark:hover:bg-neutral-800/50 hover:bg-theme-green-300 rounded "
                                 >
                                     <div className='flex items-center'>
                                         <button

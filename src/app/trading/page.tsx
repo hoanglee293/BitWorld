@@ -114,7 +114,7 @@ const TradingPage = () => {
             {
               !isSmallScreen && (
                 <>
-                  <div className={`flex ${isMobile ? 'flex-row w-full lg:h-[200px]' : 'flex-col '} xl:gap-2 gap-1 lg:overflow-hidden mr-2`}>
+                  <div className={`flex ${isMobile ? 'flex-row w-full lg:h-[200px]' : 'flex-col max-w-[20%]'} xl:gap-2 gap-1 lg:overflow-hidden mr-2`}>
                       <TokenInfo />
                       {!isMobile && <ListToken />}
                     </div>
@@ -123,11 +123,11 @@ const TradingPage = () => {
             }
 
             {/* Center Column */}
-            <Panel minSize={40} maxSize={95} className="lg:overflow-hidden relative">
+            <Panel minSize={55} maxSize={95} className="lg:overflow-hidden relative">
               <PanelGroup direction="vertical" className="h-full">
                 {/* Chart Panel */}
                 <Panel defaultSize={60} minSize={30} maxSize={80} className="lg:overflow-hidden relative">
-                  <div className='dark:bg-theme-neutral-1000 shadow-inset bg-white rounded-md p-2 md:p-4 overflow-auto transition-all duration-100 relative h-full'>
+                  <div className='dark:bg-theme-neutral-1000 shadow-inset bg-white rounded-md p-2 2xl:p-4 overflow-auto transition-all duration-100 relative h-full'>
                     <TradingViewChart className='h-full' />
                   </div>
                 </Panel>
@@ -136,7 +136,7 @@ const TradingPage = () => {
                 <PanelResizeHandle className="h-[2px] m-1 bg-theme-neutral-800 hover:bg-neutral-600 transition-colors relative z-400" />
 
                 {/* Transaction History Panel */}
-                <Panel defaultSize={40} minSize={20} maxSize={60} className="lg:overflow-hidden relative">
+                <Panel defaultSize={45} minSize={20} maxSize={60} className="lg:overflow-hidden relative">
                   <div className='transition-all duration-100 overflow-hidden rounded-md flex h-full'>
                     <div className='flex flex-1 w-full'>
                       <TransactionHistory />
@@ -150,7 +150,7 @@ const TradingPage = () => {
             <PanelResizeHandle className="w-[2px] m-1 bg-theme-neutral-800 hover:bg-neutral-600 transition-colors relative z-400" />
 
             {/* Right Column */}
-            <Panel defaultSize={22} minSize={5} maxSize={30} className="h-full overflow-hidden">
+            <Panel defaultSize={24} minSize={5} maxSize={30} className="h-full overflow-hidden">
               <div className='h-full overflow-auto'>
                 <Control />
               </div>

@@ -336,15 +336,15 @@ function TransactionHistoryContent() {
           <table className="w-full text-sm table-fixed">
             <thead className="sticky top-[-1px] z-10 bg-white dark:bg-[#0F0F0F]">
               <tr className="border-b border-gray-200 dark:border-neutral-800">
-                <th className="2xl:px-4 px-2 py-2 text-left 2xl:text-xs text-[10px] text-gray-700 dark:text-neutral-200 font-medium w-[15%]">{t("transactionHistory.time")}</th>
-                <th className="2xl:px-4 px-2 py-2 text-left 2xl:text-xs text-[10px] text-gray-700 dark:text-neutral-200 font-medium w-[7%]">{t("transactionHistory.type")}</th>
-                <th className="2xl:px-4 px-2 py-2 text-left 2xl:text-xs text-[10px] text-gray-700 dark:text-neutral-200 font-medium w-[11%]">{t("transactionHistory.price")}</th>
-                <th className="2xl:px-4 px-2 py-2 text-left 2xl:text-xs text-[10px] text-gray-700 dark:text-neutral-200 font-medium w-[9%]">{t("transactionHistory.amount")}</th>
-                <th className="2xl:px-4 px-2 py-2 text-left 2xl:text-xs text-[10px] text-gray-700 dark:text-neutral-200 font-medium w-[12%]">{t("transactionHistory.total")}</th>
-                <th className="xl:block hidden 2xl:px-4 px-2 py-2 text-left 2xl:text-xs text-[10px] text-gray-700 dark:text-neutral-200 font-medium w-[8%]">{t("transactionHistory.source")}</th>
-                <th className="2xl:px-4 px-2 py-2 text-left 2xl:text-xs text-[10px] text-gray-700 dark:text-neutral-200 font-medium w-[12%]">{t("transactionHistory.transactionHash")}</th>
-                <th className="2xl:px-4 px-2 py-2 text-left 2xl:text-xs text-[10px] text-gray-700 dark:text-neutral-200 font-medium w-[11%]">{t("transactionHistory.status")}</th>
-                <th className="2xl:px-4 px-2 py-2 text-left 2xl:text-xs text-[10px] text-gray-700 dark:text-neutral-200 font-medium w-[12%]">{t("transactionHistory.address")}</th>
+                <th className="2xl:px-4 px-2 py-1.5 2xl:py-2 text-left 2xl:text-xs text-[10px] text-gray-700 dark:text-neutral-200 font-medium w-[14%]">{t("transactionHistory.time")}</th>
+                <th className="2xl:px-4 px-2 py-1.5 2xl:py-2 text-left 2xl:text-xs text-[10px] text-gray-700 dark:text-neutral-200 font-medium w-[7%]">{t("transactionHistory.type")}</th>
+                <th className="2xl:px-4 px-2 py-1.5 2xl:py-2 text-left 2xl:text-xs text-[10px] text-gray-700 dark:text-neutral-200 font-medium w-[11%]">{t("transactionHistory.price")}</th>
+                <th className="2xl:px-4 px-2 py-1.5 2xl:py-2 text-left 2xl:text-xs text-[10px] text-gray-700 dark:text-neutral-200 font-medium w-[9%]">{t("transactionHistory.amount")}</th>
+                <th className="2xl:px-4 px-2 py-1.5 2xl:py-2 text-left 2xl:text-xs text-[10px] text-gray-700 dark:text-neutral-200 font-medium w-[12%]">{t("transactionHistory.total")}</th>
+                <th className="xl:block hidden 2xl:px-4 px-2 py-1.5 2xl:py-2 text-left 2xl:text-xs text-[10px] text-gray-700 dark:text-neutral-200 font-medium">{t("transactionHistory.source")}</th>
+                <th className="2xl:px-4 px-2 py-1.5 2xl:py-2 text-left 2xl:text-xs text-[10px] text-gray-700 dark:text-neutral-200 font-medium w-[12%]">{t("transactionHistory.transactionHash")}</th>
+                <th className="2xl:px-4 px-2 py-1.5 2xl:py-2 text-left 2xl:text-xs text-[10px] text-gray-700 dark:text-neutral-200 font-medium w-[11%]">{t("transactionHistory.status")}</th>
+                <th className="2xl:px-4 px-2 py-1.5 2xl:py-2 text-left 2xl:text-xs text-[10px] text-gray-700 dark:text-neutral-200 font-medium w-[12%]">{t("transactionHistory.address")}</th>
               </tr>
             </thead>
             <tbody>
@@ -826,35 +826,35 @@ function TransactionHistoryContent() {
   };
 
   return (
-    <div className="shadow-inset dark:bg-theme-neutral-1000 rounded-md p-2 sm:p-3 lg:overflow-hidden bg-white dark:bg-neutral-1000 flex flex-col w-full h-full ">
-      <div className="flex border-gray-200 dark:border-neutral-800 h-[30px] bg-gray-100  rounded-md dark:bg-[#333] overflow-x-auto">
+    <div className="shadow-inset dark:bg-theme-neutral-1000 rounded-md p-2 2xl:p-3 lg:overflow-hidden bg-white dark:bg-neutral-1000 flex flex-col w-full h-full ">
+      <div className="flex border-gray-200 dark:border-neutral-800 2xl:h-[30px] h-[20px] bg-gray-100  rounded-md dark:bg-[#333] overflow-x-auto md:overflow-x-hidden mb-1">
         <button
-          className={`flex-1 rounded-md text-[9px] xl:text-sm cursor-pointer font-medium uppercase text-center ${activeTab === "all" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
+          className={`flex-1 rounded-sm text-[9px] 2xl:text-sm cursor-pointer font-medium uppercase text-center ${activeTab === "all" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
           onClick={() => setActiveTab("all")}
         >
           {t("transactionHistory.allTransactions")}
         </button>
         <button
-          className={`flex-1 rounded-md cursor-pointer text-[9px] xl:text-sm font-medium uppercase text-center ${activeTab === "my" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
+          className={`flex-1 rounded-sm cursor-pointer text-[9px] 2xl:text-sm font-medium uppercase text-center ${activeTab === "my" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
           onClick={() => setActiveTab("my")}
         >
           {t("transactionHistory.myTransactions")}
         </button>
         <button
-          className={`px-4 md:flex-1 rounded-md cursor-pointer text-[9px] xl:text-sm font-medium uppercase text-center ${activeTab === "holder" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
+          className={`px-4 md:flex-1 rounded-sm cursor-pointer text-[9px] 2xl:text-sm font-medium uppercase text-center ${activeTab === "holder" ? "text-white bg-theme-primary-500" : "text-gray-500 dark:text-neutral-400"}`}
           onClick={() => setActiveTab("holder")}
         >
           {t("transactionHistory.holders")}
         </button>
         <button
-          className={`px-4 md:flex-1 rounded-md cursor-pointer text-[9px] xl:text-sm font-medium uppercase text-center ${activeTab === "asset" ? "text-white bg-theme-primary-500" : "text-red-500 dark:text-red-500"}`}
+          className={`px-4 md:flex-1 rounded-sm cursor-pointer text-[9px] 2xl:text-sm font-medium uppercase text-center ${activeTab === "asset" ? "text-white bg-theme-primary-500" : "text-red-500 dark:text-red-500"}`}
           onClick={() => setActiveTab("asset")}
         >
           {t("transactionHistory.assets")}
         </button>
       </div>
 
-      <div className="mt-2 sm:mt-3 bg-gray-50 dark:bg-[#0F0F0F] rounded-md relative flex-1 flex flex-col min-h-0">
+      <div className="mt-0 2xl:mt-3 bg-gray-50 dark:bg-[#0F0F0F] rounded-sm relative flex-1 flex flex-col min-h-0">
         <div className="flex-1 overflow-auto">
           {activeTab === "all" ? renderAllTransactionsTable() :
             activeTab === "my" ? renderMyTransactionsTable() :

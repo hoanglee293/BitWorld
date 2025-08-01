@@ -8,6 +8,7 @@ import { useWsChatMessage } from "@/hooks/useWsChatMessage";
 import { useWidgetChatStore } from "@/store/widgetChatStore";
 import { Smile } from "lucide-react";
 import EmojiPicker, { Theme } from 'emoji-picker-react'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/ui/tooltip";
 
 type Message = {
   id: string;
@@ -93,7 +94,7 @@ const ChatWidget = () => {
     // Allow dragging from logo image or chat box header
     const isLogoImage = e.target === containerRef.current?.querySelector('.chat-logo img');
     const isChatHeader = e.currentTarget.closest('.chat-header');
-    
+
     if (isLogoImage || isChatHeader) {
       e.preventDefault();
       if (containerRef.current) {
@@ -139,8 +140,8 @@ const ChatWidget = () => {
     if (isDragging) {
       setIsDragging(false);
       document.body.style.userSelect = "";
-    } else if (e.target === containerRef.current?.querySelector('.chat-logo') || 
-               e.target === containerRef.current?.querySelector('.chat-logo img')) {
+    } else if (e.target === containerRef.current?.querySelector('.chat-logo') ||
+      e.target === containerRef.current?.querySelector('.chat-logo img')) {
       // Only toggle if it wasn't a drag and clicked on the logo container or logo image
       setOpen(!open);
     }
@@ -150,7 +151,7 @@ const ChatWidget = () => {
     // Allow dragging from logo image or chat box header
     const isLogoImage = e.target === containerRef.current?.querySelector('.chat-logo img');
     const isChatHeader = e.currentTarget.closest('.chat-header');
-    
+
     if (isLogoImage || isChatHeader) {
       e.preventDefault();
       if (containerRef.current) {
@@ -206,8 +207,8 @@ const ChatWidget = () => {
   const handleTouchEnd = (e: TouchEvent) => {
     if (isDragging) {
       setIsDragging(false);
-    } else if (e.target === containerRef.current?.querySelector('.chat-logo') || 
-               e.target === containerRef.current?.querySelector('.chat-logo img')) {
+    } else if (e.target === containerRef.current?.querySelector('.chat-logo') ||
+      e.target === containerRef.current?.querySelector('.chat-logo img')) {
       // Only toggle if it wasn't a drag and tapped on the logo container or logo image
       setOpen(!open);
     }
@@ -326,7 +327,7 @@ const ChatWidget = () => {
     if (!inputMessage.trim()) return;
 
     try {
-      await ChatService.sendAllMessage(inputMessage, lang);
+      await ChatService.sendAllMessage(inputMessage, lang, []);
       refetchChatAllHistories(); // Refetch chat history after sending
       setInputMessage("");
 
@@ -360,118 +361,130 @@ const ChatWidget = () => {
   };
 
   return (
-    <div
-      ref={containerRef}
-      className="fixed z-50"
-      style={{
-        left: containerPosition.x,
-        top: containerPosition.y,
-        userSelect: "none",
-        touchAction: "none"
-      }}
-    >
-      <div className="relative">
-        {/* Chat Logo */}
-        <div
-          className="chat-logo cursor-pointer"
-          onClick={(e) => {
-            // Prevent click if it was a drag
-            if (!isDragging) {
-              setOpen(!open);
-            }
-          }}
-        >
-          <img
-            src={chatLogo}
-            alt="Chat Logo"
-            className="w-[40px] h-[40px] lg:w-[60px] lg:h-[60px] hue-rotate-[238deg]"
-            onMouseDown={handleMouseDown}
-            onTouchStart={handleTouchStart}
-          />
-        </div>
-
-        {/* Chat Box */}
-        {open && (
-          <div
-            className={`${getBoxPositionClasses()} w-[calc(100vw-100px)] shadow-lg rounded-lg  lg:w-[30vw] h-[50vh] flex flex-col border border-gray-200 dark:border-t-theme-primary-300 dark:border-l-theme-primary-300 dark:border-b-theme-secondary-400 dark:border-r-theme-secondary-400`}
-          >
-            <div
-              className="flex items-center justify-center gap-2 p-2 cursor-move bg-gray-50 dark:bg-neutral-900 rounded-t-lg select-none chat-header"
-              onMouseDown={handleMouseDown}
-              onTouchStart={handleTouchStart}
-            >
-              <div className="flex items-center gap-2">
-                <img src={"/ethereum.png"} alt="ethereum-icon" width={15} height={15} />
-                <span className="dark:text-white font-bold">{t("masterTrade.manage.chat.communityChatroom")}</span>
-                <img src={"/ethereum.png"} alt="ethereum-icon" width={15} height={15} />
+    <TooltipProvider>
+      <div
+        ref={containerRef}
+        className="fixed z-50"
+        style={{
+          left: containerPosition.x,
+          top: containerPosition.y,
+          userSelect: "none",
+          touchAction: "none"
+        }}
+      >
+        <div className="relative">
+          {/* Chat Logo */}
+          <Tooltip defaultOpen={true}>
+            <TooltipTrigger asChild>
+              <div
+                className="chat-logo cursor-pointer"
+                onClick={(e) => {
+                  // Prevent click if it was a drag
+                  if (!isDragging) {
+                    setOpen(!open);
+                  }
+                }}
+              >
+                <img
+                  src={chatLogo}
+                  alt="Chat Logo"
+                  className="2xl:w-[60px] 2xl:h-[60px] w-[40px] h-[40px] hue-rotate-[238deg]"
+                  onMouseDown={handleMouseDown}
+                  onTouchStart={handleTouchStart}
+                />
               </div>
-            </div>
-            <div className="flex-1 overflow-y-auto p-3 pb-1 lg:mx-4 dark:mx-0 rounded-md lg:bg-gray-200 bg-white  dark:bg-neutral-900">
-              {messages.map((msg) => (
-                <ChatMessage key={msg.id} message={msg} />
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
-            <div className="p-2 rounded-b-md bg-gray-50 dark:bg-neutral-900 ">
-              <div className="flex gap-2 rounded-md">
-                <div className="relative items-center w-full">
-                  <input
-                    type="text"
-                    value={inputMessage}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey && inputMessage.trim()) {
-                        e.preventDefault();
-                        handleSendMessage();
-                      }
-                    }}
-                    placeholder={t("masterTrade.manage.chat.type_a_message")}
-                    className="w-full bg-gray-50 dark:bg-neutral-800 text-gray-900 dark:text-white rounded-full px-4 py-2 pr-10 
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{t("masterTrade.manage.chat.chatroomDescription")}</p>
+            </TooltipContent>
+          </Tooltip>
+
+          {/* Chat Box */}
+          {open && (
+            <div
+              className={`${getBoxPositionClasses()} w-[calc(100vw-100px)] shadow-lg rounded-lg  lg:w-[18vw] max-w-[400px] h-[50vh] flex flex-col border border-theme-primary-500/60`}
+            >
+              <div
+                className="flex items-center justify-center gap-2 p-2 cursor-move bg-gray-50 dark:bg-neutral-900 rounded-t-lg select-none chat-header border-b border-gray-200 dark:border-t-theme-primary-300 dark:border-l-theme-primary-300 dark:border-b-theme-primary-500 dark:border-r-theme-priborder-b-theme-primary-500"
+                onMouseDown={handleMouseDown}
+                onTouchStart={handleTouchStart}
+              >
+                <div className="flex flex-col items-center gap-1">
+                  <div className="flex items-center gap-2">
+                    <img src={"/ethereum.png"} alt="ethereum-icon" width={15} height={15} />
+                    <span className="dark:text-white font-bold text-center text-[10px] 2xl:text-sm">{t("masterTrade.manage.chat.communityChatroom")}</span>
+                    <img src={"/ethereum.png"} alt="ethereum-icon" width={15} height={15} />
+                  </div>
+                  <span className="text-[6px] italic text-gray-400 text-center">{t("masterTrade.manage.chat.communityChatroomDescription")}</span>
+                </div>
+              </div>
+              <div className="flex-1 overflow-y-auto p-3 pb-1 dark:mx-0 lg:bg-gray-200 bg-white  dark:bg-neutral-900">
+                {messages.map((msg) => (
+                  <ChatMessage key={msg.id} message={msg} />
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+              <div className="p-2 rounded-b-md bg-gray-50 dark:bg-neutral-900 ">
+                <div className="flex gap-2 rounded-md">
+                  <div className="relative items-center w-full">
+                    <input
+                      type="text"
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey && inputMessage.trim()) {
+                          e.preventDefault();
+                          handleSendMessage();
+                        }
+                      }}
+                      placeholder={t("masterTrade.manage.chat.type_a_message")}
+                      className="w-full bg-gray-50 dark:bg-neutral-800 text-gray-900 dark:text-white rounded-full 2xl:max-h-[30px] max-h-[20px] px-4 py-2 pr-10 
                                          focus:outline-none focus:ring-2 focus:ring-theme-primary-400/50 
                                          placeholder-gray-400 dark:placeholder-gray-500 text-xs
                                          border border-gray-200 dark:border-neutral-700 h-[30px]
                                          shadow-sm hover:border-theme-primary-400/30 transition-colors placeholder:text-xs"
-                  />
-                  <div className="absolute right-3 top-[18px] -translate-y-1/2 flex items-center gap-2">
-                    <div ref={emojiPickerRef} className="relative">
-                      <button
-                        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                        className="text-gray-400 hover:text-theme-primary-500 dark:text-gray-400 
+                    />
+                    <div className="absolute right-3 2xl:top-[18px] top-[12px] -translate-y-1/2 flex items-center gap-2">
+                      <div ref={emojiPickerRef} className="relative">
+                        <button
+                          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                          className="text-gray-400 hover:text-theme-primary-500 dark:text-gray-400 
                                          dark:hover:text-theme-primary-300 transition-colors"
-                      >
-                        <Smile className="h-4 w-4" />
-                      </button>
-                      {showEmojiPicker && (
-                        <div className="absolute bottom-full right-0 mb-2 z-50">
-                          <EmojiPicker
-                            onEmojiClick={onEmojiSelect}
-                            theme={Theme.DARK}
-                            width={300}
-                            height={400}
-                            searchDisabled={false}
-                            skinTonesDisabled={true}
-                          />
-                        </div>
-                      )}
+                        >
+                          <Smile className="h-4 w-4" />
+                        </button>
+                        {showEmojiPicker && (
+                          <div className="absolute bottom-full right-0 mb-2 z-50">
+                            <EmojiPicker
+                              onEmojiClick={onEmojiSelect}
+                              theme={Theme.DARK}
+                              width={300}
+                              height={400}
+                              searchDisabled={false}
+                              skinTonesDisabled={true}
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <button
-                  onClick={handleSendMessage}
-                  disabled={!inputMessage.trim()}
-                  className={`px-2 lg:px-4 py-1 min-w-[60px] rounded-lg text-xs font-medium transition-colors
+                  <button
+                    onClick={handleSendMessage}
+                    disabled={!inputMessage.trim()}
+                    className={`px-2 2xl:px-4 py-1 2xl:min-w-[60px] min-w-[40px] 2xl:max-h-[30px] max-h-[20px] rounded-lg text-xs font-medium transition-colors
                     ${inputMessage.trim()
-                      ? 'bg-theme-primary-400 hover:bg-theme-primary-500 text-white'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed'}`}
-                >
-                  {t("masterTrade.manage.chat.send")}
-                </button>
+                        ? 'bg-theme-primary-400 hover:bg-theme-primary-500 text-white'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed'}`}
+                  >
+                    {t("masterTrade.manage.chat.send")}
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 };
 

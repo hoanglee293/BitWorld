@@ -17,9 +17,9 @@ export const getChatAllHistories = async (lang: string)=>{
     }
 }
 
-export const sendAllMessage = async (content: string, lang: string) => {
+export const sendAllMessage = async (content: string, lang: string, images: any[]) => {
     try {
-        const temp = await axiosClient.post("/chats/send-message/all", { content, lang })
+        const temp = await axiosClient.post("/chats/send-message/all", { content, lang, images },{ headers : {'Content-Type': 'multipart/form-data',} })
         return temp.data.data;
     } catch (error) {
         console.log(error)
@@ -27,9 +27,9 @@ export const sendAllMessage = async (content: string, lang: string) => {
     }
 }
 
-export const sendTokenMessage = async (content: string, tokenAddress: string, lang: string) => {
+export const sendTokenMessage = async (content: string, tokenAddress: string, lang: string, images: any[]) => {
     try {
-        const temp = await axiosClient.post(`/chats/send-message/token/${tokenAddress}`, { content, lang })
+        const temp = await axiosClient.post(`/chats/send-message/token/${tokenAddress}`, { content, lang, images },{ headers : {'Content-Type': 'multipart/form-data',} })
         return temp.data.data;
     } catch (error) {
         console.log(error)

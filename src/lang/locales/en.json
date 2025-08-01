@@ -18,7 +18,7 @@
       "description2": "Create a new coin on Pumpfun and Meme Pumpfun"
     },
     "universalAccount": {
-      "title": "UNIVERSAL ACCOUNT",
+      "title": "My Asset",
       "receive": "Receive",
       "send": "Send"
     },
@@ -338,7 +338,9 @@
         "noMessages": "No messages yet",
         "communityChatroom": "Community Chatroom",
         "type_a_message": "Type a message...",
-        "stream": "Allow role change"
+        "stream": "Allow role change",
+        "communityChatroomDescription": "Hold the mouse and move it",
+        "chatroomDescription": "Click to chat"
       },
       "guide": {
         "title": "Master Flow Guide",
@@ -369,7 +371,7 @@
     "eth": "ETH",
     "bnb": "BNB",
     "wallet": "Wallet",
-    "universalAccount": "Universal Account",
+    "universalAccount": "My Asset",
     "receive": "Receive",
     "send": "Send",
     "getPrivateKey": "Get Private Key",
@@ -472,7 +474,11 @@
     "confirmDeleteWalletAction": "Delete wallet",
     "cancel": "Cancel",
     "delete": "Delete",
-    "walletNameNote": "Note: Wallet name and nickname cannot be duplicated with existing wallet names and nicknames"
+    "walletNameNote": "Note: Wallet name and nickname cannot be duplicated with existing wallet names and nicknames",
+    "solBalance": "SOL Balance",
+    "usdtBalance": "USDT Balance",
+    "totalPortfolio": "Total Portfolio",
+    "tokens": "Tokens"
   },
   "searchPlaceholder": "Token Name/ Address",
   "languages": {

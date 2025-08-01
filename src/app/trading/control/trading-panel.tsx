@@ -12,6 +12,7 @@ import { STYLE_TEXT_BASE } from "./constants/styles"
 import { useLocalStorage } from "./hooks/useLocalStorage"
 import { PercentageButtons } from "./components/PercentageButtons"
 import { AmountButtons } from "./components/AmountButtons"
+import { CustomRangeSlider } from "./components/CustomRangeSlider"
 import { getInforWallet } from "@/services/api/TelegramWalletService"
 
 export default function TradingPanel({
@@ -131,19 +132,7 @@ export default function TradingPanel({
         setAmountUSD((value * exchangeRate).toFixed(2))
     }, [exchangeRate, validateAmount])
 
-    const handlePercentageChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const newPercentage = Number.parseInt(e.target.value)
-        setPercentage(newPercentage)
-        setIsDirectAmountInput(false)
-        const balance = mode === "buy" ? tradeAmount?.sol_balance || 0 : tradeAmount?.token_balance || 0
-        const newAmount = ((balance * newPercentage) / 100).toFixed(6)
-        setAmount(newAmount)
-        // Calculate amountUSD using the newAmount we just calculated
-        if (mode === "buy") {
-            const numericAmount = Number(newAmount)
-            setAmountUSD((numericAmount * exchangeRate).toFixed(2))
-        }
-    }, [isConnected, mode, tradeAmount, exchangeRate])
+
 
     const handleSetPercentage = useCallback((percent: number) => {
         setPercentage(percent)
@@ -229,8 +218,8 @@ export default function TradingPanel({
                         : Number(amount) * (solPrice?.priceUSD || 0),
                 order_qlty: Number(amount),
             })
-
-            if (result.success) {
+            console.log("result", result)
+            if (result.status === 201 || result.status === 200) {
                 setAmount("0.00")
                 setPercentage(0)
                 setAmountUSD("0.00")
@@ -283,13 +272,13 @@ export default function TradingPanel({
             {/* Mode Tabs */}
             <div className="flex group bg-gray-100 dark:bg-theme-neutral-1000 rounded-md 2xl:h-[35px] h-[30px] mb-1">
                 <button
-                    className={`flex-1 rounded-md 2xl:text-sm text-xs cursor-pointer uppercase text-center ${mode === "buy" ? "border-green-500 text-green-600 dark:text-theme-green-200 border-1 bg-green-50 dark:bg-theme-green-100 font-semibold" : "text-gray-500 dark:text-neutral-400"}`}
+                    className={`flex-1 rounded-md 2xl:max-h-[30px] max-h-[23px] 2xl:text-sm text-xs cursor-pointer uppercase text-center ${mode === "buy" ? "border-green-500 text-green-600 dark:text-theme-green-200 border-1 bg-green-50 dark:bg-theme-green-100 font-semibold" : "text-gray-500 dark:text-neutral-400"}`}
                     onClick={() => setMode("buy")}
                 >
                     {t('trading.panel.buy')}
                 </button>
                 <button
-                    className={`flex-1 rounded-md cursor-pointer 2xl:text-sm text-xs uppercase text-center ${mode === "sell" ? "border-red-500 text-red-600 dark:text-theme-red-100 border-1 bg-red-50 dark:bg-theme-red-300 font-semibold" : "text-gray-500 dark:text-neutral-400"}`}
+                    className={`flex-1 rounded-md cursor-pointer 2xl:max-h-[30px] max-h-[23px] 2xl:text-sm text-xs uppercase text-center ${mode === "sell" ? "border-red-500 text-red-600 dark:text-theme-red-100 border-1 bg-red-50 dark:bg-theme-red-300 font-semibold" : "text-gray-500 dark:text-neutral-400"}`}
                     onClick={() => setMode("sell")}
                 >
                     {t('trading.panel.sell')}
@@ -335,73 +324,27 @@ export default function TradingPanel({
                     {/* Percentage Controls */}
                     {(!isDirectAmountInput || mode !== "buy") && (
                         <div className="mb-1">
-                            {/* <div className="flex justify-between mb-1">
-                                <span className={STYLE_TEXT_BASE}>{t('trading.panel.percentage')}</span>
-                                <span className={`${STYLE_TEXT_BASE} text-blue-600 dark:text-theme-primary-300`}>
-                                    {percentage.toFixed(2)}%
-                                </span>
-                            </div> */}
-                            <input
-                                type="range"
-                                min="0"
-                                max="100"
+                            <CustomRangeSlider
+                                min={0}
+                                max={100}
                                 value={percentage}
-                                onChange={handlePercentageChange}
-                                className="w-full relative z-30"
-                            />
-                            {/* Slider Marks */}
-                            <div className="flex justify-between relative z-20" style={{ marginTop: "-22.2px" }}>
-                                {[0, 25, 50, 75, 100].map((mark) => {
-                                    const isActive = percentage >= mark;
-                                    let positionStyle;
-                                    switch (mark) {
-                                        case 0:
-                                            positionStyle = "ml-0 items-center";
-                                            break;
-                                        case 25:
-                                            positionStyle = "ml-4 items-center";
-                                            break;
-                                        case 50:
-                                            positionStyle = "ml-3.5 items-center";
-                                            break;
-                                        case 75:
-                                            positionStyle = "ml-3.5 items-center";
-                                            break;
-                                        case 100:
-                                            positionStyle = "items-end";
-                                            break;
+                                onChange={(newPercentage) => {
+                                    setPercentage(newPercentage)
+                                    setIsDirectAmountInput(false)
+                                    if (isConnected) {
+                                        const balance = mode === "buy" ? tradeAmount?.sol_balance || 0 : tradeAmount?.token_balance || 0
+                                        const newAmount = ((balance * newPercentage) / 100).toFixed(6)
+                                        setAmount(newAmount)
+                                        validateAmount(Number(newAmount))
+                                        if (mode === "buy") {
+                                            const numericAmount = Number(newAmount)
+                                            setAmountUSD((numericAmount * exchangeRate).toFixed(2))
+                                        }
                                     }
-                                    return (
-                                        <div key={mark} className={`flex flex-col gap-1 ${positionStyle}`} onClick={() => {
-                                            setPercentage(mark)
-                                            setIsDirectAmountInput(false)
-                                            if (isConnected) {
-                                                const balance = mode === "buy" ? tradeAmount?.sol_balance || 0 : tradeAmount?.token_balance || 0
-                                                const newAmount = ((balance * mark) / 100).toFixed(6)
-                                                setAmount(newAmount)
-                                                validateAmount(Number(newAmount))
-                                                if (mode === "buy") {
-                                                    const numericAmount = Number(newAmount)
-                                                    setAmountUSD((numericAmount * exchangeRate).toFixed(2))
-                                                }
-                                            }
-                                        }}>
-                                            <button
-                                                className={`w-[15px] h-[15px] rounded-full mb-1 transition-all duration-200 hover:scale-125 focus:outline-none focus:ring-2 focus:ring-blue-400 ${isActive
-                                                        ? 'bg-blue-600 dark:bg-blue-500 border-2 border-cyan-400 dark:border-cyan-300 shadow-lg'
-                                                        : 'bg-white dark:bg-white hover:bg-white dark:hover:bg-white'
-                                                    }`}
-                                            />
-                                            <span className={`text-xs font-medium transition-colors duration-200 ${isActive
-                                                    ? 'text-cyan-400 dark:text-cyan-300'
-                                                    : 'text-black dark:text-gray-200'
-                                                }`}>
-                                                {mark}%
-                                            </span>
-                                        </div>
-                                    );
-                                })}
-                            </div>
+                                }}
+                                marks={[0, 25, 50, 75, 100]}
+                                className="w-full"
+                            />
                         </div>
                     )}
 

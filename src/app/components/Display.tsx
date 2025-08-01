@@ -22,7 +22,7 @@ export default function Display() {
                         size="icon" 
                         className="w-max text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 px-2 flex items-center gap-2 transition-colors"
                     >
-                        <Settings />
+                        <Settings className='h-6 w-6' />
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent 

@@ -25,11 +25,11 @@ export const PercentageButtons: React.FC<PercentageButtonsProps> = ({
     onEditKeyPress,
 }) => {
     return (
-        <div className="flex items-center justify-between 2xl:gap-2 gap-1">
+        <div className="flex items-center justify-between 2xl:gap-2 gap-1 mt-4">
             {percentageValues.map((percent, index) => (
-                <div key={index} className="relative w-full">
+                <div key={index} className="relative">
                     {editingIndex === index ? (
-                        <div className="flex items-center 2xl:gap-2 gap-[2px] bg-gray-100 dark:bg-neutral-700 rounded-md">
+                        <div className="flex items-center max-w-[40px] 2xl:gap-2 gap-[2px] bg-gray-100 dark:bg-neutral-700 rounded-md">
                             <input
                                 type="number"
                                 value={editValue}
@@ -50,7 +50,7 @@ export const PercentageButtons: React.FC<PercentageButtonsProps> = ({
                     ) : (
                         <button
                             onClick={() => onSetPercentage(percent)}
-                            className={`w-full 2xl:px-[6px] px-1 py-1 h-[30px] font-semibold text-[10px] rounded-md flex items-center justify-between gap-1 border border-solid transition-colors ${
+                            className={`2xl:px-[6px] px-1 py-1 2xl:h-[30px] h-[23px] font-semibold 2xl:text-xs text-[8px] rounded-md flex items-center justify-around gap-1 border border-solid transition-colors ${
                                 percentage === percent
                                     ? "border-blue-500 text-blue-600 dark:border-linear-start bg-blue-50 dark:bg-theme-primary-400/10"
                                     : "border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800"

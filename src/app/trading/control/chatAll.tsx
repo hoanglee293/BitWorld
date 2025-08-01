@@ -148,7 +148,7 @@ const ChatAllContent = () => {
     if (!newMessage.trim()) return;
 
     try {
-      await ChatService.sendAllMessage(newMessage, lang);
+      await ChatService.sendAllMessage(newMessage, lang, []);
       refetchChatAllHistories(); // Refetch chat history after sending
       setNewMessage("");
     } catch (error) {

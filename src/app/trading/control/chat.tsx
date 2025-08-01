@@ -133,7 +133,8 @@ const ChatTradingContent = () => {
       await ChatService.sendTokenMessage(
         newMessage,
         tokenAddress || "",
-        lang
+        lang,
+        []
       );
       refetchChatTokenHistories(); // Refetch chat history after sending
       setNewMessage("");
